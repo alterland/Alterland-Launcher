@@ -91,6 +91,9 @@ class ClientRepositoryImpl(
                 }
             }
 
+            println(gameArguments)
+            println(jvmArguments)
+
             println("$locals")
             println("$downloads")
         }
