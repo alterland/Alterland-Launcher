@@ -16,13 +16,6 @@ class ClientApi(private val httpClient: HttpClient) {
             }
         }.body()
 
-    suspend fun getClientProfiles(): List<ClientProfileRaw> =
-        httpClient.get {
-            url {
-                path("clientProfiles")
-            }
-        }.body()
-
     suspend fun getClientProfile(profileName: String): ClientProfileRaw =
         httpClient.get("clientProfile/$profileName").body()
 

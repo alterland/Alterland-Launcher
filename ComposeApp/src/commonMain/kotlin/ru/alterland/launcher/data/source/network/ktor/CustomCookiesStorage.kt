@@ -3,7 +3,7 @@ package ru.alterland.launcher.data.source.network.ktor
 import io.ktor.client.plugins.cookies.*
 import io.ktor.http.*
 import io.ktor.util.date.*
-import ru.alterland.launcher.data.source.local.LocalStorage
+import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.data.source.local.PersistentCookie
 
 internal class CustomCookiesStorage(
@@ -27,10 +27,8 @@ internal class CustomCookiesStorage(
 
     override fun close() {}
 
-    override suspend fun get(requestUrl: Url): List<Cookie> {
-        return localStorage.getAllCookies(requestUrl.host)?.map {
-            it.toCookie()
-        } ?: emptyList()
+    override suspend fun get(requestUrl: Url): List<Cookie> = localStorage.getAllCookies(requestUrl.host).map {
+        it.toCookie()
     }
 
     private fun PersistentCookie.toCookie(): Cookie {

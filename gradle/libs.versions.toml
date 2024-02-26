@@ -1,31 +1,30 @@
 [versions]
 
-kotlin = "1.9.21"
+kotlin = "1.9.22"
 agp = "8.1.2"
-compose = "1.5.11"
+compose = "1.5.12"
 androidx-appcompat = "1.6.1"
 androidx-activityCompose = "1.8.1"
-compose-uitooling = "1.5.11"
-libres = "1.1.8"
+libres = "1.2.2"
 voyager = "1.0.0"
-composeImageLoader = "1.7.1"
+composeImageLoader = "1.7.5"
 napier = "2.6.1"
-buildConfig = "4.2.0"
+buildConfig = "5.3.5"
 kotlinx-coroutines = "1.7.3"
-ktor = "2.3.7"
+ktor = "2.3.8"
 kotlinx-serialization = "1.6.1"
 kotlinx-datetime = "0.4.1"
-koin = "3.5.0"
-kstore = "0.6.0"
+koin = "3.5.3"
+kstore = "0.7.1"
 
-slf4j = "2.0.9"
+log4j = "1.4.0"
 dnsjava = "3.5.3"
 
 [libraries]
 
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-compose-uitooling = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-uitooling" }
+compose-uitooling = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 libres = { module = "io.github.skeptick.libres:libres-compose", version.ref = "libres" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
@@ -46,8 +45,9 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
+kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" }
 
-slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+log4j = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "log4j" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 
 [plugins]

@@ -2,10 +2,8 @@ package ru.alterland.launcher.ui.screen.auth.sign_in
 
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import ru.alterland.launcher.AppConfig
-import ru.alterland.launcher.data.source.local.LocalStorage
+import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.data.source.local.LocalStoreFields
 import ru.alterland.launcher.domain.repository.UserRepository
 import ru.alterland.launcher.ui.base.BaseScreenModel

@@ -1,4 +1,4 @@
-package ru.alterland.launchercore.util
+package ru.alterland.launcher.util
 
 import java.nio.file.FileSystems
 

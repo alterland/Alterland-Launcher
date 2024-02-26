@@ -1,16 +1,13 @@
 package ru.alterland.launcher.ui.screen.main.container
 
-import ru.alterland.launchercore.Launcher
 import cafe.adriel.voyager.core.model.screenModelScope
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 import ru.alterland.launcher.AppConfig
-import ru.alterland.launcher.data.source.local.LocalStorage
+import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.domain.repository.UserRepository
 import ru.alterland.launcher.ui.base.BaseScreenModel
 import ru.alterland.launcher.util.extentions.launchSafe
+import ru.alterland.launchercore.Launcher
 import ru.alterland.launchercore.domain.model.ServerProfile
 
 class DashboardScreenModel(
@@ -21,16 +18,16 @@ class DashboardScreenModel(
     initialState = DashboardContract.State()
 ) {
 
-    override fun handleEvent(event: DashboardContract.Event) {
-        when(event) {
-            is DashboardContract.Event.OnSignOutClicked -> signOut()
-        }
-    }
-
     init {
         subscribeToCookies()
         subscribeToServers()
         getUser()
+    }
+
+    override fun handleEvent(event: DashboardContract.Event) {
+        when(event) {
+            is DashboardContract.Event.OnSignOutClicked -> signOut()
+        }
     }
 
     private fun getUser() = screenModelScope.launchSafe(onError = ::onError, onComplete = { setState { copy() } }) {
@@ -43,15 +40,14 @@ class DashboardScreenModel(
     }
 
     private fun subscribeToCookies() {
-        screenModelScope.launch {
-            localStorage.cookiesFlow.map { map ->
-                map[AppConfig.apiBaseUrl] ?: listOf()
-            }.collect { list ->
-                if (list.find { cookie -> cookie.name == "access_token" } == null) {
-                    setEffect { DashboardContract.Effect.OnNavigateToAuth }
-                }
+        localStorage.cookiesFlow.map { cookies ->
+            cookies[AppConfig.apiBaseUrl] ?: listOf()
+        }.onEach { cookies ->
+            if (cookies.find { cookie -> cookie.name == ACCESS_TOKEN_COOKIE_NAME } == null) {
+                errorRepository.clearErrors()
+                setEffect { DashboardContract.Effect.OnNavigateToAuth }
             }
-        }
+        }.launchIn(screenModelScope)
     }
 
     private fun subscribeToServers() {
@@ -68,5 +64,9 @@ class DashboardScreenModel(
             }
             setState { copy(menuItems = menuItems) }
         }.launchIn(screenModelScope)
+    }
+
+    companion object {
+        private const val ACCESS_TOKEN_COOKIE_NAME = "access_token"
     }
 }

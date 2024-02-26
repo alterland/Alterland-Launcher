@@ -12,7 +12,7 @@ data class ClientProfileRaw(
     val extra: List<Library>?,
     val mainClass: String?,
     val javaVersion: JavaVersion?,
-    val modules: List<Module>?
+    val modules: List<String>?
 ) {
     @Serializable
     data class Argument(
@@ -76,11 +76,5 @@ data class ClientProfileRaw(
     data class JavaVersion(
         val component: String?,
         val majorVersion: Int?
-    )
-
-    @Serializable
-    data class Module(
-        val type: String?,
-        val name: String?
     )
 }

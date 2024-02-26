@@ -2,7 +2,7 @@ package ru.alterland.launchercore.domain.repository
 
 import kotlinx.coroutines.flow.StateFlow
 import ru.alterland.launchercore.domain.model.ClientProfile
-import ru.alterland.launchercore.domain.model.Player
+import ru.alterland.launchercore.domain.model.Options
 import ru.alterland.launchercore.domain.model.ServerProfile
 
 interface ClientRepository {
@@ -11,5 +11,5 @@ interface ClientRepository {
 
     val clientProfiles: StateFlow<List<ClientProfile>>
 
-    fun play(player: Player, serverProfile: ServerProfile)
+    fun play(options: Options)
 }

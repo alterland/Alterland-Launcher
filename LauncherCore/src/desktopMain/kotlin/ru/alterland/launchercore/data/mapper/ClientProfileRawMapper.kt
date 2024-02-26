@@ -12,7 +12,7 @@ fun ClientProfileRaw.toDomain() = ClientProfile(
     extra = extra?.map { it.getLibrary() } ?: listOf(),
     mainClass = mainClass,
     javaVersion = null,
-    modules = modules?.filter { it.name.isNullOrEmpty() }?.map { it.getModule() } ?: listOf(),
+    modules = modules?.filter { it.isNotEmpty() } ?: listOf(),
     status = ClientStatus.Unknown
 )
 
@@ -64,9 +64,4 @@ private fun ClientProfileRaw.Natives.getNatives() = ClientProfile.Natives(
     windows = windows,
     osx = osx,
     linux = linux
-)
-
-private fun ClientProfileRaw.Module.getModule() = ClientProfile.Module(
-    type = ModuleType.getModuleType(type),
-    name = name.orEmpty()
 )

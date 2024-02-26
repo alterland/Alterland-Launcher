@@ -7,6 +7,8 @@ import ru.alterland.launcher.domain.repository.UserRepository
 import ru.alterland.launcher.ui.base.BaseScreenModel
 import ru.alterland.launcher.util.extentions.handleErrors
 import ru.alterland.launcher.util.extentions.launchSafe
+import ru.alterland.launchercore.domain.model.Feature
+import ru.alterland.launchercore.domain.model.Options
 import ru.alterland.launchercore.domain.model.Player
 import ru.alterland.launchercore.domain.model.ServerProfile
 
@@ -39,11 +41,15 @@ class ServerInfoScreenModel(
 
     private fun handlePlayClick(profile: ServerProfile) = screenModelScope.launchSafe(::onError) {
         val user = userRepository.getUser()
-        val player = Player(
-            id = user.id,
-            accessToken = user.accessToken,
-            nickname = user.nickname
+        val options = Options(
+            serverProfile = profile,
+            player = Player(
+                id = user.id,
+                accessToken = user.accessToken,
+                nickname = user.nickname
+            ),
+            features = mapOf(Feature.HAS_CUSTOM_RESOLUTION to false)
         )
-        launcher.play(player, profile)
+        launcher.play(options)
     }
 }

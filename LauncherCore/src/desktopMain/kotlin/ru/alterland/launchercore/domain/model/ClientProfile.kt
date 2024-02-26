@@ -11,7 +11,7 @@ data class ClientProfile(
     val extra: List<Library>,
     val mainClass: String?,
     val javaVersion: JavaVersion?,
-    val modules: List<Module>,
+    val modules: List<String>,
     val status: ClientStatus
 ) {
     @Serializable
@@ -63,10 +63,5 @@ data class ClientProfile(
     data class JavaVersion(
         val component: String,
         val majorVersion: Int
-    )
-
-    data class Module(
-        val type: ModuleType,
-        val name: String
     )
 }

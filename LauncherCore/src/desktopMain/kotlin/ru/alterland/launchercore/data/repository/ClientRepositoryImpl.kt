@@ -3,9 +3,14 @@ package ru.alterland.launchercore.data.repository
 import AlterlandLauncher.LauncherCore.BuildConfig
 import AlterlandLauncher.LauncherCore.BuildConfig.CLIENT_PROFILES_FOLDER
 import AlterlandLauncher.LauncherCore.BuildConfig.SERVER_PROFILES_FOLDER
+import io.ktor.client.call.*
+import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -17,10 +22,10 @@ import ru.alterland.launchercore.data.source.network.ClientApi
 import ru.alterland.launchercore.domain.model.*
 import ru.alterland.launchercore.domain.repository.ClientRepository
 import ru.alterland.launchercore.domain.repository.LaunchRepository
-import ru.alterland.launchercore.domain.repository.MojangRepository
 import ru.alterland.launchercore.domain.repository.ServerRepository
+import ru.alterland.launchercore.dto.LaunchOptions
 import ru.alterland.launchercore.util.HashUtils.getCheckSumFromFile
-import ru.alterland.launchercore.util.V
+import ru.alterland.launchercore.util.v
 import java.nio.file.Path
 import java.security.MessageDigest
 import kotlin.io.path.*
@@ -32,7 +37,6 @@ class ClientRepositoryImpl(
     private val launchDispatcher: CoroutineDispatcher,
     private val serverRepository: ServerRepository,
     private val launchRepository: LaunchRepository,
-    private val mojangRepository: MojangRepository,
     private val clientApi: ClientApi,
     private val jsonReader: Json
 ): ClientRepository {
@@ -41,7 +45,7 @@ class ClientRepositoryImpl(
         prettyPrint = true
     }
 
-    private val workPath = Path(USER_HOME V BuildConfig.WORK_FOLDER)
+    private val workPath = Path(USER_HOME v BuildConfig.WORK_FOLDER)
     private val assetsPath = workPath.resolve(ASSETS_FOLDER)
     private val assetsIndexesPath = workPath.resolve(ASSETS_INDEXES_FOLDER)
     private val assetsObjectsPath = workPath.resolve(ASSETS_OBJECTS_FOLDER)
@@ -63,39 +67,19 @@ class ClientRepositoryImpl(
         initClientProfiles()
     }
 
-    override fun play(player: Player, serverProfile: ServerProfile) {
+    override fun play(options: Options) {
+        val serverProfile = options.serverProfile
+        val player = options.player
+        val features = options.features.mapKeys { it.key.value }
+
+        if (serverProfile.clientProfile == null) return
+
+        getClientProfileOrStub(serverProfile.clientProfile).apply {
+            updateClientStatus(ClientStatus.Verification)
+        }
+
         applicationIoScope.launch {
-            //client.updateClientStatus(ClientStatus.Verification)
-
-            val locals = mutableMapOf<String, String>()
-            val downloads = mutableListOf<ClientProfile.Library>()
-
-            val clientProfile = serverProfile.clientProfile?.let { getClientProfile(it) } ?: return@launch
-
-            val gameArguments = clientProfile.gameArguments.filter { testRules(it.rules) }.flatMap { it.value }
-            val jvmArguments = clientProfile.jvmArguments.filter { testRules(it.rules) }.flatMap { it.value }
-
-            workPath.walk().forEach { path ->
-                if (!path.startsWith(assetsPath) && path.isRegularFile()) {
-                    val checkSum = path.getCheckSumFromFile(hashAlgorithm, 40)
-                    val relativePath = path.relativeTo(workPath).toString()
-                    locals[relativePath] = checkSum
-                }
-            }
-
-            clientProfile.libraries.forEach { library ->
-                library.downloads?.artifact?.let { artifact ->
-                    locals[artifact.path]?.let { checkSum ->
-                        if (checkSum != artifact.checkSum) downloads.add(library)
-                    }
-                }
-            }
-
-            println(gameArguments)
-            println(jvmArguments)
-
-            println("$locals")
-            println("$downloads")
+            updateProfileAndDownload(serverProfile.clientProfile, features)
         }
 
 //            val versions = mutableMapOf<String, ClientProfileResponse.DownloadArtifact>()
@@ -306,6 +290,76 @@ class ClientRepositoryImpl(
 //        }
     }
 
+    private fun initServerProfiles() {
+        println("Поиск профилей серверов в папке $serverProfilesPath")
+        val serverProfiles = mutableListOf<ServerProfile>()
+        serverProfilesPath.walk().forEach { path ->
+            if (path.isRegularFile()) {
+                val serverProfileRaw = jsonReader.decodeFromStream<ServerProfileRaw>(path.inputStream())
+                val serverProfile = serverProfileRaw.toDomain()
+                serverProfiles.add(serverProfile)
+            }
+        }
+        serverProfiles.sortBy { it.sortIndex }
+        _serverProfiles.tryEmit(serverProfiles)
+        pingServers()
+    }
+
+    private fun initClientProfiles() {
+        println("Поиск профилей клиентов в папке $clientProfilesPath")
+        val clientProfiles = mutableListOf<ClientProfile>()
+        clientProfilesPath.walk().forEach { path ->
+            if (path.isRegularFile()) {
+                val clientProfileRaw = jsonReader.decodeFromStream<ClientProfileRaw>(path.inputStream())
+                val clientProfile = clientProfileRaw.toDomain()
+                clientProfiles.add(clientProfile)
+            }
+        }
+        _clientProfiles.tryEmit(clientProfiles)
+    }
+
+    private suspend fun updateProfileAndDownload(
+        clientProfileId: String,
+        features: Map<String, Boolean>
+    ) {
+        getClientProfile(clientProfileId)?.apply {
+            val gameArguments = gameArguments.filter { testRules(it.rules, features) }.flatMap { it.value }
+            val jvmArguments = jvmArguments.filter { testRules(it.rules, features) }.flatMap { it.value }
+
+            val locals = checkLocals()
+            val downloads = getDownloads(locals)
+
+            download(downloads)
+
+            //check and download again recursively while downloads is not empty (case: client updated while client download)
+
+            updateClientStatus(ClientStatus.Launching)
+
+//            val launchOptions = LaunchOptions(
+//                gameArguments = gameArguments,
+//                jvmArguments = jvmArguments,
+//                gameDir = clientPath,
+//                jvmDir = JVM_DIR,
+//                authLibInjectorPath = authLibInjectorPath,
+//                nativesDir = nativesPath,
+//                assetIndex = assetsIndexName ?: "",
+//                assetsDir = assetsPath,
+//                accessToken = player.accessToken,
+//                uuid = player.id,
+//                versionName = baseVersion,
+//                versionType = versionType,
+//                nickname = player.nickname,
+//                classPath = classPath.joinToString(":"),
+//                mainClass = mainClass ?: ""
+//            )
+//
+//            withContext(launchDispatcher) {
+//                launchRepository.launch(launchOptions)
+//                updateClientStatus(ClientStatus.Launched)
+//            }
+        }
+    }
+
     private suspend fun getClientProfile(clientProfileName: String): ClientProfile? =
         try {
             val rawProfile = clientApi.getClientProfile(clientProfileName)
@@ -339,35 +393,68 @@ class ClientRepositoryImpl(
         }
     }
 
-    private fun initServerProfiles() {
-        println("Поиск профилей серверов в папке $serverProfilesPath")
-        val serverProfiles = mutableListOf<ServerProfile>()
-        serverProfilesPath.walk().forEach { path ->
-            if (path.isRegularFile()) {
-                val serverProfileRaw = jsonReader.decodeFromStream<ServerProfileRaw>(path.inputStream())
-                val serverProfile = serverProfileRaw.toDomain()
-                serverProfiles.add(serverProfile)
+    private fun ClientProfile.checkLocals(): Map<String, String> {
+        val locals = mutableMapOf<String, String>()
+
+        modules.forEach { module ->
+            val modulePath = workPath.resolve(module)
+            if (modulePath.exists()) {
+                modulePath.walk().forEach { path ->
+                    if (path.isRegularFile()) {
+                        val checkSum = path.getCheckSumFromFile(hashAlgorithm, 40)
+                        val relativePath = path.relativeTo(workPath).toString()
+                        locals[relativePath] = checkSum
+                    }
+                }
             }
         }
-        serverProfiles.sortBy { it.sortIndex }
-        _serverProfiles.tryEmit(serverProfiles)
-        pingServers()
+
+        return locals
     }
 
-    private fun initClientProfiles() {
-        println("Поиск профилей клиентов в папке $clientProfilesPath")
-        val clientProfiles = mutableListOf<ClientProfile>()
-        clientProfilesPath.walk().forEach { path ->
-            if (path.isRegularFile()) {
-                val clientProfileRaw = jsonReader.decodeFromStream<ClientProfileRaw>(path.inputStream())
-                val clientProfile = clientProfileRaw.toDomain()
-                clientProfiles.add(clientProfile)
+    private fun ClientProfile.getDownloads(locals: Map<String, String>): List<ClientProfile.Library> {
+        val downloads = mutableListOf<ClientProfile.Library>()
+
+        libraries.filter { testRules(it.rules) }.forEach { library ->
+            library.downloads?.artifact?.let { artifact ->
+                locals[artifact.path]?.let { checkSum ->
+                    if (checkSum != artifact.checkSum) downloads.add(library)
+                }
             }
         }
-        _clientProfiles.tryEmit(clientProfiles)
+
+        return downloads
     }
 
-    private fun testRules(rules: List<ClientProfile.Rule>): Boolean {
+    private suspend fun ClientProfile.download(libraries: List<ClientProfile.Library>) {
+        libraries.forEach { library ->
+            library.downloads?.artifact?.let { artifact ->
+                if (artifact.url.isNotEmpty() && artifact.path.isNotEmpty()) {
+                    val saveFile = Path(artifact.path).createDirectories()
+                    downloadAndSaveFile(artifact.url, saveFile)
+                }
+            }
+        }
+    }
+
+    private suspend fun ClientProfile.downloadAndSaveFile(downloadUrl: String, saveFile: Path) {
+        clientApi.downloadFile(downloadUrl).execute { httpResponse ->
+            val channel: ByteReadChannel = httpResponse.body()
+            while (!channel.isClosedForRead) {
+                val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
+                while (!packet.isEmpty) {
+                    val bytes = packet.readBytes()
+                    saveFile.appendBytes(bytes)
+                    updateClientDownloadStatus(bytes.size)
+                }
+            }
+        }
+    }
+
+    private fun testRules(
+        rules: List<ClientProfile.Rule>,
+        enabledFeatures: Map<String, Boolean>? = null
+    ): Boolean {
         var testPass = true
         for (rule in rules) {
             if (rule.action == null) continue
@@ -387,14 +474,15 @@ class ClientRepositoryImpl(
 
                 testPass = when(rule.action) {
                     ActionRule.ALLOW -> osNameMatch && osArchMatch && osVersionMatch
-                    ActionRule.DISALLOW -> !osNameMatch && !osArchMatch && !osVersionMatch
+                    ActionRule.DISALLOW -> !osNameMatch || !osArchMatch || !osVersionMatch
                 }
             }
 
-            //                  TODO
-//                rule.features.forEach {
-//
-//                }
+            if (enabledFeatures != null) {
+                rule.features.forEach { feature ->
+                    testPass = testPass && feature.value == (enabledFeatures[feature.key] ?: false)
+                }
+            }
         }
         return testPass
     }
@@ -403,57 +491,6 @@ class ClientRepositoryImpl(
         jsonWriter.encodeToStream<T>(obj, this.outputStream())
         return jsonReader.decodeFromStream<T>(this.inputStream())
     }
-
-//    private suspend fun Client.download(artifacts: List<ClientProfileResponse.DownloadArtifact>) {
-//        artifacts.forEach { artifact ->
-//            if (!artifact.url.isNullOrEmpty() && !artifact.path.isNullOrEmpty()) {
-//                val filePath = artifact.path
-//                val folderPath = filePath.getPath()
-//                File(folderPath).mkdirs()
-//                val saveFile = File(filePath)
-//                saveFile.createNewFile()
-//                downloadAndSaveFile(artifact.url, saveFile)
-//            }
-//        }
-//    }
-
-//    private suspend fun getProfiles(
-//        rootProfileName: String,
-//        rootProfileType: ProfileType
-//    ): Map<String, ClientProfileResponse> {
-//        val profiles = mutableMapOf<String, ClientProfileResponse>()
-//        val rootProfile = getProfile(rootProfileName, rootProfileType)
-//        profiles[rootProfileName] = rootProfile
-//        if (rootProfile.modules != null) {
-//            rootProfile.modules.forEach { module ->
-//                val type = ProfileType.fromValue(module.type)
-//                if (module.name != null) {
-//                    val childModules = getProfiles(module.name, type)
-//                    profiles.putAll(childModules)
-//                }
-//            }
-//        }
-//        return profiles
-//    }
-
-//    private suspend fun getProfile(profileName: String, profileType: ProfileType) = when(profileType) {
-//        ProfileType.CUSTOM -> clientApi.getProfile(profileName + PROFILE_EXTENSION)
-//        ProfileType.MOJANG -> mojangRepository.getClientProfile(profileName)
-//    }
-//
-//    private suspend fun Client.downloadAndSaveFile(downloadUrl: String, file: File) {
-//        clientApi.downloadFile(downloadUrl).execute { httpResponse ->
-//            val channel: ByteReadChannel = httpResponse.body()
-//            while (!channel.isClosedForRead) {
-//                val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
-//                while (!packet.isEmpty) {
-//                    val bytes = packet.readBytes()
-//                    file.appendBytes(bytes)
-//                    this.updateClientDownloadStatus(bytes.size)
-//                }
-//            }
-//        }
-//    }
 
     private fun pingServers() {
         applicationIoScope.launch {
@@ -476,36 +513,50 @@ class ClientRepositoryImpl(
         }
     }
 
-//    private fun Client.updateClientStatus(newStatus: ClientStatus) {
-//        val clientsMutable = clients.value.toMutableList()
-//        val client = clientsMutable.firstOrNull { it.id == this.id } ?: return
-//        val index = clientsMutable.indexOf(client)
-//        clientsMutable[index] = client.copy(clientStatus = newStatus)
-//        _clients.tryEmit(clientsMutable)
-//    }
-//
-//    private fun Client.updateClientDownloadStatus(newBytesSize: Int, total: Long = 0) {
-//        val clientsMutable = clients.value.toMutableList()
-//        val client = clientsMutable.firstOrNull { it.id == this.id } ?: return
-//        val index = clientsMutable.indexOf(client)
-//        val newStatus = if (client.clientStatus is ClientStatus.Downloading) {
-//            ClientStatus.Downloading(
-//                received = client.clientStatus.received + newBytesSize,
-//                total = client.clientStatus.total
-//            )
-//        } else {
-//            ClientStatus.Downloading(
-//                received = newBytesSize.toLong(),
-//                total = total
-//            )
-//        }
-//        clientsMutable[index] = client.copy(clientStatus = newStatus)
-//        _clients.tryEmit(clientsMutable)
-//    }
+    private fun ClientProfile.updateClientStatus(newStatus: ClientStatus) {
+        val clientsMutable = _clientProfiles.value.toMutableList()
+        val client = clientsMutable.firstOrNull { it.id == this.id } ?: return
+        val index = clientsMutable.indexOf(client)
+        clientsMutable[index] = client.copy(status = newStatus)
+        _clientProfiles.tryEmit(clientsMutable)
+    }
+
+    private fun ClientProfile.updateClientDownloadStatus(newBytesSize: Int, total: Long = 0) {
+        val clientsMutable = clientProfiles.value.toMutableList()
+        val client = clientsMutable.firstOrNull { it.id == this.id } ?: return
+        val index = clientsMutable.indexOf(client)
+        val newStatus = if (client.status is ClientStatus.Downloading) {
+            ClientStatus.Downloading(
+                received = client.status.received + newBytesSize,
+                total = client.status.total
+            )
+        } else {
+            ClientStatus.Downloading(
+                received = newBytesSize.toLong(),
+                total = total
+            )
+        }
+        clientsMutable[index] = client.copy(status = newStatus)
+        _clientProfiles.tryEmit(clientsMutable)
+    }
+
+    private fun getClientProfileOrStub(id: String): ClientProfile {
+        val clientProfilesMutable = _clientProfiles.value.toMutableList()
+        var clientProfile = clientProfilesMutable.firstOrNull { it.id == id }
+        if (clientProfile == null) {
+            clientProfile = ClientProfileRaw(
+                id, null, null, null,
+                null, null, null, null, null
+            ).toDomain()
+            clientProfilesMutable.add(clientProfile)
+            _clientProfiles.tryEmit(clientProfilesMutable)
+        }
+        return clientProfile
+    }
 
     companion object {
         private val USER_HOME = System.getProperty("user.home")
-        private val JVM_DIR = System.getProperty("java.home") V "bin" V "java"
+        private val JVM_DIR = System.getProperty("java.home") v "bin" v "java"
         private val OS_NAME = OsName.getOsType(System.getProperty("os.name"))
         private val OS_ARCH = OsArch.getOsArchType(System.getProperty("os.arch"))
         private val OS_VERSION = System.getProperty("os.version")
