@@ -3,7 +3,7 @@ package ru.alterland.launcher.ui.screen.auth.container
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.FadeTransition
 import ru.alterland.launcher.Res
-import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.screen.auth.sign_in.SignInScreen
+import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.Logo
 import ru.alterland.launcher.ui.widgets.errors.BaseErrorHandler
 

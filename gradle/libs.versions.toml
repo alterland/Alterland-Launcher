@@ -1,21 +1,20 @@
 [versions]
 
 kotlin = "1.9.22"
-agp = "8.1.2"
-compose = "1.5.12"
+agp = "8.3.0"
+compose = "1.6.0"
 androidx-appcompat = "1.6.1"
-androidx-activityCompose = "1.8.1"
-libres = "1.2.2"
+androidx-activityCompose = "1.8.2"
 voyager = "1.0.0"
-composeImageLoader = "1.7.5"
+composeImageLoader = "1.7.6"
 napier = "2.6.1"
 buildConfig = "5.3.5"
-kotlinx-coroutines = "1.7.3"
+kotlinx-coroutines = "1.8.0"
 ktor = "2.3.8"
-kotlinx-serialization = "1.6.1"
-kotlinx-datetime = "0.4.1"
+kotlinx-datetime = "0.5.0"
 koin = "3.5.3"
 kstore = "0.7.1"
+libres = "1.2.2"
 
 log4j = "1.4.0"
 dnsjava = "3.5.3"
@@ -41,7 +40,6 @@ ktor-serialization = { module = "io.ktor:ktor-client-serialization", version.ref
 ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }

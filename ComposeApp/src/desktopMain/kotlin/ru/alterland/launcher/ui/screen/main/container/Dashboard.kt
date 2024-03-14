@@ -11,9 +11,9 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideOrientation
 import cafe.adriel.voyager.transitions.SlideTransition
 import ru.alterland.launcher.Res
-import ru.alterland.launcher.ui.screen.main.serverinfo.ServerInfoScreen
 import ru.alterland.launcher.ui.screen.main.clients.MenuClientsList
 import ru.alterland.launcher.ui.screen.main.container.miniprofile.MiniProfile
+import ru.alterland.launcher.ui.screen.main.serverinfo.ServerInfoScreen
 import ru.alterland.launcher.ui.theme.AppTheme
 
 @Composable

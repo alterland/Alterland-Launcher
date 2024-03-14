@@ -50,29 +50,31 @@ fun ServerInfo(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0, 0, 0, 0x4D),
-                                Color(0, 0, 0, 0x00),
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color(0, 0, 0, 0x4D),
+                                    Color(0, 0, 0, 0x00),
+                                )
                             )
                         )
-                    )
                 )
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0, 0, 0, 0x00),
-                                Color(0, 0, 0, 0x4D)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color(0, 0, 0, 0x00),
+                                    Color(0, 0, 0, 0x4D)
+                                )
                             )
                         )
-                    )
                 )
             }
             Column(
