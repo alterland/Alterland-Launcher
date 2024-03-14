@@ -9,8 +9,6 @@ import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -23,7 +21,6 @@ import ru.alterland.launchercore.domain.model.*
 import ru.alterland.launchercore.domain.repository.ClientRepository
 import ru.alterland.launchercore.domain.repository.LaunchRepository
 import ru.alterland.launchercore.domain.repository.ServerRepository
-import ru.alterland.launchercore.dto.LaunchOptions
 import ru.alterland.launchercore.util.HashUtils.getCheckSumFromFile
 import ru.alterland.launchercore.util.v
 import java.nio.file.Path
@@ -81,213 +78,6 @@ class ClientRepositoryImpl(
         applicationIoScope.launch {
             updateProfileAndDownload(serverProfile.clientProfile, features)
         }
-
-//            val versions = mutableMapOf<String, ClientProfileResponse.DownloadArtifact>()
-//            val libraries = mutableMapOf<String, List<ClientProfileResponse.LibraryDownloads>>()
-//            val extra = mutableListOf<ClientProfileResponse.DownloadArtifact>()
-//            val assets = mutableListOf<ClientProfileResponse.DownloadArtifact>()
-//
-//            val gameArgs = mutableListOf<String>()
-//            val jvmArgs = mutableListOf<String>()
-//
-//            var clientName: String? = null
-//            var assetsIndexName: String? = null
-//            var assetsIndexConfig: ClientProfileResponse.DownloadArtifact? = null
-//            var mainClass: String? = null
-//            var baseVersion: String? = null
-//            var versionType: String? = null
-//            var authLibInjectorPath: String? = null
-//
-//            var total = 0L
-//
-//            gameArgs.add("-XstartOnFirstThread")
-//
-//            val classPath = mutableListOf<String>()
-//
-//            profiles.forEach { (_, profile: ClientProfileResponse) ->
-//                val profileId = profile.id
-//                clientName = profileId
-//                if (baseVersion == null) baseVersion = profileId
-//
-//                // <profile_name>/versions/<profile_name>/<profile_name>.jar
-//                profile.downloads?.client?.let {
-//                    versions[profileId] = it.copy(
-//                        path = "$workFolder/$profileId/$VERSIONS_FOLDER_NAME/$profileId/$profileId.jar"
-//                    )
-//                }
-//
-//                // <profile_name>/libraries/*
-//                libraries[profileId] =
-//                    profile.libraries?.filter { it.downloads?.artifact != null }?.map {
-//                        val relativePath = it.downloads!!.artifact!!.path ?: ""
-//                        val artifact = it.copy(
-//                            downloads = it.downloads.copy(
-//                                artifact = it.downloads.artifact!!.copy(
-//                                    path = "$workFolder/$profileId/$LIBRARIES_FOLDER_NAME/$relativePath"
-//                                )
-//                            )
-//                        )
-//                        if (relativePath.contains("authlibinjector")) {
-//                            authLibInjectorPath = artifact.downloads!!.artifact!!.path
-//                        }
-//                        artifact
-//                    } ?: listOf()
-//
-//                // <client_name>/*
-//                val extras = profile.extra?.map {
-//                    val relativePath = it.path ?: ""
-//                    it.copy(path = "$workFolder/$profileId/$relativePath")
-//                } ?: listOf()
-//                extra.addAll(extras)
-//
-//                // assets/indexes/<version_name>.json
-//                profile.assetIndex?.let { index ->
-//                    profile.assets?.let { assetIndexName ->
-//                        assetsIndexName = assetIndexName
-//                        assetsIndexConfig = ClientProfileResponse.DownloadArtifact(
-//                            sha1 = index.sha1,
-//                            path = "$assetIndexName$PROFILE_EXTENSION",
-//                            size = index.size,
-//                            url = index.url
-//                        )
-//                    }
-//                }
-//
-//                // arguments
-//                profile.arguments?.let { arguments ->
-//                    arguments.game?.forEach { element ->
-//                        if (element is JsonObject) {
-//                            //val rule = json.decodeFromJsonElement<ClientProfileResponse.RulesItem>(element)
-//                        } else {
-//                            val arg = json.decodeFromJsonElement<String>(element)
-//                            jvmArgs.add(arg)
-//                        }
-//                    }
-//                    arguments.jvm?.forEach { element ->
-//                        if (element is JsonObject) {
-//                            //val rule = json.decodeFromJsonElement<ClientProfileResponse.RulesItem>(element)
-//                        } else {
-//                            val arg = json.decodeFromJsonElement<String>(element)
-//                            gameArgs.add(arg)
-//                        }
-//                    }
-//                }
-//
-//                profile.type?.let { versionType = it }
-//                profile.mainClass?.let { mainClass = it }
-//            }
-//
-//            if (clientName == null) throw Exception("Отсутствует целевой клиент")
-//            if (assetsIndexName == null) throw Exception("Отсутствует файл индекса assets")
-//            if (assetsIndexConfig == null) throw Exception("Отсутствует конфигурация assets")
-//            if (mainClass == null) throw Exception("Отсутствует главный класс")
-//
-//            val clientPath = "$workFolder/$clientName"
-//            val nativesPath = "$workFolder/$baseVersion/$NATIVES_FOLDER_NAME/$baseVersion"
-//            val assetIndexesPath = "$workFolder/$ASSETS_INDEXES_FOLDER_NAME"
-//            val assetObjectsPath = "$workFolder/$ASSETS_OBJECTS_FOLDER_NAME"
-//            val assetsPath = "$workFolder/$ASSETS_FOLDER_NAME"
-//
-//            val statTime = System.currentTimeMillis()
-//            File("$workFolder").walkTopDown().forEach { file ->
-//                if (file.isFile) {
-//                    val hash = file.getCheckSumFromFile(hashAlgorithm, 40)
-//                    println("${file.name} : $hash")
-//                }
-//            }
-//
-//            val endTime = System.currentTimeMillis()
-//            println("hash time: ${endTime-statTime}")
-//
-//            client.updateClientDownloadStatus(0, 100000000)
-//
-//            //download versions
-//            versions.forEach { (_, artifact: ClientProfileResponse.DownloadArtifact) ->
-//                artifact.path?.let { classPath.add(it) }
-//                client.download(listOf(artifact))
-//            }
-//
-//            //download libraries
-//            libraries.forEach { (_, libraries: List<ClientProfileResponse.LibraryDownloads>) ->
-//                val artifacts = mutableListOf<ClientProfileResponse.DownloadArtifact>()
-//                libraries.forEach {
-//                    it.downloads?.artifact?.let { artifact ->
-//                        artifacts.add(artifact)
-//                        artifact.path?.let { classPath.add(it) }
-//                    }
-//                }
-//                client.download(artifacts)
-//            }
-//
-//            client.download(extra) //download extra
-//
-//            //download assets
-////            assetsIndexConfig?.let { artifact ->
-////                val path = "$assetIndexesPath/$assetsIndexName$PROFILE_EXTENSION"
-////                var file = File(path)
-////                if (!file.exists()) {
-////                    client.download(listOf(artifact)) //download assetsIndex
-////                    file = File(path)
-////                }
-////                val config = json.decodeFromStream<AssetsIndexResponse>(file.inputStream())
-////                config.objects?.let { objects ->
-////                    objects.forEach { (_, obj) ->
-////                        if (obj.hash != null && obj.hash.length > 2) {
-////                            val firstTwo = obj.hash.substring(0, 2)
-////                            val url = "${BuildConfig.MOJANG_ASSETS_HOST}/$firstTwo/${obj.hash}"
-////
-////                            val downloadArtifact = ClientProfileResponse.DownloadArtifact(
-////                                sha1 = null,
-////                                path = "$firstTwo/${obj.hash}",
-////                                size = obj.size,
-////                                url = url
-////                            )
-////                            assets.add(downloadArtifact)
-////                        }
-////                    }
-////                }
-////            }
-////            client.download(assets)
-//
-//            println("downloads done")
-//
-//            //для клиентов без модов
-//            val clientFolder = File(clientPath)
-//            if (!clientFolder.exists()) {
-//                clientFolder.mkdirs()
-//            }
-//
-//            //todo
-//            //check server updates again
-//
-//            client.updateClientStatus(ClientStatus.Launching)
-//
-//            val gameArguments = clientProfile.gameArguments.filter { it.rules.isEmpty() }.flatMap { it.value }
-//            val jvmArguments = clientProfile.jvmArguments.filter { testRules(it.rules) }.flatMap { it.value }
-//
-//            val options = LaunchOptions(
-//                gameArguments = gameArguments,
-//                jvmArguments = jvmArguments,
-//                gameDir = clientPath,
-//                jvmDir = JVM_DIR,
-//                authLibInjectorPath = authLibInjectorPath,
-//                nativesDir = nativesPath,
-//                assetIndex = assetsIndexName ?: "",
-//                assetsDir = assetsPath,
-//                accessToken = player.accessToken,
-//                uuid = player.id,
-//                versionName = baseVersion,
-//                versionType = versionType,
-//                nickname = player.nickname,
-//                classPath = classPath.joinToString(":"),
-//                mainClass = mainClass ?: ""
-//            )
-//
-//            withContext(launchDispatcher) {
-//                launchRepository.launch(options)
-//                client.updateClientStatus(ClientStatus.Launched)
-//            }
-//        }
     }
 
     private fun initServerProfiles() {
@@ -417,8 +207,9 @@ class ClientRepositoryImpl(
 
         libraries.filter { testRules(it.rules) }.forEach { library ->
             library.downloads?.artifact?.let { artifact ->
-                locals[artifact.path]?.let { checkSum ->
-                    if (checkSum != artifact.checkSum) downloads.add(library)
+                val checkSum = locals[artifact.path]
+                if (checkSum == null || checkSum != artifact.checkSum) {
+                    downloads.add(library)
                 }
             }
         }
@@ -427,17 +218,23 @@ class ClientRepositoryImpl(
     }
 
     private suspend fun ClientProfile.download(libraries: List<ClientProfile.Library>) {
+        val total = libraries.sumOf { it.downloads?.artifact?.size ?: 0 }
         libraries.forEach { library ->
             library.downloads?.artifact?.let { artifact ->
                 if (artifact.url.isNotEmpty() && artifact.path.isNotEmpty()) {
-                    val saveFile = Path(artifact.path).createDirectories()
-                    downloadAndSaveFile(artifact.url, saveFile)
+                    val saveFile = workPath.resolve(artifact.path)
+                    if (saveFile.exists()) {
+                        saveFile.deleteRecursively()
+                    }
+                    saveFile.createParentDirectories()
+                    saveFile.createFile()
+                    downloadAndSaveFile(artifact.url, saveFile, total)
                 }
             }
         }
     }
 
-    private suspend fun ClientProfile.downloadAndSaveFile(downloadUrl: String, saveFile: Path) {
+    private suspend fun ClientProfile.downloadAndSaveFile(downloadUrl: String, saveFile: Path, total: Long) {
         clientApi.downloadFile(downloadUrl).execute { httpResponse ->
             val channel: ByteReadChannel = httpResponse.body()
             while (!channel.isClosedForRead) {
@@ -445,7 +242,7 @@ class ClientRepositoryImpl(
                 while (!packet.isEmpty) {
                     val bytes = packet.readBytes()
                     saveFile.appendBytes(bytes)
-                    updateClientDownloadStatus(bytes.size)
+                    updateClientDownloadStatus(bytes.size, total)
                 }
             }
         }
@@ -521,7 +318,7 @@ class ClientRepositoryImpl(
         _clientProfiles.tryEmit(clientsMutable)
     }
 
-    private fun ClientProfile.updateClientDownloadStatus(newBytesSize: Int, total: Long = 0) {
+    private fun ClientProfile.updateClientDownloadStatus(newBytesSize: Int, total: Long) {
         val clientsMutable = clientProfiles.value.toMutableList()
         val client = clientsMutable.firstOrNull { it.id == this.id } ?: return
         val index = clientsMutable.indexOf(client)
