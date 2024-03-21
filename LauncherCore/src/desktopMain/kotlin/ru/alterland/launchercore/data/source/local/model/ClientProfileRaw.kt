@@ -5,14 +5,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ClientProfileRaw(
     val id: String?,
-    val gameArguments: List<Argument>?,
-    val jvmArguments: List<Argument>?,
-    val assets: Assets?,
-    val libraries: List<Library>?,
-    val extra: List<Library>?,
-    val mainClass: String?,
-    val javaVersion: JavaVersion?,
-    val modules: List<String>?
+    val gameArguments: List<Argument>? = null,
+    val jvmArguments: List<Argument>? = null,
+    val assets: Assets? = null,
+    val libraries: List<Library>? = null,
+    val extra: List<Library>? = null,
+    val mainClass: String? = null,
+    val javaVersion: JavaVersion? = null,
+    val type: String? = null,
+    val modules: List<String>? = null,
+    val strict: List<String>? = null
 ) {
     @Serializable
     data class Argument(

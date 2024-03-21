@@ -11,6 +11,7 @@ sealed class ClientStatus {
         val received: Long = 0,
         val total: Long = 0
     ): ClientStatus()
+    data object DownloadError: ClientStatus()
     data object DownloadPaused: ClientStatus()
     data object UpdateRequired: ClientStatus()
     data object Unknown: ClientStatus()

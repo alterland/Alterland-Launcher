@@ -9,11 +9,11 @@ class SignInContract {
     sealed class Event : UiEvent {
         data class OnLoginInput(val data: String): Event()
         data class OnPasswordInput(val data: String): Event()
-        object OnRememberMeChecked: Event()
+        data object OnRememberMeChecked: Event()
 
-        object OnSignInClicked: Event()
-        object OnVkSignInClicked: Event()
-        object OnGoogleSignInClicked: Event()
+        data object OnSignInClicked: Event()
+        data object OnVkSignInClicked: Event()
+        data object OnGoogleSignInClicked: Event()
     }
 
     data class State(
@@ -28,8 +28,8 @@ class SignInContract {
     ) : UiState
 
     sealed class Effect: UiEffect {
-        object ShowToastSocialsSignInNotYetDone: Effect()
-        object OnNavigateToDashboard: Effect()
+        data object ShowToastSocialsSignInNotYetDone: Effect()
+        data object OnNavigateToDashboard: Effect()
     }
 
 }

@@ -1,7 +1,9 @@
 package ru.alterland.launcher.ui.screen.main.container
 
 import cafe.adriel.voyager.core.model.screenModelScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import ru.alterland.launcher.AppConfig
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.domain.repository.UserRepository
@@ -47,6 +49,10 @@ class DashboardScreenModel(
                 errorRepository.clearErrors()
                 setEffect { DashboardContract.Effect.OnNavigateToAuth }
             }
+        }.launchIn(screenModelScope)
+
+        launcher.isOffline.onEach {
+            setState { copy(isClientServiceOffline = it) }
         }.launchIn(screenModelScope)
     }
 

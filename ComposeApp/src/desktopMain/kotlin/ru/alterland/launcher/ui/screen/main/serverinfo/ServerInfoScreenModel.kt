@@ -1,12 +1,13 @@
 package ru.alterland.launcher.ui.screen.main.serverinfo
 
-import ru.alterland.launchercore.Launcher
 import cafe.adriel.voyager.core.model.screenModelScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ru.alterland.launcher.domain.repository.UserRepository
 import ru.alterland.launcher.ui.base.BaseScreenModel
 import ru.alterland.launcher.util.extentions.handleErrors
 import ru.alterland.launcher.util.extentions.launchSafe
+import ru.alterland.launchercore.Launcher
 import ru.alterland.launchercore.domain.model.Feature
 import ru.alterland.launchercore.domain.model.Options
 import ru.alterland.launchercore.domain.model.Player

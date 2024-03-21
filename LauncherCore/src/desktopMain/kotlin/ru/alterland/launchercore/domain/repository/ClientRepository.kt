@@ -11,5 +11,7 @@ interface ClientRepository {
 
     val clientProfiles: StateFlow<List<ClientProfile>>
 
+    val isOffline: StateFlow<Boolean>
+
     fun play(options: Options)
 }

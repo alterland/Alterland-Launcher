@@ -1,6 +1,5 @@
 package ru.alterland.launcher.ui.screen.main.container
 
-import org.jetbrains.skia.Bitmap
 import ru.alterland.launchercore.domain.model.ServerStatus
 
 data class MenuItem(

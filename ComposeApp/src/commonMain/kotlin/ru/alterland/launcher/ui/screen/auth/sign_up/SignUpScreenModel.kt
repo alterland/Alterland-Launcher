@@ -1,6 +1,6 @@
 package ru.alterland.launcher.ui.screen.auth.sign_up
 
-import base.Resource
+import ru.alterland.launcher.util.base.Resource
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

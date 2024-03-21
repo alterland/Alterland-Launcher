@@ -1,6 +1,6 @@
 package ru.alterland.launcher.ui.screen.auth.sign_up
 
-import base.Resource
+import ru.alterland.launcher.util.base.Resource
 import ru.alterland.launcher.ui.base.UiEffect
 import ru.alterland.launcher.ui.base.UiEvent
 import ru.alterland.launcher.ui.base.UiState

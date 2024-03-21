@@ -1,4 +1,4 @@
-package widgets
+package ru.alterland.launcher.ui.widgets
 
 import androidx.compose.runtime.Composable
 

@@ -10,14 +10,12 @@ class LaunchRepositoryImpl: LaunchRepository {
         val gameArgsWithValues = addArgValues(options.gameArguments, options)
         val jvmArgsWithValues = addArgValues(options.jvmArguments, options)
 
-        val mainClass = options.mainClass
-
         val args = mutableListOf<String>()
 
         args.add(options.jvmDir)
-        args.addAll(gameArgsWithValues)
-        args.add(mainClass)
         args.addAll(jvmArgsWithValues)
+        args.add(options.mainClass)
+        args.addAll(gameArgsWithValues)
 
         println("Launch command: ${args.joinToString(" ")}")
 

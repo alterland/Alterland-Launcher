@@ -14,7 +14,12 @@ data class ServerProfileRaw(
     @SerialName("description") val description: String?,
     @SerialName("backgroundUrl") val backgroundUrl: String?,
     @SerialName("backgroundLocalPath") val backgroundLocalPath: String?,
-    @SerialName("ip") val ip: String?,
-    @SerialName("port") val port: Int?,
+    @SerialName("address") val address: ServerAddressRaw?,
     @SerialName("clientProfile") val clientProfile: String?
+)
+
+@Serializable
+data class ServerAddressRaw(
+    @SerialName("ip") val ip: String?,
+    @SerialName("port") val port: Int?
 )

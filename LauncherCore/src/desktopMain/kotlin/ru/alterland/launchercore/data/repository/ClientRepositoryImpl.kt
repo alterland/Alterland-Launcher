@@ -17,12 +17,15 @@ import ru.alterland.launchercore.data.mapper.toDomain
 import ru.alterland.launchercore.data.source.local.model.ClientProfileRaw
 import ru.alterland.launchercore.data.source.local.model.ServerProfileRaw
 import ru.alterland.launchercore.data.source.network.ClientApi
+import ru.alterland.launchercore.data.source.network.model.response.AssetsIndexResponse
 import ru.alterland.launchercore.domain.model.*
 import ru.alterland.launchercore.domain.repository.ClientRepository
 import ru.alterland.launchercore.domain.repository.LaunchRepository
 import ru.alterland.launchercore.domain.repository.ServerRepository
+import ru.alterland.launchercore.dto.LaunchOptions
 import ru.alterland.launchercore.util.HashUtils.getCheckSumFromFile
 import ru.alterland.launchercore.util.v
+import java.nio.file.Files
 import java.nio.file.Path
 import java.security.MessageDigest
 import kotlin.io.path.*
@@ -44,8 +47,6 @@ class ClientRepositoryImpl(
 
     private val workPath = Path(USER_HOME v BuildConfig.WORK_FOLDER)
     private val assetsPath = workPath.resolve(ASSETS_FOLDER)
-    private val assetsIndexesPath = workPath.resolve(ASSETS_INDEXES_FOLDER)
-    private val assetsObjectsPath = workPath.resolve(ASSETS_OBJECTS_FOLDER)
     private val serverProfilesPath = workPath.resolve(SERVER_PROFILES_FOLDER)
     private val clientProfilesPath = workPath.resolve(CLIENT_PROFILES_FOLDER)
 
@@ -54,6 +55,9 @@ class ClientRepositoryImpl(
 
     private val _clientProfiles = MutableStateFlow<List<ClientProfile>>(listOf())
     override val clientProfiles = _clientProfiles.asStateFlow()
+
+    private val _isOffline = MutableStateFlow(false)
+    override val isOffline = _isOffline.asStateFlow()
 
     private val hashAlgorithm = MessageDigest.getInstance("SHA-1")
 
@@ -71,12 +75,12 @@ class ClientRepositoryImpl(
 
         if (serverProfile.clientProfile == null) return
 
-        getClientProfileOrStub(serverProfile.clientProfile).apply {
+        getClientProfileOrStubLocal(serverProfile.clientProfile).apply {
             updateClientStatus(ClientStatus.Verification)
         }
 
         applicationIoScope.launch {
-            updateProfileAndDownload(serverProfile.clientProfile, features)
+            updateProfileAndDownload(serverProfile.clientProfile, features, player)
         }
     }
 
@@ -110,44 +114,118 @@ class ClientRepositoryImpl(
 
     private suspend fun updateProfileAndDownload(
         clientProfileId: String,
-        features: Map<String, Boolean>
+        features: Map<String, Boolean>,
+        player: Player
     ) {
         getClientProfile(clientProfileId)?.apply {
+            val mainModulePath =  workPath.resolve(id)
+
             val gameArguments = gameArguments.filter { testRules(it.rules, features) }.flatMap { it.value }
             val jvmArguments = jvmArguments.filter { testRules(it.rules, features) }.flatMap { it.value }
 
-            val locals = checkLocals()
-            val downloads = getDownloads(locals)
+            val childModulesSums = getFoldersFilesChecksums(modules.filter { it != id })
+            val mainModuleSums = getFolderFilesChecksums(id)
+            val assetsSums = getFolderFilesChecksums(ASSETS_OBJECTS_FOLDER)
+            val strictSums = mainModuleSums.filter {
+                val segments = it.key.split('/')
+                segments.size > 1 && strict.contains(segments[1])
+            }
+            val allModulesSums = childModulesSums + mainModuleSums
 
-            download(downloads)
+            val assetObjects = getAssetObjects()
 
-            //check and download again recursively while downloads is not empty (case: client updated while client download)
+            deleteWrongFiles(childModulesSums, libraries)
+            deleteWrongFiles(strictSums, extra)
+            deleteWrongFiles(assetsSums, assetObjects, true)
 
-            updateClientStatus(ClientStatus.Launching)
+            val downloads = mutableListOf<ClientProfile.Library>().apply {
+                addAll(libraries.getDownloads(allModulesSums))
+                addAll(extra.getDownloads(allModulesSums))
+                addAll(assetObjects.getDownloads(assetsSums))
+            }
 
-//            val launchOptions = LaunchOptions(
-//                gameArguments = gameArguments,
-//                jvmArguments = jvmArguments,
-//                gameDir = clientPath,
-//                jvmDir = JVM_DIR,
-//                authLibInjectorPath = authLibInjectorPath,
-//                nativesDir = nativesPath,
-//                assetIndex = assetsIndexName ?: "",
-//                assetsDir = assetsPath,
-//                accessToken = player.accessToken,
-//                uuid = player.id,
-//                versionName = baseVersion,
-//                versionType = versionType,
-//                nickname = player.nickname,
-//                classPath = classPath.joinToString(":"),
-//                mainClass = mainClass ?: ""
-//            )
-//
-//            withContext(launchDispatcher) {
-//                launchRepository.launch(launchOptions)
-//                updateClientStatus(ClientStatus.Launched)
-//            }
+            try {
+                download(downloads)
+
+                updateClientStatus(ClientStatus.Launching)
+
+                val authlibPath = libraries.find { it.downloads?.artifact?.path?.contains("authlibinjector") == true }?.let {
+                    workPath.resolve(it.downloads!!.artifact!!.path)
+                }?.toAbsolutePath()?.toString()
+
+                val classPath = libraries.filter { it.downloads?.artifact?.path != null }.map {
+                    workPath.resolve(it.downloads!!.artifact!!.path).toAbsolutePath().toString()
+                }
+
+                val launchOptions = LaunchOptions(
+                    gameArguments = gameArguments,
+                    jvmArguments = jvmArguments,
+                    gameDir = mainModulePath.toAbsolutePath().toString(),
+                    jvmDir = JVM_DIR,
+                    authLibInjectorPath = authlibPath,
+                    nativesDir = mainModulePath.resolve(NATIVES_FOLDER).toAbsolutePath().toString(),
+                    assetIndex = assets?.id ?: "",
+                    assetsDir = assetsPath.toAbsolutePath().toString(),
+                    accessToken = player.accessToken,
+                    uuid = player.id,
+                    versionName = id,
+                    versionType = type,
+                    nickname = player.nickname,
+                    classPath = classPath.joinToString(":"),
+                    mainClass = mainClass ?: "net.minecraft.client.main.Main"
+                )
+
+                withContext(launchDispatcher) {
+                    launchRepository.launch(launchOptions)
+                    updateClientStatus(ClientStatus.Launched)
+                }
+            } catch (e: Exception) {
+                updateClientStatus(ClientStatus.DownloadError)
+            }
         }
+    }
+
+    private suspend fun ClientProfile.getAssetObjects(): List<ClientProfile.Library> {
+        assets?.let { index ->
+            val indexPath = workPath.resolve(ASSETS_INDEXES_FOLDER v "${index.id}.$ASSETS_INDEXES_EXT")
+            if (indexPath.exists()) {
+                val localCheckSum = indexPath.getCheckSumFromFile(hashAlgorithm, 40)
+                if (localCheckSum == index.checkSum) {
+                    return getAssetsIndexes(indexPath)
+                }
+            }
+            indexPath.deleteIfExists()
+            indexPath.createParentDirectories()
+            indexPath.createFile()
+            downloadAndSaveFile(index.url, indexPath, index.totalSize)
+            return getAssetObjects()
+        }
+        return listOf()
+    }
+
+    private fun getAssetsIndexes(indexPath: Path): List<ClientProfile.Library> {
+        val assets = mutableListOf<ClientProfile.Library>()
+        val config = jsonReader.decodeFromStream<AssetsIndexResponse>(indexPath.inputStream())
+        config.objects?.let { objects ->
+            objects.forEach { (_, obj) ->
+                if (obj.hash != null && obj.hash.length > 2) {
+                    val firstTwo = obj.hash.substring(0, 2)
+                    val url = "${BuildConfig.MOJANG_ASSETS_HOST}/$firstTwo/${obj.hash}"
+                    val download = ClientProfile.Library(
+                        downloads = ClientProfile.Downloads(
+                            artifact = ClientProfile.Artifact(
+                                path = ASSETS_OBJECTS_FOLDER v firstTwo v "${obj.hash}",
+                                checkSum = obj.hash,
+                                size = obj.size ?: 0L,
+                                url = url
+                            )
+                        )
+                    )
+                    assets.add(download)
+                }
+            }
+        }
+        return assets
     }
 
     private suspend fun getClientProfile(clientProfileName: String): ClientProfile? =
@@ -158,11 +236,13 @@ class ClientRepositoryImpl(
             }
             val profile = rawProfile.toDomain()
             val updateClientProfiles = clientProfiles.value.map {
-                if (it.id == clientProfileName) profile else it
+                if (it.id == clientProfileName) profile.copy(status = it.status) else it
             }
-            _clientProfiles.tryEmit(updateClientProfiles)
+            _clientProfiles.emit(updateClientProfiles)
+            _isOffline.emit(false)
             profile
         } catch (e: Exception) {
+            _isOffline.emit(true)
             clientProfiles.value.firstOrNull { it.id == clientProfileName }
         }
 
@@ -174,38 +254,40 @@ class ClientRepositoryImpl(
                     serverProfilesPath.resolve(id).writeObj(rawProfile)
                 }
             }
+            _isOffline.emit(false)
         } catch (e: Exception) {
             println(e)
-            //TODO switch to offline mode
+            _isOffline.emit(true)
         } finally {
             initServerProfiles()
             initClientProfiles()
         }
     }
 
-    private fun ClientProfile.checkLocals(): Map<String, String> {
-        val locals = mutableMapOf<String, String>()
-
-        modules.forEach { module ->
-            val modulePath = workPath.resolve(module)
-            if (modulePath.exists()) {
-                modulePath.walk().forEach { path ->
-                    if (path.isRegularFile()) {
-                        val checkSum = path.getCheckSumFromFile(hashAlgorithm, 40)
-                        val relativePath = path.relativeTo(workPath).toString()
-                        locals[relativePath] = checkSum
-                    }
-                }
+    private fun deleteWrongFiles(locals: Map<String, String>, remotes: List<ClientProfile.Library>, onlyHashDifferent: Boolean = false) {
+        val remotesMap = mutableMapOf<String, String>()
+        remotes.forEach { lib ->
+            lib.downloads?.artifact?.let {
+                remotesMap[it.path] = it.checkSum
             }
         }
-
-        return locals
+        deleteWrongFiles(locals, remotesMap, onlyHashDifferent)
     }
 
-    private fun ClientProfile.getDownloads(locals: Map<String, String>): List<ClientProfile.Library> {
-        val downloads = mutableListOf<ClientProfile.Library>()
+    private fun deleteWrongFiles(locals: Map<String, String>, remotes: Map<String, String>, onlyHashDifferent: Boolean = false) {
+        locals.forEach { entry ->
+            val remote = remotes[entry.key]
+            if (remote == null && !onlyHashDifferent || remote != null && remote != entry.value) {
+                val file = workPath.resolve(entry.key)
+                file.deleteIfExists()
+                file.removeEmptyParentFolders()
+            }
+        }
+    }
 
-        libraries.filter { testRules(it.rules) }.forEach { library ->
+    private fun List<ClientProfile.Library>.getDownloads(locals: Map<String, String>): List<ClientProfile.Library> {
+        val downloads = mutableListOf<ClientProfile.Library>()
+        this.filter { testRules(it.rules) }.forEach { library ->
             library.downloads?.artifact?.let { artifact ->
                 val checkSum = locals[artifact.path]
                 if (checkSum == null || checkSum != artifact.checkSum) {
@@ -213,7 +295,6 @@ class ClientRepositoryImpl(
                 }
             }
         }
-
         return downloads
     }
 
@@ -223,9 +304,7 @@ class ClientRepositoryImpl(
             library.downloads?.artifact?.let { artifact ->
                 if (artifact.url.isNotEmpty() && artifact.path.isNotEmpty()) {
                     val saveFile = workPath.resolve(artifact.path)
-                    if (saveFile.exists()) {
-                        saveFile.deleteRecursively()
-                    }
+                    saveFile.deleteIfExists()
                     saveFile.createParentDirectories()
                     saveFile.createFile()
                     downloadAndSaveFile(artifact.url, saveFile, total)
@@ -246,6 +325,40 @@ class ClientRepositoryImpl(
                 }
             }
         }
+    }
+
+    private fun Path.removeEmptyParentFolders() {
+        val stream = Files.newDirectoryStream(parent)
+        if (!stream.iterator().hasNext()) {
+            parent.deleteExisting()
+            stream.close()
+            parent.removeEmptyParentFolders()
+        }
+        stream.close()
+    }
+
+    private fun getFoldersFilesChecksums(folderPaths: List<String>): Map<String, String> {
+        val checkSums = mutableMapOf<String, String>()
+        folderPaths.forEach {
+            val map = getFolderFilesChecksums(it)
+            checkSums.putAll(map)
+        }
+        return checkSums
+    }
+
+    private fun getFolderFilesChecksums(folderPath: String): Map<String, String> {
+        val checkSums = mutableMapOf<String, String>()
+        val path = workPath.resolve(folderPath)
+        if (path.exists()) {
+            path.walk().forEach { subPath ->
+                if (subPath.isRegularFile()) {
+                    val checkSum = subPath.getCheckSumFromFile(hashAlgorithm, 40)
+                    val relativePath = subPath.relativeTo(workPath).toString()
+                    checkSums[relativePath] = checkSum
+                }
+            }
+        }
+        return checkSums
     }
 
     private fun testRules(
@@ -295,7 +408,7 @@ class ClientRepositoryImpl(
                 .filter { it.address != null }
                 .map {
                     async {
-                        val pong = serverRepository.ping(it.address!!.getAddress())
+                        val pong = serverRepository.ping(it.address!!.ip, it.address.port)
                         val updateClients = serverProfiles.value.map { updateClient ->
                             if (updateClient.id == it.id) {
                                 updateClient.copy(pong = pong)
@@ -337,14 +450,11 @@ class ClientRepositoryImpl(
         _clientProfiles.tryEmit(clientsMutable)
     }
 
-    private fun getClientProfileOrStub(id: String): ClientProfile {
+    private fun getClientProfileOrStubLocal(id: String): ClientProfile {
         val clientProfilesMutable = _clientProfiles.value.toMutableList()
         var clientProfile = clientProfilesMutable.firstOrNull { it.id == id }
         if (clientProfile == null) {
-            clientProfile = ClientProfileRaw(
-                id, null, null, null,
-                null, null, null, null, null
-            ).toDomain()
+            clientProfile = ClientProfileRaw(id = id).toDomain()
             clientProfilesMutable.add(clientProfile)
             _clientProfiles.tryEmit(clientProfilesMutable)
         }
@@ -361,8 +471,9 @@ class ClientRepositoryImpl(
 
         private const val NATIVES_FOLDER = "bin"
         private const val ASSETS_FOLDER = "assets"
-        private const val ASSETS_INDEXES_FOLDER = "indexes"
-        private const val ASSETS_OBJECTS_FOLDER = "objects"
+        private const val ASSETS_INDEXES_EXT = "json"
+        private val ASSETS_INDEXES_FOLDER = ASSETS_FOLDER v "indexes"
+        private val ASSETS_OBJECTS_FOLDER = ASSETS_FOLDER v "objects"
 
         private const val PING_DELAY = 5000L
     }

@@ -13,6 +13,8 @@ fun ClientProfileRaw.toDomain() = ClientProfile(
     mainClass = mainClass,
     javaVersion = null,
     modules = modules?.filter { it.isNotEmpty() } ?: listOf(),
+    type = type,
+    strict = strict ?: listOf(),
     status = ClientStatus.Unknown
 )
 

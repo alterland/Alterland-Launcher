@@ -12,7 +12,8 @@ class DashboardContract {
     data class State(
         val currentClient: String? = null,
         val nickName: String = "",
-        val menuItems: List<MenuItem> = listOf()
+        val menuItems: List<MenuItem> = listOf(),
+        val isClientServiceOffline: Boolean = false
     ): UiState
 
     sealed class Effect: UiEffect {

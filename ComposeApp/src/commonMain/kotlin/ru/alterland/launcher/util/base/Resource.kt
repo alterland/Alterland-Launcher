@@ -1,6 +1,4 @@
-package base
-
-import ru.alterland.launcher.util.base.AppException
+package ru.alterland.launcher.util.base
 
 sealed class Resource<T> {
     class Loading<T> : Resource<T>()

@@ -2,8 +2,8 @@ package ru.alterland.launcher.ui.screen.main.container
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -46,14 +46,23 @@ fun Dashboard(
                 }
             }
         }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Box {
             Navigator(ServerInfoScreen()) { navigator ->
                 SlideTransition(
                     navigator = navigator,
                     orientation = SlideOrientation.Vertical
                 )
+            }
+            if (state.isClientServiceOffline) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth().background(AppTheme.colors.red).padding(4.dp)
+                ) {
+                    Text(
+                        text = "Сервер синхронизации файлов игры временно недоступен",
+                        color = AppTheme.colors.forceWhitePrimary
+                    )
+                }
             }
         }
     }

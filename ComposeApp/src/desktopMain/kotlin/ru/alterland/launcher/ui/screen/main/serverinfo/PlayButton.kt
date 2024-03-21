@@ -6,10 +6,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ru.alterland.launcher.ui.theme.AppTheme
-import ru.alterland.launchercore.domain.model.ClientStatus
 import ru.alterland.launcher.ui.widgets.AppleCircularProgressIndicator
 import ru.alterland.launcher.ui.widgets.Button
-import ru.alterland.launchercore.domain.model.ClientProfile
+import ru.alterland.launchercore.domain.model.ClientStatus
 
 @Composable
 fun PlayButton(
@@ -71,6 +70,14 @@ fun PlayButton(
                     progress = progress,
                     modifier = Modifier.size(34.dp),
                     strokeWidth = 3.dp
+                )
+            }
+            ClientStatus.DownloadError -> {
+                Button(
+                    text = "Ошибка. Повторить",
+                    backgroundColor = AppTheme.colors.primary,
+                    modifier = Modifier.padding(start = 8.dp).height(34.dp),
+                    onClick = onClick
                 )
             }
         }

@@ -11,7 +11,9 @@ data class ClientProfile(
     val extra: List<Library>,
     val mainClass: String?,
     val javaVersion: JavaVersion?,
+    val type: String?,
     val modules: List<String>,
+    val strict: List<String>,
     val status: ClientStatus
 ) {
     @Serializable
@@ -43,15 +45,15 @@ data class ClientProfile(
     )
 
     data class Downloads(
-        val artifact: Artifact?,
-        val classifiers: Map<String, Artifact>
+        val artifact: Artifact? = null,
+        val classifiers: Map<String, Artifact> = mapOf()
     )
 
     data class Library(
-        val name: String?,
-        val downloads: Downloads?,
-        val rules: List<Rule>,
-        val natives: Natives?
+        val name: String? = null,
+        val downloads: Downloads? = null,
+        val rules: List<Rule> = listOf(),
+        val natives: Natives? = null
     )
 
     data class Natives(

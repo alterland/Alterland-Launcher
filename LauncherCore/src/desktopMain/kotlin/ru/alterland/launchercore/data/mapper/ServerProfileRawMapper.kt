@@ -1,5 +1,6 @@
 package ru.alterland.launchercore.data.mapper
 
+import ru.alterland.launchercore.data.source.local.model.ServerAddressRaw
 import ru.alterland.launchercore.data.source.local.model.ServerProfileRaw
 import ru.alterland.launchercore.domain.model.ServerAddress
 import ru.alterland.launchercore.domain.model.ServerProfile
@@ -14,6 +15,11 @@ fun ServerProfileRaw.toDomain() = ServerProfile(
     description = description.orEmpty(),
     backgroundUrl = backgroundUrl.orEmpty(),
     backgroundLocalPath = backgroundLocalPath.orEmpty(),
-    address = if (ip != null) ServerAddress(ip = ip, port = port ?: 25565) else null,
+    address = address?.toDomain(),
     clientProfile = clientProfile
+)
+
+fun ServerAddressRaw.toDomain() = ServerAddress(
+    ip = ip.orEmpty(),
+    port = port ?: 0
 )

@@ -18,7 +18,7 @@ import ru.alterland.launcher.Res
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.loadables.LoadableImage
 import ru.alterland.launcher.ui.widgets.loadables.LoadableText
-import widgets.LoadableItem
+import ru.alterland.launcher.ui.widgets.LoadableItem
 
 @Composable
 fun MiniProfile(
