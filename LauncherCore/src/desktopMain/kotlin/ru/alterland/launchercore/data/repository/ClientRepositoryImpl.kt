@@ -25,6 +25,7 @@ import ru.alterland.launchercore.domain.repository.ServerRepository
 import ru.alterland.launchercore.dto.LaunchOptions
 import ru.alterland.launchercore.util.HashUtils.getCheckSumFromFile
 import ru.alterland.launchercore.util.v
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.MessageDigest
@@ -45,7 +46,7 @@ class ClientRepositoryImpl(
         prettyPrint = true
     }
 
-    private val workPath = Path(USER_HOME v BuildConfig.WORK_FOLDER)
+    private val workPath = Path("$USER_HOME/${BuildConfig.WORK_FOLDER}")
     private val assetsPath = workPath.resolve(ASSETS_FOLDER)
     private val serverProfilesPath = workPath.resolve(SERVER_PROFILES_FOLDER)
     private val clientProfilesPath = workPath.resolve(CLIENT_PROFILES_FOLDER)
@@ -171,7 +172,7 @@ class ClientRepositoryImpl(
                     versionName = id,
                     versionType = type,
                     nickname = player.nickname,
-                    classPath = classPath.joinToString(":"),
+                    classPath = classPath.joinToString(File.pathSeparator),
                     mainClass = mainClass ?: "net.minecraft.client.main.Main"
                 )
 
@@ -187,7 +188,7 @@ class ClientRepositoryImpl(
 
     private suspend fun ClientProfile.getAssetObjects(): List<ClientProfile.Library> {
         assets?.let { index ->
-            val indexPath = workPath.resolve(ASSETS_INDEXES_FOLDER v "${index.id}.$ASSETS_INDEXES_EXT")
+            val indexPath = workPath.resolve("$ASSETS_INDEXES_FOLDER/${index.id}.$ASSETS_INDEXES_EXT")
             if (indexPath.exists()) {
                 val localCheckSum = indexPath.getCheckSumFromFile(hashAlgorithm, 40)
                 if (localCheckSum == index.checkSum) {
@@ -214,7 +215,7 @@ class ClientRepositoryImpl(
                     val download = ClientProfile.Library(
                         downloads = ClientProfile.Downloads(
                             artifact = ClientProfile.Artifact(
-                                path = ASSETS_OBJECTS_FOLDER v firstTwo v "${obj.hash}",
+                                path = "$ASSETS_OBJECTS_FOLDER/$firstTwo/${obj.hash}",
                                 checkSum = obj.hash,
                                 size = obj.size ?: 0L,
                                 url = url
@@ -353,7 +354,7 @@ class ClientRepositoryImpl(
             path.walk().forEach { subPath ->
                 if (subPath.isRegularFile()) {
                     val checkSum = subPath.getCheckSumFromFile(hashAlgorithm, 40)
-                    val relativePath = subPath.relativeTo(workPath).toString()
+                    val relativePath = subPath.relativeTo(workPath).toString().replace("\\", "/")
                     checkSums[relativePath] = checkSum
                 }
             }
@@ -472,8 +473,8 @@ class ClientRepositoryImpl(
         private const val NATIVES_FOLDER = "bin"
         private const val ASSETS_FOLDER = "assets"
         private const val ASSETS_INDEXES_EXT = "json"
-        private val ASSETS_INDEXES_FOLDER = ASSETS_FOLDER v "indexes"
-        private val ASSETS_OBJECTS_FOLDER = ASSETS_FOLDER v "objects"
+        private val ASSETS_INDEXES_FOLDER = "$ASSETS_FOLDER/indexes"
+        private val ASSETS_OBJECTS_FOLDER = "$ASSETS_FOLDER/objects"
 
         private const val PING_DELAY = 5000L
     }

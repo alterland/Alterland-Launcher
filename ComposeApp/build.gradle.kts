@@ -107,8 +107,14 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "ru.alterland.launcher.desktopApp"
+            packageName = "AlterlandLauncher"
             packageVersion = "1.0.0"
+            description = "Access to the Alterland world"
+            vendor = "Alterland"
+
+            windows {
+                shortcut = true
+            }
         }
     }
 }
