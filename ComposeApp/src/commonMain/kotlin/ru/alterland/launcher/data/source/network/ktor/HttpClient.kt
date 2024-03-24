@@ -1,5 +1,6 @@
 package ru.alterland.launcher.data.source.network.ktor
 
+import AlterlandLauncher.ComposeApp.BuildConfig
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -34,7 +35,7 @@ internal class HttpClient(
         }
         defaultRequest {
             url {
-                protocol = URLProtocol.HTTP
+                protocol = if (BuildConfig.DEV_ENV) URLProtocol.HTTP else URLProtocol.HTTPS
                 host = AppConfig.apiBaseUrl
             }
             header("Content-Type", "application/json; charset=UTF-8")
