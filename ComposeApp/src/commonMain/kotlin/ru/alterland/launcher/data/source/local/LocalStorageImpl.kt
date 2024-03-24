@@ -10,6 +10,9 @@ import ru.alterland.launcher.data.source.local.LocalStoreFields.RAM
 import ru.alterland.launcher.data.source.local.LocalStoreFields.REMEMBER
 import ru.alterland.launcher.data.source.local.model.Store
 import ru.alterland.launcher.domain.repository.LocalStorage
+import kotlin.io.path.Path
+import kotlin.io.path.createParentDirectories
+import kotlin.io.path.exists
 
 class LocalStorageImpl(
     private val dispatcherIo: CoroutineDispatcher,
@@ -126,7 +129,9 @@ class LocalStorageImpl(
     }
 
     private fun createStoreIfNotExist() = applicationIoScope.launch {
-        if (store.get() == null) {
+        val storePath = Path(platformConfiguration.storeDir)
+        if (!storePath.exists()) {
+            storePath.createParentDirectories()
             store.set(
                 Store(
                     settings = mapOf(
