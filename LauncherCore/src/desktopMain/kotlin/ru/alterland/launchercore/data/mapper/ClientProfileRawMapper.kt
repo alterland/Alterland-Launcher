@@ -7,11 +7,11 @@ fun ClientProfileRaw.toDomain() = ClientProfile(
     id = id.orEmpty(),
     gameArguments = gameArguments?.map { it.getArgument() } ?: listOf(),
     jvmArguments = jvmArguments?.map { it.getArgument() } ?: listOf(),
-    assets = assets?.getAssets(),
+    assets = assets?.getExternalIndex(),
+    external = external?.map { it.getExternalIndex() } ?: listOf(),
     libraries = libraries?.map { it.getLibrary() } ?: listOf(),
     extra = extra?.map { it.getLibrary() } ?: listOf(),
     mainClass = mainClass,
-    javaVersion = null,
     modules = modules?.filter { it.isNotEmpty() } ?: listOf(),
     type = type,
     strict = strict ?: listOf(),
@@ -35,19 +35,21 @@ private fun ClientProfileRaw.OS.getOS() = OS(
     version = version
 )
 
-private fun ClientProfileRaw.Library.getLibrary() = ClientProfile.Library(
+fun ClientProfileRaw.Library.getLibrary() = ClientProfile.Library(
     name = name.orEmpty(),
     downloads = downloads?.getDownloads(),
     rules = rules?.map { it.getRule() } ?: listOf(),
     natives = natives?.getNatives()
 )
 
-private fun ClientProfileRaw.Assets.getAssets() = ClientProfile.Assets (
+private fun ClientProfileRaw.ExternalIndex.getExternalIndex() = ClientProfile.ExternalIndex (
     id = id.orEmpty(),
     checkSum = checkSum.orEmpty(),
     size = size ?: 0,
     totalSize = totalSize ?: 0,
+    path = path.orEmpty(),
     url = url.orEmpty(),
+    rules = rules?.map { it.getRule() } ?: listOf(),
 )
 
 private fun ClientProfileRaw.Downloads.getDownloads() = ClientProfile.Downloads(

@@ -13,21 +13,24 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
+import ru.alterland.launchercore.data.mapper.getLibrary
 import ru.alterland.launchercore.data.mapper.toDomain
 import ru.alterland.launchercore.data.source.local.model.ClientProfileRaw
 import ru.alterland.launchercore.data.source.local.model.ServerProfileRaw
 import ru.alterland.launchercore.data.source.network.ClientApi
 import ru.alterland.launchercore.data.source.network.model.response.AssetsIndexResponse
+import ru.alterland.launchercore.data.source.network.model.response.ExternalIndexResponse
 import ru.alterland.launchercore.domain.model.*
 import ru.alterland.launchercore.domain.repository.ClientRepository
 import ru.alterland.launchercore.domain.repository.LaunchRepository
 import ru.alterland.launchercore.domain.repository.ServerRepository
 import ru.alterland.launchercore.dto.LaunchOptions
 import ru.alterland.launchercore.util.HashUtils.getCheckSumFromFile
-import ru.alterland.launchercore.util.v
 import java.io.File
+import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.attribute.PosixFilePermission
 import java.security.MessageDigest
 import kotlin.io.path.*
 
@@ -124,7 +127,7 @@ class ClientRepositoryImpl(
             val gameArguments = gameArguments.filter { testRules(it.rules, features) }.flatMap { it.value }
             val jvmArguments = jvmArguments.filter { testRules(it.rules, features) }.flatMap { it.value }
 
-            val childModulesSums = getFoldersFilesChecksums(modules.filter { it != id })
+            val childModulesSums = getFoldersFilesChecksums(modules.filter { it != id && !it.contains("runtime") })
             val mainModuleSums = getFolderFilesChecksums(id)
             val assetsSums = getFolderFilesChecksums(ASSETS_OBJECTS_FOLDER)
             val strictSums = mainModuleSums.filter {
@@ -133,16 +136,35 @@ class ClientRepositoryImpl(
             }
             val allModulesSums = childModulesSums + mainModuleSums
 
+            val externalSums = mutableMapOf<String, String>()
+            external.forEach {
+                externalSums.putAll(getFolderFilesChecksums(workPath.resolve(it.path).parent.toAbsolutePath().toString()))
+            }
+
+            var runtime: Path? = null
+
             val assetObjects = getAssetObjects()
+            val externalObjects = external.filter { testRules(it.rules, features) }.flatMap {
+                if (it.path.contains("runtime")) {
+                    val configPath = workPath.resolve(it.path)
+                    runtime = configPath.parent.resolve("${configPath.nameWithoutExtension}/bin").apply {
+                        if (IS_POSIX) {
+                            Files.setPosixFilePermissions(this, BIN_POSIX_PERMISSIONS)
+                        }
+                    }
+                }
+                getExternalObjectsFromIndex(it)
+            }
 
             deleteWrongFiles(childModulesSums, libraries)
             deleteWrongFiles(strictSums, extra)
             deleteWrongFiles(assetsSums, assetObjects, true)
-
+            deleteWrongFiles(externalSums, externalObjects)
             val downloads = mutableListOf<ClientProfile.Library>().apply {
                 addAll(libraries.getDownloads(allModulesSums))
                 addAll(extra.getDownloads(allModulesSums))
                 addAll(assetObjects.getDownloads(assetsSums))
+                addAll(externalObjects.getDownloads(externalSums))
             }
 
             try {
@@ -162,7 +184,7 @@ class ClientRepositoryImpl(
                     gameArguments = gameArguments,
                     jvmArguments = jvmArguments,
                     gameDir = mainModulePath.toAbsolutePath().toString(),
-                    jvmDir = JVM_DIR,
+                    jvmDir = runtime?.resolve("java")?.toAbsolutePath()?.toString() ?: "",
                     authLibInjectorPath = authlibPath,
                     nativesDir = mainModulePath.resolve(NATIVES_FOLDER).toAbsolutePath().toString(),
                     assetIndex = assets?.id ?: "",
@@ -227,6 +249,31 @@ class ClientRepositoryImpl(
             }
         }
         return assets
+    }
+
+    private suspend fun ClientProfile.getExternalObjectsFromIndex(index: ClientProfile.ExternalIndex): List<ClientProfile.Library> {
+        val indexPath = workPath.resolve(index.path)
+        if (indexPath.exists()) {
+            val localCheckSum = indexPath.getCheckSumFromFile(hashAlgorithm, 40)
+            if (localCheckSum == index.checkSum) {
+                return jsonReader.decodeFromStream<ExternalIndexResponse>(indexPath.inputStream()).objects?.map {
+                    it.getLibrary()
+                }?.map { lib ->
+                    lib.copy(
+                        downloads = lib.downloads?.copy(
+                            artifact = lib.downloads.artifact?.copy(
+                                path = "${indexPath.parent.fileName}/${lib.downloads.artifact.path}"
+                            )
+                        )
+                    )
+                } ?: listOf()
+            }
+        }
+        indexPath.deleteIfExists()
+        indexPath.createParentDirectories()
+        indexPath.createFile()
+        downloadAndSaveFile(index.url, indexPath, index.totalSize)
+        return getExternalObjectsFromIndex(index)
     }
 
     private suspend fun getClientProfile(clientProfileName: String): ClientProfile? =
@@ -464,17 +511,23 @@ class ClientRepositoryImpl(
 
     companion object {
         private val USER_HOME = System.getProperty("user.home")
-        private val JVM_DIR = System.getProperty("java.home") v "bin" v "java"
         private val OS_NAME = OsName.getOsType(System.getProperty("os.name"))
         private val OS_ARCH = OsArch.getOsArchType(System.getProperty("os.arch"))
         private val OS_VERSION = System.getProperty("os.version")
         private val USER_OS = OS(name = OS_NAME, arch = OS_ARCH, version = OS_VERSION)
 
+        private val IS_POSIX = FileSystems.getDefault().supportedFileAttributeViews().contains("posix")
+        private val BIN_POSIX_PERMISSIONS = setOf(
+            PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE, // Owner
+            PosixFilePermission.GROUP_READ, PosixFilePermission.GROUP_EXECUTE, // Group
+            PosixFilePermission.OTHERS_READ, PosixFilePermission.OTHERS_EXECUTE // Others
+        )
+
         private const val NATIVES_FOLDER = "bin"
         private const val ASSETS_FOLDER = "assets"
         private const val ASSETS_INDEXES_EXT = "json"
-        private val ASSETS_INDEXES_FOLDER = "$ASSETS_FOLDER/indexes"
-        private val ASSETS_OBJECTS_FOLDER = "$ASSETS_FOLDER/objects"
+        private const val ASSETS_INDEXES_FOLDER = "$ASSETS_FOLDER/indexes"
+        private const val ASSETS_OBJECTS_FOLDER = "$ASSETS_FOLDER/objects"
 
         private const val PING_DELAY = 5000L
     }

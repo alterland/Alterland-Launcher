@@ -6,11 +6,11 @@ data class ClientProfile(
     val id: String,
     val gameArguments: List<Argument>,
     val jvmArguments: List<Argument>,
-    val assets: Assets?,
+    val assets: ExternalIndex?,
+    val external: List<ExternalIndex>,
     val libraries: List<Library>,
     val extra: List<Library>,
     val mainClass: String?,
-    val javaVersion: JavaVersion?,
     val type: String?,
     val modules: List<String>,
     val strict: List<String>,
@@ -29,12 +29,14 @@ data class ClientProfile(
         val features: Map<String, Boolean>
     )
 
-    data class Assets(
+    data class ExternalIndex(
         val id: String,
         val checkSum: String,
         val size: Long,
         val totalSize: Long,
-        val url: String
+        val path: String,
+        val url: String,
+        val rules: List<Rule>
     )
 
     data class Artifact(
@@ -60,10 +62,5 @@ data class ClientProfile(
         val windows: String?,
         val osx: String?,
         val linux: String?
-    )
-
-    data class JavaVersion(
-        val component: String,
-        val majorVersion: Int
     )
 }

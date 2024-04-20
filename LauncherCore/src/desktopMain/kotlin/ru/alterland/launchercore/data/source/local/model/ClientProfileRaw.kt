@@ -7,11 +7,11 @@ data class ClientProfileRaw(
     val id: String?,
     val gameArguments: List<Argument>? = null,
     val jvmArguments: List<Argument>? = null,
-    val assets: Assets? = null,
+    val assets: ExternalIndex? = null,
+    val external: List<ExternalIndex>? = null,
     val libraries: List<Library>? = null,
     val extra: List<Library>? = null,
     val mainClass: String? = null,
-    val javaVersion: JavaVersion? = null,
     val type: String? = null,
     val modules: List<String>? = null,
     val strict: List<String>? = null
@@ -37,12 +37,14 @@ data class ClientProfileRaw(
     )
 
     @Serializable
-    data class Assets(
+    data class ExternalIndex(
         val id: String?,
         val checkSum: String?,
         val size: Long?,
         val totalSize: Long?,
-        val url: String?
+        val path: String?,
+        val url: String?,
+        val rules: List<Rule>?
     )
 
     @Serializable
@@ -72,11 +74,5 @@ data class ClientProfileRaw(
         val windows: String?,
         val osx: String?,
         val linux: String?
-    )
-
-    @Serializable
-    data class JavaVersion(
-        val component: String?,
-        val majorVersion: Int?
     )
 }
