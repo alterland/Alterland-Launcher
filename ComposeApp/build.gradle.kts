@@ -106,9 +106,10 @@ compose.desktop {
         mainClass = "MainKt"
 
         buildTypes.release.proguard {
+            isEnabled = true
             configurationFiles.from(project.file("compose-desktop.pro"))
-            obfuscate.set(true)
-            optimize.set(true)
+            obfuscate = true
+            optimize = true
         }
 
         nativeDistributions {
