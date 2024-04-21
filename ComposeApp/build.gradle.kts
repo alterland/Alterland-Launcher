@@ -105,6 +105,12 @@ compose.desktop {
     application {
         mainClass = "MainKt"
 
+        buildTypes.release.proguard {
+            configurationFiles.from(project.file("compose-desktop.pro"))
+            obfuscate.set(true)
+            optimize.set(true)
+        }
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "AlterlandLauncher"
@@ -114,6 +120,9 @@ compose.desktop {
 
             windows {
                 shortcut = true
+            }
+            macOS {
+                bundleID = "ru.alterland.launcher"
             }
         }
     }
