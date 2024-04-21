@@ -5,8 +5,8 @@ plugins {
 }
 
 buildConfig {
-    //buildConfigField("String", "CLIENT_API_BASE_URL", "\"client.alterland.ru\"")
-    buildConfigField("String", "CLIENT_API_BASE_URL", "\"localhost:3200\"")
+    buildConfigField("String", "CLIENT_API_BASE_URL", "\"client.alterland.ru/api\"")
+    //buildConfigField("String", "CLIENT_API_BASE_URL", "\"localhost:3200\"")
     buildConfigField("String", "MOJANG_ASSETS_HOST", "\"https://resources.download.minecraft.net\"")
     buildConfigField("String", "WORK_FOLDER", "\"alterland\"")
     buildConfigField("String", "SERVER_PROFILES_FOLDER", "\"server-profiles\"")
