@@ -39,7 +39,7 @@ data class ClientProfileRaw(
     @Serializable
     data class ExternalIndex(
         val id: String?,
-        val checkSum: String?,
+        val sha1: String?,
         val size: Long?,
         val totalSize: Long?,
         val path: String?,
@@ -50,7 +50,7 @@ data class ClientProfileRaw(
     @Serializable
     data class Artifact(
         val path: String?,
-        val checkSum: String?,
+        val sha1: String?,
         val size: Long?,
         val url: String?
     )

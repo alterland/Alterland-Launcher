@@ -44,7 +44,7 @@ fun ClientProfileRaw.Library.getLibrary() = ClientProfile.Library(
 
 private fun ClientProfileRaw.ExternalIndex.getExternalIndex() = ClientProfile.ExternalIndex (
     id = id.orEmpty(),
-    checkSum = checkSum.orEmpty(),
+    checkSum = sha1.orEmpty(),
     size = size ?: 0,
     totalSize = totalSize ?: 0,
     path = path.orEmpty(),
@@ -59,7 +59,7 @@ private fun ClientProfileRaw.Downloads.getDownloads() = ClientProfile.Downloads(
 
 private fun ClientProfileRaw.Artifact.getArtifact() = ClientProfile.Artifact(
     path = path.orEmpty(),
-    checkSum = checkSum.orEmpty(),
+    checkSum = sha1.orEmpty(),
     size = size ?: 0,
     url = url.orEmpty(),
 )

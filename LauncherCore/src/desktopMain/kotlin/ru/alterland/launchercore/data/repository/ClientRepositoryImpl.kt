@@ -136,7 +136,7 @@ class ClientRepositoryImpl(
             }
             val allModulesSums = childModulesSums + mainModuleSums
 
-            val externalSums = mutableMapOf<String, String>()
+            val externalSums = mutableMapOf<String, String?>()
             external.forEach {
                 externalSums.putAll(getFolderFilesChecksums(workPath.resolve(it.path).parent.toAbsolutePath().toString()))
             }
@@ -312,7 +312,7 @@ class ClientRepositoryImpl(
         }
     }
 
-    private fun deleteWrongFiles(locals: Map<String, String>, remotes: List<ClientProfile.Library>, onlyHashDifferent: Boolean = false) {
+    private fun deleteWrongFiles(locals: Map<String, String?>, remotes: List<ClientProfile.Library>, onlyHashDifferent: Boolean = false) {
         val remotesMap = mutableMapOf<String, String>()
         remotes.forEach { lib ->
             lib.downloads?.artifact?.let {
@@ -322,7 +322,7 @@ class ClientRepositoryImpl(
         deleteWrongFiles(locals, remotesMap, onlyHashDifferent)
     }
 
-    private fun deleteWrongFiles(locals: Map<String, String>, remotes: Map<String, String>, onlyHashDifferent: Boolean = false) {
+    private fun deleteWrongFiles(locals: Map<String, String?>, remotes: Map<String, String>, onlyHashDifferent: Boolean = false) {
         locals.forEach { entry ->
             val remote = remotes[entry.key]
             if (remote == null && !onlyHashDifferent || remote != null && remote != entry.value) {
@@ -333,7 +333,7 @@ class ClientRepositoryImpl(
         }
     }
 
-    private fun List<ClientProfile.Library>.getDownloads(locals: Map<String, String>): List<ClientProfile.Library> {
+    private fun List<ClientProfile.Library>.getDownloads(locals: Map<String, String?>): List<ClientProfile.Library> {
         val downloads = mutableListOf<ClientProfile.Library>()
         this.filter { testRules(it.rules) }.forEach { library ->
             library.downloads?.artifact?.let { artifact ->
@@ -385,8 +385,8 @@ class ClientRepositoryImpl(
         stream.close()
     }
 
-    private fun getFoldersFilesChecksums(folderPaths: List<String>): Map<String, String> {
-        val checkSums = mutableMapOf<String, String>()
+    private fun getFoldersFilesChecksums(folderPaths: List<String>): Map<String, String?> {
+        val checkSums = mutableMapOf<String, String?>()
         folderPaths.forEach {
             val map = getFolderFilesChecksums(it)
             checkSums.putAll(map)
@@ -394,8 +394,8 @@ class ClientRepositoryImpl(
         return checkSums
     }
 
-    private fun getFolderFilesChecksums(folderPath: String): Map<String, String> {
-        val checkSums = mutableMapOf<String, String>()
+    private fun getFolderFilesChecksums(folderPath: String): Map<String, String?> {
+        val checkSums = mutableMapOf<String, String?>()
         val path = workPath.resolve(folderPath)
         if (path.exists()) {
             path.walk().forEach { subPath ->

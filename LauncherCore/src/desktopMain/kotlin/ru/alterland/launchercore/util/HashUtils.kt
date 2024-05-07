@@ -11,12 +11,16 @@ object HashUtils {
 
     private const val STREAM_BUFFER_LENGTH = 65536
 
-    fun Path.getCheckSumFromFile(digest: MessageDigest, hashLength: Int): String {
-        val fis = this.inputStream()
-        val byteArray = updateDigest(digest, fis).digest()
-        fis.close()
-        return String.format("%1$0" + hashLength + "x", *arrayOf<Any>(BigInteger(1, byteArray)))
-    }
+    fun Path.getCheckSumFromFile(digest: MessageDigest, hashLength: Int): String? =
+        try {
+            val fis = this.inputStream()
+            val byteArray = updateDigest(digest, fis).digest()
+            fis.close()
+            String.format("%1$0" + hashLength + "x", *arrayOf<Any>(BigInteger(1, byteArray)))
+        } catch (e: Exception) {
+            println(e)
+            null
+        }
 
     /**
      * Reads through an InputStream and updates the digest for the data
