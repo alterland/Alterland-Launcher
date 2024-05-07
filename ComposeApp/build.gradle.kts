@@ -88,8 +88,8 @@ android {
         targetSdk = 34
 
         applicationId = "ru.alterland.launcher.androidApp"
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
     }
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -115,7 +115,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "AlterlandLauncher"
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
             description = "Access to the Alterland world"
             vendor = "Alterland"
 
