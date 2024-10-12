@@ -1,66 +1,46 @@
 package ru.alterland.launchercore.domain.model
 
-import kotlinx.serialization.Serializable
+import ru.alterland.launchercore.domain.model.externalindex.ExternalIndexType
 
 data class ClientProfile(
     val id: String,
+    val configVersion: Int,
+    val mainClass: String,
     val gameArguments: List<Argument>,
     val jvmArguments: List<Argument>,
-    val assets: ExternalIndex?,
-    val external: List<ExternalIndex>,
-    val libraries: List<Library>,
-    val extra: List<Library>,
-    val mainClass: String?,
-    val type: String?,
+    val downloads: List<DownloadIndex>,
+    val externals: List<ExternalIndex>,
     val modules: List<String>,
     val strict: List<String>,
     val status: ClientStatus
 ) {
-    @Serializable
+
     data class Argument(
         val rules: List<Rule>,
         val value: List<String>
     )
 
-    @Serializable
+    data class ExternalIndex(
+        val indexPath: String,
+        val externalsPath: String,
+        val checkSum: String,
+        val url: String,
+        val type: ExternalIndexType,
+        val rules: List<Rule>
+    )
+
+    data class DownloadIndex(
+        val path: String,
+        val checkSum: String,
+        val size: Long,
+        val url: String,
+        val classPath: Boolean,
+        val rules: List<Rule>
+    )
+
     data class Rule(
         val action: ActionRule?,
         val os: OS?,
         val features: Map<String, Boolean>
-    )
-
-    data class ExternalIndex(
-        val id: String,
-        val checkSum: String,
-        val size: Long,
-        val totalSize: Long,
-        val path: String,
-        val url: String,
-        val rules: List<Rule>
-    )
-
-    data class Artifact(
-        val path: String,
-        val checkSum: String,
-        val size: Long,
-        val url: String
-    )
-
-    data class Downloads(
-        val artifact: Artifact? = null,
-        val classifiers: Map<String, Artifact> = mapOf()
-    )
-
-    data class Library(
-        val name: String? = null,
-        val downloads: Downloads? = null,
-        val rules: List<Rule> = listOf(),
-        val natives: Natives? = null
-    )
-
-    data class Natives(
-        val windows: String?,
-        val osx: String?,
-        val linux: String?
     )
 }

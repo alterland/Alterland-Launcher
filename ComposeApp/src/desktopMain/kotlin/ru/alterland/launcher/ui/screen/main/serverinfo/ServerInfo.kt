@@ -6,8 +6,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Text
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -27,17 +29,20 @@ fun ServerInfo(
     state: ServerInfoContract.State,
     setEvent: (e: ServerInfoContract.Event) -> Unit
 ) {
-    val settingsIcon = painterResource(Res.image.ic_settings)
+    val pagerState = rememberPagerState(pageCount = { state.serversCount })
 
-    val pagerState = rememberPagerState(pageCount = { state.servers.size })
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            setEvent(ServerInfoContract.Event.OnServerSelected(page))
+        }
+    }
+
+    if (state.currentServerProfile == null) return
 
     VerticalPager(
-        modifier = Modifier.fillMaxHeight().fillMaxWidth(),
-        state = pagerState
-    ) { page ->
-        val server = state.servers[page]
-        val client = state.clients.firstOrNull { it.id == server.clientProfile }
-
+        state = pagerState,
+        modifier = Modifier.fillMaxHeight().fillMaxWidth()
+    ) {
         Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
             Image(
                 painter = painterResource(Res.image.role_play_bg),
@@ -78,7 +83,7 @@ fun ServerInfo(
                 )
             }
             Column(
-                modifier = Modifier.align(Alignment.BottomCenter),
+                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
@@ -87,18 +92,18 @@ fun ServerInfo(
                     modifier = Modifier.padding(bottom = 14.dp)
                 )
                 Text(
-                    server.description,
+                    state.currentServerProfile.description,
                     color = AppTheme.colors.forceWhitePrimary,
                     fontSize = 18.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 14.dp)
                 )
-                server.clientProfile?.let {
-                    PlayButton(
-                        modifier = Modifier.padding(bottom = 20.dp),
-                        clientStatus = client?.status ?: ClientStatus.Unknown
-                    ) {
-                        setEvent(ServerInfoContract.Event.OnPlayClicked(server))
+                when {
+                    state.isFetchingClientProfile -> PlayButton(clientStatus = ClientStatus.Verification)
+                    state.currentClientProfile != null -> {
+                        PlayButton(clientStatus = state.currentClientProfile.status) {
+                            setEvent(ServerInfoContract.Event.OnPlayClicked(state.currentClientProfile))
+                        }
                     }
                 }
             }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideOrientation
 import cafe.adriel.voyager.transitions.SlideTransition
@@ -16,6 +17,7 @@ import ru.alterland.launcher.ui.screen.main.container.miniprofile.MiniProfile
 import ru.alterland.launcher.ui.screen.main.serverinfo.ServerInfoScreen
 import ru.alterland.launcher.ui.theme.AppTheme
 
+@OptIn(ExperimentalVoyagerApi::class)
 @Composable
 fun Dashboard(
     state: DashboardContract.State,
@@ -50,7 +52,8 @@ fun Dashboard(
             Navigator(ServerInfoScreen()) { navigator ->
                 SlideTransition(
                     navigator = navigator,
-                    orientation = SlideOrientation.Vertical
+                    orientation = SlideOrientation.Vertical,
+                    disposeScreenAfterTransitionEnd = true
                 )
             }
             if (state.isClientServiceOffline) {

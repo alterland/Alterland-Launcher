@@ -15,9 +15,15 @@ class Launcher {
     val clients: StateFlow<List<ClientProfile>> = clientRepository.clientProfiles
     val isOffline: StateFlow<Boolean> = clientRepository.isOffline
 
+    suspend fun fetchClientProfile(id: String): ClientProfile? = clientRepository.fetchClientProfile(id)
+
     @Throws(Exception::class)
     fun play(options: Options)  {
         clientRepository.play(options)
+    }
+
+    fun toggleDownload(clientProfile: ClientProfile) {
+        clientRepository.toggleDownload(clientProfile)
     }
 
     companion object : Logging

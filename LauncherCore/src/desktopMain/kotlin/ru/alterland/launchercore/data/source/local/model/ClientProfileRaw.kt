@@ -1,25 +1,31 @@
 package ru.alterland.launchercore.data.source.local.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class ClientProfileRaw(
-    val id: String?,
-    val gameArguments: List<Argument>? = null,
-    val jvmArguments: List<Argument>? = null,
-    val assets: ExternalIndex? = null,
-    val external: List<ExternalIndex>? = null,
-    val libraries: List<Library>? = null,
-    val extra: List<Library>? = null,
-    val mainClass: String? = null,
-    val type: String? = null,
-    val modules: List<String>? = null,
-    val strict: List<String>? = null
+    @SerialName("id") val id: String?,
+    @SerialName("configVersion") val configVersion: Int? = null,
+    @SerialName("mainClass") val mainClass: String? = null,
+    @SerialName("arguments") val arguments: Arguments? = null,
+    @SerialName("downloads") val downloads: List<DownloadIndex>? = null,
+    @SerialName("externals") val externals: List<ExternalIndex>? = null,
+    @SerialName("modules") val modules: List<String>? = null,
+    @SerialName("strict") val strict: List<String>? = null
 ) {
+
+    @Serializable
+    data class Arguments(
+        val game: List<JsonElement>?,
+        val jvm: List<JsonElement>?
+    )
+
     @Serializable
     data class Argument(
         val rules: List<Rule>?,
-        val value: List<String>?
+        val value: JsonElement
     )
 
     @Serializable
@@ -38,41 +44,21 @@ data class ClientProfileRaw(
 
     @Serializable
     data class ExternalIndex(
-        val id: String?,
-        val sha1: String?,
-        val size: Long?,
-        val totalSize: Long?,
-        val path: String?,
+        val indexPath: String?,
+        val externalsPath: String?,
+        val checkSum: String?,
         val url: String?,
+        val type: String?,
         val rules: List<Rule>?
     )
 
     @Serializable
-    data class Artifact(
+    data class DownloadIndex(
         val path: String?,
-        val sha1: String?,
+        val checkSum: String?,
         val size: Long?,
-        val url: String?
-    )
-
-    @Serializable
-    data class Downloads(
-        val artifact: Artifact?,
-        val classifiers: Map<String, Artifact>?
-    )
-
-    @Serializable
-    data class Library(
-        val name: String?,
-        val downloads: Downloads?,
-        val rules: List<Rule>?,
-        val natives: Natives?
-    )
-
-    @Serializable
-    data class Natives(
-        val windows: String?,
-        val osx: String?,
-        val linux: String?
+        val url: String?,
+        val classPath: Boolean?,
+        val rules: List<Rule>?
     )
 }

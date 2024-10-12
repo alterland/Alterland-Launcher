@@ -1,6 +1,6 @@
 package ru.alterland.launchercore.util
 
-import java.io.*
+import java.io.InputStream
 import java.math.BigInteger
 import java.nio.file.Path
 import java.security.MessageDigest
@@ -8,6 +8,8 @@ import kotlin.io.path.inputStream
 
 
 object HashUtils {
+
+    val hashAlgorithm = MessageDigest.getInstance("SHA-1")
 
     private const val STREAM_BUFFER_LENGTH = 65536
 

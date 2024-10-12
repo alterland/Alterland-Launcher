@@ -22,8 +22,8 @@ class AlterlandHttpClient(
             json(json)
         }
         install(HttpTimeout) {
-            connectTimeoutMillis = HttpTimeout.INFINITE_TIMEOUT_MS
-            requestTimeoutMillis = HttpTimeout.INFINITE_TIMEOUT_MS
+            connectTimeoutMillis = 120000
+            requestTimeoutMillis = 120000
         }
         defaultRequest {
             url {

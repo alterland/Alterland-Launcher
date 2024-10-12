@@ -1,26 +1,40 @@
 package ru.alterland.launchercore.data.mapper
 
+import kotlinx.serialization.json.*
 import ru.alterland.launchercore.data.source.local.model.ClientProfileRaw
 import ru.alterland.launchercore.domain.model.*
+import ru.alterland.launchercore.domain.model.externalindex.ExternalIndexType
+import java.nio.file.Path
 
-fun ClientProfileRaw.toDomain() = ClientProfile(
+fun ClientProfileRaw.toDomain(json: Json) = ClientProfile(
     id = id.orEmpty(),
-    gameArguments = gameArguments?.map { it.getArgument() } ?: listOf(),
-    jvmArguments = jvmArguments?.map { it.getArgument() } ?: listOf(),
-    assets = assets?.getExternalIndex(),
-    external = external?.map { it.getExternalIndex() } ?: listOf(),
-    libraries = libraries?.map { it.getLibrary() } ?: listOf(),
-    extra = extra?.map { it.getLibrary() } ?: listOf(),
-    mainClass = mainClass,
-    modules = modules?.filter { it.isNotEmpty() } ?: listOf(),
-    type = type,
+    configVersion = configVersion ?: -1,
+    mainClass = mainClass.orEmpty(),
+    gameArguments = arguments?.game?.map { it.getArgument(json) } ?: listOf(),
+    jvmArguments = arguments?.jvm?.map { it.getArgument(json) } ?: listOf(),
+    downloads = downloads?.mapNotNull { it.toDomain(null) } ?: listOf(),
+    externals = externals?.mapNotNull { it.getExternalIndex() } ?: listOf(),
+    modules = modules ?: listOf(),
     strict = strict ?: listOf(),
     status = ClientStatus.Unknown
 )
 
+private fun JsonElement.getArgument(json: Json) = when(this) {
+    is JsonPrimitive -> ClientProfile.Argument(
+        value = listOf(this.jsonPrimitive.content),
+        rules = listOf()
+    )
+    is JsonObject -> json.decodeFromJsonElement<ClientProfileRaw.Argument>(this).getArgument()
+    else -> throw Exception("cannot decode $this")
+}
+
 private fun ClientProfileRaw.Argument.getArgument() = ClientProfile.Argument(
     rules = rules?.map { it.getRule() } ?: listOf(),
-    value = value ?: listOf()
+    value = when(value) {
+        is JsonPrimitive -> listOf(value.jsonPrimitive.content)
+        is JsonArray -> value.map { it.jsonPrimitive.content }
+        else -> listOf()
+    }
 )
 
 private fun ClientProfileRaw.Rule.getRule() = ClientProfile.Rule(
@@ -35,37 +49,30 @@ private fun ClientProfileRaw.OS.getOS() = OS(
     version = version
 )
 
-fun ClientProfileRaw.Library.getLibrary() = ClientProfile.Library(
-    name = name.orEmpty(),
-    downloads = downloads?.getDownloads(),
-    rules = rules?.map { it.getRule() } ?: listOf(),
-    natives = natives?.getNatives()
-)
+fun ClientProfileRaw.DownloadIndex.toDomain(basePath: Path?): ClientProfile.DownloadIndex? =
+    if (path != null && checkSum != null  && size != null && url != null) {
+        ClientProfile.DownloadIndex(
+            path = basePath?.resolve(path)?.toString() ?: path,
+            checkSum = checkSum,
+            size = size,
+            url = url,
+            classPath = classPath ?: false,
+            rules = rules?.map { it.getRule() } ?: listOf()
+        )
+    } else {
+        null
+    }
 
-private fun ClientProfileRaw.ExternalIndex.getExternalIndex() = ClientProfile.ExternalIndex (
-    id = id.orEmpty(),
-    checkSum = sha1.orEmpty(),
-    size = size ?: 0,
-    totalSize = totalSize ?: 0,
-    path = path.orEmpty(),
-    url = url.orEmpty(),
-    rules = rules?.map { it.getRule() } ?: listOf(),
-)
-
-private fun ClientProfileRaw.Downloads.getDownloads() = ClientProfile.Downloads(
-    artifact = artifact?.getArtifact(),
-    classifiers = classifiers?.mapValues { it.value.getArtifact() } ?: mapOf()
-)
-
-private fun ClientProfileRaw.Artifact.getArtifact() = ClientProfile.Artifact(
-    path = path.orEmpty(),
-    checkSum = sha1.orEmpty(),
-    size = size ?: 0,
-    url = url.orEmpty(),
-)
-
-private fun ClientProfileRaw.Natives.getNatives() = ClientProfile.Natives(
-    windows = windows,
-    osx = osx,
-    linux = linux
-)
+private fun ClientProfileRaw.ExternalIndex.getExternalIndex(): ClientProfile.ExternalIndex? =
+    if (indexPath != null && externalsPath != null && checkSum != null  && url != null) {
+        ClientProfile.ExternalIndex(
+            indexPath = indexPath,
+            externalsPath = externalsPath,
+            checkSum = checkSum,
+            url = url,
+            type = ExternalIndexType.fromValue(type),
+            rules = rules?.map { it.getRule() } ?: listOf()
+        )
+    } else {
+        null
+    }

@@ -1,9 +1,12 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.multiplatform)
-    alias(libs.plugins.compose)
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.libres)
     alias(libs.plugins.buildConfig)
     alias(libs.plugins.kotlinx.serialization)
@@ -18,87 +21,90 @@ buildConfig {
     useKotlinOutput { internalVisibility = true }
 }
 
-@OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    applyDefaultHierarchyTemplate()
-
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_17.toString()
-            }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
     jvm("desktop")
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(project(":LauncherCore"))
-                implementation(compose.runtime)
-                implementation(compose.material3)
-                implementation(libs.compose.uitooling)
-                implementation(libs.libres)
-                implementation(libs.voyager.navigator)
-                implementation(libs.voyager.transitions)
-                implementation(libs.voyager.koin)
-                implementation(libs.composeImageLoader)
-                implementation(libs.napier)
-                implementation(libs.ktor.core)
-                implementation(libs.ktor.negotiation)
-                implementation(libs.ktor.json)
-                implementation(libs.ktor.kotlin.json)
-                implementation(libs.ktor.serialization)
-                implementation(libs.ktor.logging)
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.datetime)
-                implementation(libs.koin.core)
-                implementation(libs.kstore)
-                implementation(libs.kstore.file)
-            }
-        }
+        val desktopMain by getting
 
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.androidx.appcompat)
-                implementation(libs.androidx.activityCompose)
-                implementation(libs.kotlinx.coroutines.android)
-                implementation(libs.ktor.client.okhttp)
-            }
+        androidMain.dependencies {
+            implementation(compose.preview)
+            implementation(libs.androidx.appcompat)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.ktor.client.okhttp)
         }
+        commonMain.dependencies {
+            implementation(project(":LauncherCore"))
 
-        val desktopMain by getting {
-            dependencies {
-                implementation(compose.desktop.common)
-                implementation(compose.desktop.currentOs)
-                implementation(libs.ktor.client.okhttp)
-            }
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material)
+            implementation(compose.ui)
+            implementation(compose.components.uiToolingPreview)
+
+            implementation(libs.libres)
+            implementation(libs.composeImageLoader)
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.transitions)
+            implementation(libs.voyager.koin)
+            implementation(libs.napier)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.negotiation)
+            implementation(libs.ktor.json)
+            implementation(libs.ktor.kotlin.json)
+            implementation(libs.ktor.serialization)
+            implementation(libs.ktor.logging)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.koin.core)
+            implementation(libs.kstore)
+            implementation(libs.kstore.file)
         }
-
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.kotlinx.coroutines.swing)
+        }
     }
 }
 
 android {
     namespace = "ru.alterland.launcher"
-    compileSdk = 34
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 26
-        targetSdk = 34
-
         applicationId = "ru.alterland.launcher.androidApp"
-        versionCode = 2
-        versionName = "1.0.1"
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        versionCode = 1
+        versionName = "1.0"
     }
-    sourceSets["main"].apply {
-        manifest.srcFile("src/androidMain/AndroidManifest.xml")
-        res.srcDirs("src/androidMain/resources")
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+composeCompiler {
+    enableStrongSkippingMode = true
 }
 
 compose.desktop {
@@ -115,7 +121,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "AlterlandLauncher"
-            packageVersion = "1.0.1"
+            packageVersion = "1.1.1"
             description = "Access to the Alterland world"
             vendor = "Alterland"
 

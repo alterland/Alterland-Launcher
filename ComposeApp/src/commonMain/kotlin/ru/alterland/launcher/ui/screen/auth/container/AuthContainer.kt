@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.FadeTransition
 import ru.alterland.launcher.Res
@@ -17,6 +18,7 @@ import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.Logo
 import ru.alterland.launcher.ui.widgets.errors.BaseErrorHandler
 
+@OptIn(ExperimentalVoyagerApi::class)
 @Composable
 fun AuthContainer(
     state: AuthContainerContract.State,
@@ -52,7 +54,10 @@ fun AuthContainer(
             Logo(modifier = Modifier.padding(top = 50.dp, bottom = 26.dp))
 
             Navigator(SignInScreen()) { navigator ->
-                FadeTransition(navigator)
+                FadeTransition(
+                    navigator = navigator,
+                    disposeScreenAfterTransitionEnd = true
+                )
             }
         }
     }

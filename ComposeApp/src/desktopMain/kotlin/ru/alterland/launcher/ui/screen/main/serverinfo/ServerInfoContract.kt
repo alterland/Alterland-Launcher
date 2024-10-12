@@ -8,12 +8,15 @@ import ru.alterland.launchercore.domain.model.ServerProfile
 
 class ServerInfoContract {
     sealed class Event : UiEvent {
-        data class OnPlayClicked(val profile: ServerProfile): Event()
+        data class OnServerSelected(val page: Int): Event()
+        data class OnPlayClicked(val clientProfile: ClientProfile): Event()
     }
 
     data class State(
-        val servers: List<ServerProfile> = listOf(),
-        val clients: List<ClientProfile> = listOf()
+        val currentServerProfile: ServerProfile? = null,
+        val currentClientProfile: ClientProfile? = null,
+        val isFetchingClientProfile: Boolean = false,
+        val serversCount: Int = 0
     ): UiState
 
     sealed class Effect: UiEffect

@@ -14,11 +14,13 @@ import kotlinx.serialization.json.Json
 import ru.alterland.launcher.AppConfig
 import ru.alterland.launcher.util.base.throwAppError
 
-internal class HttpClient(
+internal expect fun httpClient(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient
+
+internal class AppHttpClient(
     private val json: Json,
     private val cookiesStorage: CustomCookiesStorage
 ) {
-    val client = HttpClient(HttpEngineFactory().createEngine()) {
+    val client = httpClient {
         install(Logging) {
             logger = Logger.SIMPLE
             level = LogLevel.ALL
@@ -28,10 +30,6 @@ internal class HttpClient(
         }
         install(ContentNegotiation) {
             json(json)
-        }
-        install(HttpTimeout) {
-            connectTimeoutMillis = 15000
-            requestTimeoutMillis = 30000
         }
         defaultRequest {
             url {

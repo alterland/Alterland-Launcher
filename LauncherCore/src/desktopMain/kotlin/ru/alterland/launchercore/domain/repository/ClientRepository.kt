@@ -13,5 +13,7 @@ interface ClientRepository {
 
     val isOffline: StateFlow<Boolean>
 
+    suspend fun fetchClientProfile(clientProfileId: String): ClientProfile?
     fun play(options: Options)
+    fun toggleDownload(clientProfile: ClientProfile)
 }

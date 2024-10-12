@@ -1,6 +1,7 @@
 package ru.alterland.launcher
 
 import androidx.compose.runtime.Composable
+import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.core.registry.ScreenRegistry
 import cafe.adriel.voyager.core.registry.rememberScreen
 import cafe.adriel.voyager.navigator.Navigator
@@ -10,6 +11,7 @@ import ru.alterland.launcher.ui.screen.auth.authScreenModule
 import ru.alterland.launcher.ui.screen.containerScreenModule
 import ru.alterland.launcher.ui.theme.AppTheme
 
+@OptIn(ExperimentalVoyagerApi::class)
 @Composable
 internal fun App(
     isDarkTheme: Boolean = true
@@ -23,7 +25,10 @@ internal fun App(
     val authContainer = rememberScreen(ContainerScreenProvider.Auth)
 
     Navigator(authContainer) { navigator ->
-        SlideTransition(navigator)
+        SlideTransition(
+            navigator = navigator,
+            disposeScreenAfterTransitionEnd = true
+        )
     }
 }
 

@@ -14,15 +14,15 @@ import ru.alterland.launchercore.domain.model.ClientStatus
 fun PlayButton(
     modifier: Modifier = Modifier,
     clientStatus: ClientStatus,
-    onClick: () -> Unit
+    onClick: () -> Unit = {}
 ) {
-    Row(modifier = modifier) {
+    Row(modifier = modifier.height(34.dp)) {
         when(clientStatus) {
             ClientStatus.Ready, ClientStatus.Unknown -> {
                 Button(
                     text = "Играть",
                     backgroundColor = AppTheme.colors.primary,
-                    modifier = Modifier.padding(start = 8.dp).width(153.dp).height(34.dp),
+                    modifier = Modifier.padding(start = 8.dp).width(153.dp),
                     onClick = onClick
                 )
             }
@@ -38,7 +38,7 @@ fun PlayButton(
                     text = "Запуск",
                     backgroundColor = AppTheme.colors.primary,
                     isEnabled = false,
-                    modifier = Modifier.padding(start = 8.dp).width(153.dp).height(34.dp),
+                    modifier = Modifier.padding(start = 8.dp).width(153.dp),
                     onClick = onClick
                 )
             }
@@ -47,36 +47,24 @@ fun PlayButton(
                     text = "Запущено",
                     backgroundColor = AppTheme.colors.green,
                     isEnabled = false,
-                    modifier = Modifier.padding(start = 8.dp).width(153.dp).height(34.dp),
+                    modifier = Modifier.padding(start = 8.dp).width(153.dp),
                     onClick = onClick
                 )
             }
-            ClientStatus.DownloadPaused -> TODO()
             ClientStatus.UpdateRequired -> {
                 Button(
                     text = "Обновить",
                     backgroundColor = Color(52, 120, 246),
-                    modifier = Modifier.padding(start = 8.dp).width(153.dp).height(34.dp),
+                    modifier = Modifier.padding(start = 8.dp).width(153.dp),
                     onClick = onClick
                 )
             }
-            is ClientStatus.Downloading -> {
-                val progress = if (clientStatus.total == 0L) {
-                    0f
-                } else {
-                    clientStatus.received.toFloat() / clientStatus.total.toFloat()
-                }
-                AppleCircularProgressIndicator(
-                    progress = progress,
-                    modifier = Modifier.size(34.dp),
-                    strokeWidth = 3.dp
-                )
-            }
+            is ClientStatus.Downloading -> DownloadProgress(clientStatus = clientStatus) { onClick() }
             ClientStatus.DownloadError -> {
                 Button(
                     text = "Ошибка. Повторить",
                     backgroundColor = AppTheme.colors.primary,
-                    modifier = Modifier.padding(start = 8.dp).height(34.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     onClick = onClick
                 )
             }

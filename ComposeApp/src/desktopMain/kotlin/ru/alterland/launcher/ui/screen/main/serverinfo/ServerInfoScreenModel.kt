@@ -8,10 +8,7 @@ import ru.alterland.launcher.ui.base.BaseScreenModel
 import ru.alterland.launcher.util.extentions.handleErrors
 import ru.alterland.launcher.util.extentions.launchSafe
 import ru.alterland.launchercore.Launcher
-import ru.alterland.launchercore.domain.model.Feature
-import ru.alterland.launchercore.domain.model.Options
-import ru.alterland.launchercore.domain.model.Player
-import ru.alterland.launchercore.domain.model.ServerProfile
+import ru.alterland.launchercore.domain.model.*
 
 class ServerInfoScreenModel(
     private val launcher: Launcher,
@@ -20,37 +17,73 @@ class ServerInfoScreenModel(
     initialState = ServerInfoContract.State()
 ) {
 
+    private var servers: List<ServerProfile> = listOf()
+    private var clients: List<ClientProfile> = listOf()
+
     init {
         initSubscribes()
     }
 
     override fun handleEvent(event: ServerInfoContract.Event) {
         when(event) {
-            is ServerInfoContract.Event.OnPlayClicked -> handlePlayClick(event.profile)
+            is ServerInfoContract.Event.OnServerSelected -> handleServerSelected(event.page)
+            is ServerInfoContract.Event.OnPlayClicked -> handlePlayClick(event.clientProfile)
         }
     }
 
     private fun initSubscribes() {
         launcher.servers.onEach {
-            setState { copy(servers = it) }
+            val initServers = servers.isEmpty() && it.isNotEmpty()
+            servers = it
+            setState { copy(serversCount = it.size) }
+            if (initServers) {
+                handleServerSelected(0)
+            }
         }.handleErrors(::onError).launchIn(screenModelScope)
 
         launcher.clients.onEach {
-            setState { copy(clients = it) }
+            clients = it
+            clients.firstOrNull { client -> client.id == state.value.currentClientProfile?.id }?.let {
+                setState { copy(currentClientProfile = it) }
+            }
         }.handleErrors(::onError).launchIn(screenModelScope)
     }
 
-    private fun handlePlayClick(profile: ServerProfile) = screenModelScope.launchSafe(::onError) {
-        val user = userRepository.getUser()
-        val options = Options(
-            serverProfile = profile,
-            player = Player(
-                id = user.id,
-                accessToken = user.accessToken,
-                nickname = user.nickname
-            ),
-            features = mapOf(Feature.HAS_CUSTOM_RESOLUTION to false)
-        )
-        launcher.play(options)
+    private fun handleServerSelected(page: Int) = screenModelScope.launchSafe({
+        setState { copy(isFetchingClientProfile = false) }
+    }) {
+        servers.getOrNull(page)?.let { serverProfile ->
+            setState { copy(currentServerProfile = serverProfile) }
+            serverProfile.clientProfile?.let { clientProfileId ->
+                val clientProfile = clients.firstOrNull { it.id == clientProfileId } ?: run {
+                    setState { copy(isFetchingClientProfile = true) }
+                    launcher.fetchClientProfile(clientProfileId)
+                }
+                setState {
+                    copy(
+                        currentClientProfile = clientProfile,
+                        isFetchingClientProfile = false
+                    )
+                }
+            }
+        }
+    }
+
+    private fun handlePlayClick(clientProfile: ClientProfile) = screenModelScope.launchSafe(::onError) {
+        if (clientProfile.status is ClientStatus.Downloading) {
+            launcher.toggleDownload(clientProfile)
+        } else {
+            val user = userRepository.getUser()
+            val options = Options(
+                clientProfile = clientProfile,
+                player = Player(
+                    id = user.id,
+                    accessToken = user.accessToken,
+                    nickname = user.nickname
+                ),
+                features = mapOf(Feature.HAS_CUSTOM_RESOLUTION to false)
+            )
+            launcher.play(options)
+        }
     }
 }
