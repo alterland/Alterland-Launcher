@@ -2,8 +2,14 @@ package ru.alterland.launcher.data.source.local
 
 import io.github.xxfast.kstore.KStore
 import io.github.xxfast.kstore.file.storeOf
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okio.Path.Companion.toPath
 import ru.alterland.launcher.PlatformConfiguration
 import ru.alterland.launcher.data.source.local.LocalStoreFields.RAM
@@ -111,6 +117,10 @@ class LocalStorageImpl(
         allCookies.addAll(tempDomainCookies)
         allCookies.addAll(domainCookies)
         return allCookies
+    }
+
+    override suspend fun removeAllCookies() {
+        store.update { it?.copy(cookies = mapOf()) }
     }
 
     override suspend fun removeCookie(domain: String, cookieName: String) {

@@ -8,6 +8,7 @@ import io.ktor.utils.io.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.io.readByteArray
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -69,9 +70,7 @@ class ClientRepositoryImpl(
             val rawProfile = clientApi.getClientProfile(clientProfileId)
             rawProfile.id?.let { jsonWriter.encodeToStream(rawProfile, clientProfilesPath.resolve(it).outputStream()) }
             val profile = rawProfile.toDomain(jsonReader)
-            val updateClientProfiles = clientProfiles.value.map {
-                if (it.id == clientProfileId) profile.copy(status = it.status) else it
-            }
+            val updateClientProfiles = _clientProfiles.value.toMutableList().apply { add(profile) }
             _clientProfiles.emit(updateClientProfiles)
             _isOffline.emit(false)
             profile
@@ -89,18 +88,20 @@ class ClientRepositoryImpl(
 
         applicationScope.launch {
             val clientProfile = fetchClientProfile(options.clientProfile.id) ?: options.clientProfile
-            clientProfile.updateClient()
-            clientProfile.launch(player, features)
+            val isUpdatedSuccessFully = clientProfile.updateClient()
+            if (isUpdatedSuccessFully) {
+                clientProfile.launch(player, features)
+            }
         }
     }
 
     override fun toggleDownload(clientProfile: ClientProfile) {
-        if (clientProfile.status is ClientStatus.Downloading) {
+        if (clientProfile.status is ClientStatus.Updating) {
 
         }
     }
 
-    private suspend fun ClientProfile.updateClient() {
+    private suspend fun ClientProfile.updateClient(): Boolean {
         val startTime = System.currentTimeMillis()
         val externals = getExternalIndexes(externals)
         val downloads = getDownloads(externals).plus(getDownloads(downloads))
@@ -111,9 +112,22 @@ class ClientRepositoryImpl(
 
         println("${endTime - startTime} ms")
 
-        download(downloads) { i ->
+        val errorIndexes = mutableListOf<ClientProfile.DownloadIndex>()
+
+        download(
+            downloads = downloads,
+            onError = { e, downloadIndex ->
+                errorIndexes.add(downloadIndex)
+            }
+        ) { i ->
             received += i
-            updateClientStatus(ClientStatus.Downloading(received = received, total = total))
+            updateClientStatus(ClientStatus.Updating(received = received, total = total))
+        }
+        return if (errorIndexes.isNotEmpty()) {
+            updateClientStatus(ClientStatus.UpdateError(errorIndexes.size))
+            false
+        } else {
+            true
         }
     }
 
@@ -150,7 +164,7 @@ class ClientRepositoryImpl(
                 val checkSum = if (indexPath.exists()) indexPath.getCheckSumFromFile() else null
                 if (checkSum == null || index.checkSum != checkSum) {
                     indexPath.deleteFileAndCreateEmpty()
-                    downloadAndSaveFile(index.url, indexPath)
+                    downloadFile(index.url, indexPath)
                 }
                 val basePath = workPath.resolve(index.externalsPath)
                 when(index.type) {
@@ -222,23 +236,39 @@ class ClientRepositoryImpl(
 
     private suspend fun download(
         downloads: List<ClientProfile.DownloadIndex>,
+        maxConcurrentDownloads: Int = 3,
+        onError: (Exception, ClientProfile.DownloadIndex) -> Unit = { _, _ -> },
         onBytesReceived: (Int) -> Unit = {}
-    ) = withContext(dispatcherIo) {
-        downloads.forEach {
-            val path = workPath.resolve(it.path)
-            path.deleteFileAndCreateEmpty()
-            downloadAndSaveFile(it.url, path, onBytesReceived)
-        }
+    ) = coroutineScope {
+        val semaphore = Semaphore(maxConcurrentDownloads)
+        downloads.map {
+            async {
+                semaphore.acquire()
+                try {
+                    val path = workPath.resolve(it.path)
+                    path.deleteFileAndCreateEmpty()
+                    downloadFile(downloadUrl = it.url, savePath = path, onBytesReceived)
+                } catch (e: Exception) {
+                    onError(e, it)
+                } finally {
+                    semaphore.release()
+                }
+            }
+        }.awaitAll()
     }
 
-    private suspend fun downloadAndSaveFile(downloadUrl: String, saveFile: Path, onBytesReceived: (Int) -> Unit = {}) {
+    private suspend fun downloadFile(
+        downloadUrl: String,
+        savePath: Path,
+        onBytesReceived: (Int) -> Unit = {}
+    ) = withContext(dispatcherIo) {
         clientApi.downloadFile(downloadUrl).execute { httpResponse ->
             val channel: ByteReadChannel = httpResponse.body()
             while (!channel.isClosedForRead) {
                 val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
                 while (!packet.exhausted()) {
                     val bytes = packet.readByteArray()
-                    saveFile.appendBytes(bytes)
+                    savePath.appendBytes(bytes)
                     onBytesReceived(bytes.size)
                 }
             }

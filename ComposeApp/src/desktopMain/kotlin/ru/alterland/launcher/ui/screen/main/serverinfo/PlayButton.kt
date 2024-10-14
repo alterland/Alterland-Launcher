@@ -59,10 +59,10 @@ fun PlayButton(
                     onClick = onClick
                 )
             }
-            is ClientStatus.Downloading -> DownloadProgress(clientStatus = clientStatus) { onClick() }
-            ClientStatus.DownloadError -> {
+            is ClientStatus.Updating -> UpdateProgress(clientStatus = clientStatus) { onClick() }
+            is ClientStatus.UpdateError -> {
                 Button(
-                    text = "Ошибка. Повторить",
+                    text = "Повторить",
                     backgroundColor = AppTheme.colors.primary,
                     modifier = Modifier.padding(start = 8.dp),
                     onClick = onClick

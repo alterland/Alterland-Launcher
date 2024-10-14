@@ -1,9 +1,12 @@
 package ru.alterland.launcher.ui.widgets.errors
 
+import alterlandlauncher.composeapp.generated.resources.Res
+import alterlandlauncher.composeapp.generated.resources.error_update_files
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import org.jetbrains.compose.resources.pluralStringResource
 import ru.alterland.launcher.domain.entity.AppError
 import ru.alterland.launcher.util.base.AppException
 
@@ -35,7 +38,7 @@ fun BaseErrorHandler(
                     }
                 }
             }
-
+            is AppException.UpdateException -> pluralStringResource(Res.plurals.error_update_files, throwable.errorCount, throwable.errorCount)
             is AppException -> {
                 when (throwable) {
                     AppException.AlreadySignedInException -> "Вы уже выполнили вход"

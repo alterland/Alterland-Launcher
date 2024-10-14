@@ -15,5 +15,5 @@ internal val repositoryModule = module {
     singleOf(::CustomCookiesStorage)
     singleOf<ErrorRepository>(::ErrorRepositoryImpl)
     single<LocalStorage> { LocalStorageImpl(get(named(DISPATCHER_IO)), get(named(APPLICATION_IO_SCOPE)), get()) }
-    single<UserRepository> { UserRepositoryImpl(get(named(DISPATCHER_IO)), get()) }
+    single<UserRepository> { UserRepositoryImpl(get(named(DISPATCHER_IO)), get(), get()) }
 }

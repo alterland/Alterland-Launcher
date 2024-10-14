@@ -16,7 +16,7 @@ class AlterlandHttpClient(
     val client = HttpClient(HttpEngineFactory().createEngine()) {
         install(Logging) {
             logger = Logger.SIMPLE
-            level = LogLevel.ALL
+            level = LogLevel.INFO
         }
         install(ContentNegotiation) {
             json(json)

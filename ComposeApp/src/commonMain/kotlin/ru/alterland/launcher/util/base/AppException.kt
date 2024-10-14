@@ -27,6 +27,8 @@ sealed class AppException: Exception() {
     data object ClientException: AppException()
     data object NoInternetException: AppException()
 
+    data class UpdateException(val errorCount: Int): AppException()
+
     companion object {
         fun createAppException(message: String) = when(message) {
             "user_not_found" -> UserNotFoundException

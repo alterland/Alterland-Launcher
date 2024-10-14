@@ -8,12 +8,14 @@ import ru.alterland.launcher.data.source.network.model.request.ResetPasswordRequ
 import ru.alterland.launcher.data.source.network.model.request.SignInRequest
 import ru.alterland.launcher.data.source.network.model.request.SignUpRequest
 import ru.alterland.launcher.domain.entity.User
+import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.domain.repository.UserRepository
 import ru.alterland.launcher.util.base.AppException
 
 class UserRepositoryImpl(
     private val dispatcherIo: CoroutineDispatcher,
-    private val userApi: UserApi
+    private val userApi: UserApi,
+    private val localStorage: LocalStorage
 ): UserRepository {
 
     private var cachedUser: User? = null
@@ -55,11 +57,11 @@ class UserRepositoryImpl(
     override suspend fun signOut() {
         withContext(dispatcherIo) {
             runCatching {
-                cachedUser = null
                 userApi.signOut()
             }.onFailure {
-
+                localStorage.removeAllCookies()
             }
+            cachedUser = null
         }
     }
 

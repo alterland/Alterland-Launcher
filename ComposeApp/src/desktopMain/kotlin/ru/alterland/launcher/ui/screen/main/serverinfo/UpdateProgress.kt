@@ -17,9 +17,9 @@ import ru.alterland.launcher.util.extentions.bytesToMegabytes
 import ru.alterland.launchercore.domain.model.ClientStatus
 
 @Composable
-fun DownloadProgress(
+fun UpdateProgress(
     modifier: Modifier = Modifier,
-    clientStatus: ClientStatus.Downloading,
+    clientStatus: ClientStatus.Updating,
     onClick: () -> Unit
 ) {
     val progress = if (clientStatus.total == 0L) {

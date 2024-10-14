@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.alterland.launcher.domain.repository.UserRepository
 import ru.alterland.launcher.ui.base.BaseScreenModel
+import ru.alterland.launcher.util.base.AppException
 import ru.alterland.launcher.util.extentions.handleErrors
 import ru.alterland.launcher.util.extentions.launchSafe
 import ru.alterland.launchercore.Launcher
@@ -45,12 +46,16 @@ class ServerInfoScreenModel(
             clients = it
             clients.firstOrNull { client -> client.id == state.value.currentClientProfile?.id }?.let {
                 setState { copy(currentClientProfile = it) }
+                if (it.status is ClientStatus.UpdateError) {
+                    onError(AppException.UpdateException(((it.status as ClientStatus.UpdateError).errorCount)))
+                }
             }
         }.handleErrors(::onError).launchIn(screenModelScope)
     }
 
     private fun handleServerSelected(page: Int) = screenModelScope.launchSafe({
         setState { copy(isFetchingClientProfile = false) }
+        onError(it)
     }) {
         servers.getOrNull(page)?.let { serverProfile ->
             setState { copy(currentServerProfile = serverProfile) }
@@ -69,10 +74,14 @@ class ServerInfoScreenModel(
         }
     }
 
-    private fun handlePlayClick(clientProfile: ClientProfile) = screenModelScope.launchSafe(::onError) {
-        if (clientProfile.status is ClientStatus.Downloading) {
+    private fun handlePlayClick(clientProfile: ClientProfile) = screenModelScope.launchSafe({
+        setState { copy(currentClientProfile = clientProfile.copy(status = ClientStatus.UpdateError(0))) }
+        onError(it)
+    }) {
+        if (clientProfile.status is ClientStatus.Updating) {
             launcher.toggleDownload(clientProfile)
         } else {
+            setState { copy(currentClientProfile = clientProfile.copy(status = ClientStatus.Verification)) }
             val user = userRepository.getUser()
             val options = Options(
                 clientProfile = clientProfile,

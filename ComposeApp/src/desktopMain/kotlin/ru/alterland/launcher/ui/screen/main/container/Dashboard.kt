@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -16,6 +17,7 @@ import ru.alterland.launcher.ui.screen.main.clients.MenuClientsList
 import ru.alterland.launcher.ui.screen.main.container.miniprofile.MiniProfile
 import ru.alterland.launcher.ui.screen.main.serverinfo.ServerInfoScreen
 import ru.alterland.launcher.ui.theme.AppTheme
+import ru.alterland.launcher.ui.widgets.errors.BaseErrorHandler
 
 @OptIn(ExperimentalVoyagerApi::class)
 @Composable
@@ -67,6 +69,16 @@ fun Dashboard(
                     )
                 }
             }
+            BaseErrorHandler(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .width(320.dp)
+                    .fillMaxHeight(0.5f)
+                    .padding(top = 18.dp, end = 16.dp),
+                itemsModifier = Modifier.padding(vertical = 3.dp),
+                errors = state.errors,
+                onMessageClose = { setEvent(DashboardContract.Event.OnMessageClose(it)) }
+            )
         }
     }
 }

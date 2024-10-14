@@ -14,4 +14,5 @@ interface LocalStorage {
     suspend fun storeCookie(domain: String, cookie: PersistentCookie)
     suspend fun removeCookie(domain: String, cookieName: String)
     suspend fun getAllCookies(domain: String): List<PersistentCookie>
+    suspend fun removeAllCookies()
 }
