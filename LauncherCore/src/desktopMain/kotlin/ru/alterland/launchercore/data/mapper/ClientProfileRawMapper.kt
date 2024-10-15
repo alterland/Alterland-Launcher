@@ -57,6 +57,7 @@ fun ClientProfileRaw.DownloadIndex.toDomain(basePath: Path?): ClientProfile.Down
             size = size,
             url = url,
             classPath = classPath ?: false,
+            allowChanges = allowChanges ?: false,
             rules = rules?.map { it.getRule() } ?: listOf()
         )
     } else {

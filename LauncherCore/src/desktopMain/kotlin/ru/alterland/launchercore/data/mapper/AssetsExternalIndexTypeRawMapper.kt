@@ -25,6 +25,7 @@ private fun AssetsExternalIndexType.Item.getDownloadIndex(basePath: Path): Clien
             size = size,
             url = "${BuildConfig.MOJANG_ASSETS_HOST}/$firstTwo/$hash",
             classPath = false,
+            allowChanges = false,
             rules = listOf()
         )
     } else {

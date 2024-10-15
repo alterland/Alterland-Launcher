@@ -59,6 +59,7 @@ data class ClientProfileRaw(
         val size: Long?,
         val url: String?,
         val classPath: Boolean?,
+        val allowChanges: Boolean?,
         val rules: List<Rule>?
     )
 }

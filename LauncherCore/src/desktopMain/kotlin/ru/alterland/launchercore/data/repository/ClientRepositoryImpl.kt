@@ -90,6 +90,7 @@ class ClientRepositoryImpl(
             val clientProfile = fetchClientProfile(options.clientProfile.id) ?: options.clientProfile
             val isUpdatedSuccessFully = clientProfile.updateClient()
             if (isUpdatedSuccessFully) {
+                clientProfile.cleanStrictPaths()
                 clientProfile.launch(player, features)
             }
         }
@@ -101,16 +102,24 @@ class ClientRepositoryImpl(
         }
     }
 
-    private suspend fun ClientProfile.updateClient(): Boolean {
+    private fun ClientProfile.cleanStrictPaths() {
         val startTime = System.currentTimeMillis()
+        strict.forEach {
+            workPath.resolve(it).walk().forEach { path ->
+                val index = downloads.firstOrNull { index -> path.endsWith(index.path) }
+                if (index == null) path.deleteIfExists()
+            }
+        }
+        val endTime = System.currentTimeMillis()
+        println("elapsed:${endTime-startTime} ms")
+    }
+
+    private suspend fun ClientProfile.updateClient(): Boolean {
         val externals = getExternalIndexes(externals)
         val downloads = getDownloads(externals).plus(getDownloads(downloads))
 
         var received = 0L
         val total = downloads.sumOf { it.size }
-        val endTime = System.currentTimeMillis()
-
-        println("${endTime - startTime} ms")
 
         val errorIndexes = mutableListOf<ClientProfile.DownloadIndex>()
 
@@ -184,7 +193,7 @@ class ClientRepositoryImpl(
             .filter { index ->
                 val indexPath = workPath.resolve(index.path)
                 val checkSum = if (indexPath.exists()) indexPath.getCheckSumFromFile() else null
-                checkSum == null || index.checkSum != checkSum
+                checkSum == null || index.checkSum != checkSum && !index.allowChanges
             }
     }
 
