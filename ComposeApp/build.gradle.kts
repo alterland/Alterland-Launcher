@@ -122,7 +122,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "AlterlandLauncher"
-            packageVersion = "1.1.1"
+            packageVersion = "1.1.2"
             description = "Access to the Alterland world"
             vendor = "Alterland"
 
