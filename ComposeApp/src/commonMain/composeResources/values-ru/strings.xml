@@ -1,7 +1,25 @@
 <resources>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_in">Вход</string>
+    <string name="nickname">Ник</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="no_account">Нет аккаунта?</string>
+    <string name="remember_me">Запомнить меня</string>
+    <string name="string_continue">Продолжить</string>
+    <string name="back">Назад</string>
     <plurals name="error_update_files">
         <item quantity="one">Не удалось загрузить %1$d файл</item>
         <item quantity="few">Не удалось загрузить %1$d файла</item>
         <item quantity="other">Не удалось загрузить %1$d файлов</item>
     </plurals>
+
+    <string name="settings">Настройки</string>
+    <string name="jvm_settings">Java</string>
+    <string name="jvm_settings_use_recommended_ram">Use recommended value</string>
+    <string name="client_settings">Игра</string>
+    <string name="client_settings_launch_after_update">Запускать после обновления</string>
+    <string name="client_settings_launch_fullscreen">Запускать в полноэкранном режиме</string>
+    <string name="client_settings_auto_connect">Подключаться к серверу автоматически</string>
 </resources>

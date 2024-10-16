@@ -8,11 +8,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.theme.defaultButtonHeight
 import ru.alterland.launcher.ui.theme.defaultElementsShape
@@ -32,6 +34,7 @@ fun Button(
         if (backgroundGradient == null) {
             modifier
                 .background(backgroundColor, defaultElementsShape)
+                .clip(defaultElementsShape)
                 .defaultMinSize(minHeight = defaultButtonHeight)
                 .clickable(
                     enabled = !isLoading,
@@ -40,6 +43,7 @@ fun Button(
         } else {
             modifier
                 .background(backgroundGradient, defaultElementsShape)
+                .clip(defaultElementsShape)
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = defaultButtonHeight)
                 .clickable(
@@ -77,8 +81,8 @@ fun Button(
     }
 }
 
-//@Composable
-//@Preview
-//private fun ButtonPreview() {
-//    Button()
-//}
+@Composable
+@Preview
+private fun ButtonPreview() {
+    Button()
+}

@@ -1,40 +1,27 @@
-package ru.alterland.launcher.ui.screen.main.container
+package ru.alterland.launcher.ui.screen.main.clientsettings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import cafe.adriel.voyager.core.registry.ScreenRegistry
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import ru.alterland.launcher.ui.screen.main.mainScreenModule
 
-actual class DashboardScreen: Screen {
+class ClientSettingsScreen: Screen {
 
     @Composable
     override fun Content() {
-
-        ScreenRegistry {
-            mainScreenModule()
-        }
-
-        val screenModel = koinScreenModel<DashboardScreenModel>()
+        val screenModel = koinScreenModel<ClientSettingsScreenModel>()
         val state by screenModel.state.collectAsState()
         val effect by screenModel.effect.collectAsState(null)
 
         val navigator = LocalNavigator.currentOrThrow
 
-        when(effect) {
-            DashboardContract.Effect.OnNavigateToAuth -> {
-                navigator.popAll()
-            }
-            else -> {}
-        }
-
-        Dashboard(
+        ClientSettings(
             state = state,
-            setEvent = { e -> screenModel.setEvent(e) }
+            setEvent = { e -> screenModel.setEvent(e) },
+            navigateBack = { navigator.pop() }
         )
     }
 }

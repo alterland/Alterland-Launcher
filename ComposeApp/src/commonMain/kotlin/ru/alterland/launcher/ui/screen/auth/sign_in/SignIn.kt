@@ -1,16 +1,21 @@
 package ru.alterland.launcher.ui.screen.auth.sign_in
 
+import alterlandlauncher.composeapp.generated.resources.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.alterland.launcher.Res
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.alterland.launcher.ui.theme.AppTheme
-import ru.alterland.launcher.ui.widgets.*
+import ru.alterland.launcher.ui.widgets.Button
+import ru.alterland.launcher.ui.widgets.CheckBox
+import ru.alterland.launcher.ui.widgets.Input
+import ru.alterland.launcher.ui.widgets.InputType
 
 @Composable
 fun SignIn(
@@ -22,16 +27,16 @@ fun SignIn(
 
     fun isQueryInProgress() = state.signInProgress || state.vkSignInProgress || state.googleSignInProgress
 
-    val icLogin = painterResource(Res.image.ic_login)
-    val icPassword = painterResource(Res.image.ic_password)
-    val icVk = painterResource(Res.image.ic_vk)
-    val icGoogle = painterResource(Res.image.ic_google)
+    val icLogin = painterResource(Res.drawable.ic_login)
+    val icPassword = painterResource(Res.drawable.ic_password)
+    val icVk = painterResource(Res.drawable.ic_vk)
+    val icGoogle = painterResource(Res.drawable.ic_google)
 
     val elementsPadding = 20.dp
 
     Column {
         Input(
-            hint = "Email",
+            hint = stringResource(Res.string.email),
             text = state.login,
             icon = icLogin,
             onInput = { setEvent(SignInContract.Event.OnLoginInput(it)) },
@@ -39,7 +44,7 @@ fun SignIn(
             singleLine = true
         )
         Input(
-            hint = "Пароль",
+            hint = stringResource(Res.string.password),
             text = state.password,
             icon = icPassword,
             onInput = { setEvent(SignInContract.Event.OnPasswordInput(it)) },
@@ -52,11 +57,11 @@ fun SignIn(
             modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CheckBox(checked = state.remember, text = "Запомнить меня") {
+            CheckBox(checked = state.remember, text = stringResource(Res.string.remember_me)) {
                 setEvent(SignInContract.Event.OnRememberMeChecked)
             }
             Text(
-                text = "Забыли пароль?",
+                text = stringResource(Res.string.forgot_password),
                 //textDecoration = TextDecoration.Underline,
                 color = AppTheme.colors.primary,
                 fontSize = 12.sp,
@@ -64,28 +69,28 @@ fun SignIn(
             )
         }
         Button(
-            text = "Войти",
+            text = stringResource(Res.string.sign_in),
             isEnabled = !isQueryInProgress(),
             isLoading = state.signInProgress,
             onClick = { setEvent(SignInContract.Event.OnSignInClicked) },
             modifier = Modifier.fillMaxWidth().padding(top = 14.dp)
         )
-        SocialButton(
-            "Войти через Вконтакте",
-            icVk,
-            isEnabled = !isQueryInProgress(),
-            isLoading = state.vkSignInProgress,
-            modifier = Modifier.padding(top = elementsPadding),
-            onClick = { setEvent(SignInContract.Event.OnVkSignInClicked) },
-        )
-        SocialButton(
-            "Войти через Google",
-            icGoogle,
-            isEnabled = !isQueryInProgress(),
-            isLoading = state.googleSignInProgress,
-            modifier = Modifier.padding(top = elementsPadding/2),
-            onClick = { setEvent(SignInContract.Event.OnGoogleSignInClicked) },
-        )
+//        SocialButton(
+//            "Войти через Вконтакте",
+//            icVk,
+//            isEnabled = !isQueryInProgress(),
+//            isLoading = state.vkSignInProgress,
+//            modifier = Modifier.padding(top = elementsPadding),
+//            onClick = { setEvent(SignInContract.Event.OnVkSignInClicked) },
+//        )
+//        SocialButton(
+//            "Войти через Google",
+//            icGoogle,
+//            isEnabled = !isQueryInProgress(),
+//            isLoading = state.googleSignInProgress,
+//            modifier = Modifier.padding(top = elementsPadding/2),
+//            onClick = { setEvent(SignInContract.Event.OnGoogleSignInClicked) },
+//        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -94,12 +99,12 @@ fun SignIn(
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = "Нет аккаунта?",
+                text = stringResource(Res.string.no_account),
                 color = AppTheme.colors.labelSecondary,
                 fontSize = 12.sp,
             )
             Text(
-                text = "Регистрация",
+                text = stringResource(Res.string.sign_up),
                 //textDecoration = TextDecoration.Underline,
                 color = AppTheme.colors.primary,
                 fontSize = 12.sp,
@@ -109,8 +114,8 @@ fun SignIn(
     }
 }
 
-//@Preview
-//@Composable
-//fun SignInPreview() {
-//    SignIn(SignInContract.State(), {}, {}, {})
-//}
+@Preview
+@Composable
+fun SignInPreview() {
+    SignIn(SignInContract.State(), {}, {}, {})
+}

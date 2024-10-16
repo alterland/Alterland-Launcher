@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.alterland.launcher.ui.theme.AppTheme
-import ru.alterland.launcher.util.extentions.bytesToMegabytes
+import ru.alterland.launcher.util.extentions.bytesToMegabytesString
 import ru.alterland.launchercore.domain.model.ClientStatus
 
 @Composable
@@ -34,7 +34,7 @@ fun UpdateProgress(
         Column {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "${clientStatus.received.bytesToMegabytes()} МБ из ${clientStatus.total.bytesToMegabytes()} МБ",
+                text = "${clientStatus.received.bytesToMegabytesString()} МБ из ${clientStatus.total.bytesToMegabytesString()} МБ",
                 color = AppTheme.colors.labelPrimary,
                 textAlign = TextAlign.End,
                 fontSize = 12.sp

@@ -2,10 +2,10 @@ package ru.alterland.launchercore.data.repository
 
 import ru.alterland.launchercore.domain.repository.LaunchRepository
 import ru.alterland.launchercore.dto.LaunchOptions
+import ru.alterland.launchercore.util.BIN_POSIX_PERMISSIONS
+import ru.alterland.launchercore.util.IS_POSIX
 import java.io.File
-import java.nio.file.FileSystems
 import java.nio.file.Files
-import java.nio.file.attribute.PosixFilePermission
 import kotlin.io.path.exists
 
 class LaunchRepositoryImpl: LaunchRepository {
@@ -81,14 +81,5 @@ class LaunchRepositoryImpl: LaunchRepository {
                 it.value.startsWith(value?.lowercase() ?: "")
             } ?: UNKNOWN
         }
-    }
-
-    companion object {
-        private val IS_POSIX = FileSystems.getDefault().supportedFileAttributeViews().contains("posix")
-        private val BIN_POSIX_PERMISSIONS = setOf(
-            PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE, // Owner
-            PosixFilePermission.GROUP_READ, PosixFilePermission.GROUP_EXECUTE, // Group
-            PosixFilePermission.OTHERS_READ, PosixFilePermission.OTHERS_EXECUTE // Others
-        )
     }
 }

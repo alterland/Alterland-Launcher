@@ -25,8 +25,7 @@ import ru.alterland.launchercore.domain.repository.ClientRepository
 import ru.alterland.launchercore.domain.repository.LaunchRepository
 import ru.alterland.launchercore.domain.repository.ServerRepository
 import ru.alterland.launchercore.dto.LaunchOptions
-import ru.alterland.launchercore.util.deleteFileAndCreateEmpty
-import ru.alterland.launchercore.util.getCheckSumFromFile
+import ru.alterland.launchercore.util.*
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -360,12 +359,7 @@ class ClientRepositoryImpl(
     }
 
     companion object {
-        private val USER_HOME = System.getProperty("user.home")
-        private val OS_NAME = OsName.getOsType(System.getProperty("os.name"))
-        private val OS_ARCH = OsArch.getOsArchType(System.getProperty("os.arch"))
-        private val OS_VERSION = System.getProperty("os.version")
         private val USER_OS = OS(name = OS_NAME, arch = OS_ARCH, version = OS_VERSION)
-
         private const val PING_DELAY = 5000L
     }
 

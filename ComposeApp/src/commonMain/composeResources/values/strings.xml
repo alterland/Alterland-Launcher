@@ -1,6 +1,25 @@
 <resources>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="google_sign_up">Создать через Google</string>
+    <string name="vk_sign_up">Создать через Вконтакте</string>
+    <string name="nickname">Nickname</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot your password?</string>
+    <string name="no_account">Don't have an account?</string>
+    <string name="remember_me">Remember me</string>
+    <string name="string_continue">Continue</string>
+    <string name="back">Back</string>
     <plurals name="error_update_files">
         <item quantity="one">Failed to download %1$d file</item>
         <item quantity="other">Failed to download %1$d files</item>
     </plurals>
+
+    <string name="settings">Settings</string>
+    <string name="jvm_settings">Java</string>
+    <string name="jvm_settings_use_recommended_ram">Use recommended value</string>
+    <string name="client_settings">Game</string>
+    <string name="client_settings_launch_fullscreen">Run in full-screen mode</string>
+    <string name="client_settings_auto_connect">Connect to the server automatically</string>
 </resources>

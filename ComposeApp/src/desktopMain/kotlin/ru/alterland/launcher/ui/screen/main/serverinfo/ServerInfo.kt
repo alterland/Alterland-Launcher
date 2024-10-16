@@ -1,5 +1,9 @@
 package ru.alterland.launcher.ui.screen.main.serverinfo
 
+import alterlandlauncher.composeapp.generated.resources.Res
+import alterlandlauncher.composeapp.generated.resources.ic_settings
+import alterlandlauncher.composeapp.generated.resources.role_play_bg
+import alterlandlauncher.composeapp.generated.resources.rp_logo
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,19 +19,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.alterland.launcher.Res
+import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.ui.theme.AppTheme
+import ru.alterland.launcher.ui.widgets.Button
 import ru.alterland.launchercore.domain.model.ClientStatus
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ServerInfo(
     state: ServerInfoContract.State,
-    setEvent: (e: ServerInfoContract.Event) -> Unit
+    setEvent: (e: ServerInfoContract.Event) -> Unit,
+    navigateToClientSettings: () -> Unit
 ) {
     val pagerState = rememberPagerState(pageCount = { state.serversCount })
 
@@ -45,7 +50,7 @@ fun ServerInfo(
     ) {
         Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
             Image(
-                painter = painterResource(Res.image.role_play_bg),
+                painter = painterResource(Res.drawable.role_play_bg),
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
@@ -87,7 +92,7 @@ fun ServerInfo(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(Res.image.rp_logo),
+                    painter = painterResource(Res.drawable.rp_logo),
                     contentDescription = null,
                     modifier = Modifier.padding(bottom = 14.dp)
                 )
@@ -101,8 +106,16 @@ fun ServerInfo(
                 when {
                     state.isFetchingClientProfile -> PlayButton(clientStatus = ClientStatus.Verification)
                     state.currentClientProfile != null -> {
-                        PlayButton(clientStatus = state.currentClientProfile.status) {
-                            setEvent(ServerInfoContract.Event.OnPlayClicked(state.currentClientProfile))
+                        Row {
+                            PlayButton(clientStatus = state.currentClientProfile.status) {
+                                setEvent(ServerInfoContract.Event.OnPlayClicked(state.currentClientProfile))
+                            }
+                            Button(
+                                icon = painterResource(Res.drawable.ic_settings),
+                                backgroundColor = AppTheme.colors.backgroundElevatedTertiary,
+                                modifier = Modifier.padding(start = 6.dp).size(34.dp),
+                                onClick = navigateToClientSettings
+                            )
                         }
                     }
                 }

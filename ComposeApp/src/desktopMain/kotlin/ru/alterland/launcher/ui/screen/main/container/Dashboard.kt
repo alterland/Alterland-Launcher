@@ -51,7 +51,7 @@ fun Dashboard(
             }
         }
         Box {
-            Navigator(ServerInfoScreen()) { navigator ->
+            Navigator(screen = ServerInfoScreen()) { navigator ->
                 SlideTransition(
                     navigator = navigator,
                     orientation = SlideOrientation.Vertical,
