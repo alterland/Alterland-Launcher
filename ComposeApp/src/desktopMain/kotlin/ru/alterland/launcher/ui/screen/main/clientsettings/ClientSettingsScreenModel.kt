@@ -19,6 +19,10 @@ class ClientSettingsScreenModel(
         when(event) {
             is ClientSettingsContract.Event.OnRamSliderValueSelected -> handleRamSliderValueSelected(event.value)
             ClientSettingsContract.Event.OnUseRecommendedRamValueClick -> handleOnUseRecommendedRamValueClick()
+            is ClientSettingsContract.Event.OnLaunchAfterUpdate -> handleOnLaunchAfterUpdate()
+            is ClientSettingsContract.Event.OnLaunchFullScreen -> handleOnLaunchFullScreen()
+            is ClientSettingsContract.Event.OnAutoConnect -> handleOnAutoConnect()
+            is ClientSettingsContract.Event.OnApplyResolution -> handleApplyResolution()
         }
     }
 
@@ -28,6 +32,22 @@ class ClientSettingsScreenModel(
 
     private fun handleOnUseRecommendedRamValueClick() {
         setState { copy(ramSettings = recommendedCustomRam, useRecommendedRamValue = !useRecommendedRamValue) }
+    }
+
+    private fun handleOnLaunchAfterUpdate() {
+        setState { copy(launchAfterUpdate = !launchAfterUpdate) }
+    }
+
+    private fun handleOnLaunchFullScreen() {
+        setState { copy(launchFullScreen = !launchFullScreen) }
+    }
+
+    private fun handleOnAutoConnect() {
+        setState { copy(autoConnect = !autoConnect) }
+    }
+
+    private fun handleApplyResolution() {
+        setState { copy(screenResolution = !screenResolution) }
     }
 
     private fun initRamSettings() {

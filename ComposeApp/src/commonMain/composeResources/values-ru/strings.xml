@@ -20,6 +20,6 @@
     <string name="jvm_settings_use_recommended_ram">Use recommended value</string>
     <string name="client_settings">Игра</string>
     <string name="client_settings_launch_after_update">Запускать после обновления</string>
-    <string name="client_settings_launch_fullscreen">Запускать в полноэкранном режиме</string>
+    <string name="client_settings_launch_fullscreen">Полноэкранный режим</string>
     <string name="client_settings_auto_connect">Подключаться к серверу автоматически</string>
 </resources>
