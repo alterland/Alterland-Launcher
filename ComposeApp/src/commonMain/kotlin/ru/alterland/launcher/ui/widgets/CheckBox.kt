@@ -1,5 +1,7 @@
 package ru.alterland.launcher.ui.widgets
 
+import alterlandlauncher.composeapp.generated.resources.Res
+import alterlandlauncher.composeapp.generated.resources.ic_checkbox_check
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -10,10 +12,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.alterland.launcher.Res
+import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.ui.theme.AppTheme
 
 @Composable
@@ -23,7 +24,7 @@ fun CheckBox(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    val icCheck = painterResource(Res.image.ic_checkbox_check)
+    val icCheck = painterResource(Res.drawable.ic_checkbox_check)
     val size = 14
     val shape = RoundedCornerShape((size/2).dp)
 

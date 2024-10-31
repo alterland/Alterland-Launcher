@@ -1,7 +1,6 @@
 package ru.alterland.launchercore
 
 import kotlinx.coroutines.flow.StateFlow
-import org.apache.logging.log4j.kotlin.Logging
 import ru.alterland.launchercore.domain.model.ClientProfile
 import ru.alterland.launchercore.domain.model.Options
 import ru.alterland.launchercore.domain.model.ServerProfile
@@ -25,7 +24,4 @@ class Launcher {
     fun toggleDownload(clientProfile: ClientProfile) {
         clientRepository.toggleDownload(clientProfile)
     }
-
-    companion object : Logging
-
 }

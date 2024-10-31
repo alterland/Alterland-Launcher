@@ -1,5 +1,8 @@
 package ru.alterland.launcher.ui.screen.main.container.miniprofile
 
+import alterlandlauncher.composeapp.generated.resources.Res
+import alterlandlauncher.composeapp.generated.resources.avatar_temp
+import alterlandlauncher.composeapp.generated.resources.ic_exit
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -12,10 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.alterland.launcher.Res
+import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.LoadableItem
 import ru.alterland.launcher.ui.widgets.loadables.LoadableImage
@@ -24,7 +26,7 @@ import ru.alterland.launcher.ui.widgets.loadables.LoadableText
 @Composable
 fun MiniProfile(
     nickName: String,
-    avatar: Painter = painterResource(Res.image.avatar_temp),
+    avatar: Painter = painterResource(Res.drawable.avatar_temp),
     modifier: Modifier = Modifier,
     onExit: () -> Unit = {}
 ) {
@@ -74,7 +76,7 @@ fun MiniProfile(
             }
         }
         Image(
-            painter = painterResource(Res.image.ic_exit),
+            painter = painterResource(Res.drawable.ic_exit),
             contentDescription = null,
             modifier = Modifier.padding(start = 8.dp).size(20.dp).clickable { onExit() }
         )

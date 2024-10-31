@@ -1,47 +1,43 @@
 [versions]
-agp = "8.2.2"
+agp = "8.7.1"
 android-compileSdk = "34"
 android-minSdk = "26"
 android-targetSdk = "34"
-androidx-activityCompose = "1.9.2"
+androidx-activityCompose = "1.9.3"
 androidx-appcompat = "1.7.0"
 androidx-core-ktx = "1.13.1"
-androidx-material = "1.12.0"
-compose-plugin = "1.6.11"
 kotlin = "2.0.21"
+compose-multiplatform = "1.7.0"
 kotlinx-coroutines = "1.9.0"
+kotlinx-serialization = "1.7.3"
 kotlinx-datetime = "0.6.1"
 voyager = "1.1.0-beta03"
-composeImageLoader = "1.8.4"
-napier = "2.7.1"
-buildConfig = "5.3.5"
+composeImageLoader = "1.9.0"
+logback = "1.5.12"
+buildConfig = "5.5.0"
 ktor = "3.0.0"
 koin = "4.0.0"
 kstore = "0.8.0"
-libres = "1.2.2"
-log4j = "1.5.0"
 dnsjava = "3.6.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
 
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 
-libres = { module = "io.github.skeptick.libres:libres-compose", version.ref = "libres" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager"}
 
 composeImageLoader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "composeImageLoader" }
-
-napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
@@ -51,20 +47,20 @@ ktor-kotlin-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version
 ktor-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
 ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 
+logback = {  module = "ch.qos.logback:logback-classic", version.ref = "logback"  }
+
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 
 kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
 kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" }
 
-log4j = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "log4j" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
-jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-libres = { id = "io.github.skeptick.libres", version.ref = "libres" }
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }

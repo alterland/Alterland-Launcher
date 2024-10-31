@@ -9,7 +9,7 @@ import kotlin.io.path.inputStream
 
 object HashUtils {
 
-    val hashAlgorithm = MessageDigest.getInstance("SHA-1")
+    val hashAlgorithm: MessageDigest = MessageDigest.getInstance("SHA-1")
 
     private const val STREAM_BUFFER_LENGTH = 65536
 
