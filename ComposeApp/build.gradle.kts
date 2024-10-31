@@ -3,13 +3,12 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.compose)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.libres)
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.buildConfig)
-    alias(libs.plugins.kotlinx.serialization)
 }
 
 buildConfig {
@@ -37,6 +36,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.appcompat)
+            implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.okhttp)
@@ -50,29 +50,34 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-
-            implementation(libs.libres)
             implementation(libs.composeImageLoader)
+
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
             implementation(libs.voyager.koin)
-            implementation(libs.napier)
+
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.negotiation)
             implementation(libs.ktor.json)
             implementation(libs.ktor.kotlin.json)
             implementation(libs.ktor.serialization)
             implementation(libs.ktor.logging)
+
+            implementation(libs.logback)
+
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
+
             implementation(libs.koin.core)
+
             implementation(libs.kstore)
             implementation(libs.kstore.file)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.okhttp)
         }
     }
 }
@@ -104,19 +109,23 @@ android {
     }
 }
 
-composeCompiler {
-    enableStrongSkippingMode = true
+dependencies {
+    debugImplementation(compose.uiTooling)
 }
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "ru.alterland.launcher.MainKt"
 
-        buildTypes.release.proguard {
-            isEnabled = true
-            configurationFiles.from(project.file("compose-desktop.pro"))
-            obfuscate = true
-            optimize = true
+        buildTypes.release {
+            javaHome = "C:\\Users\\Roman\\Documents\\OpenJDK17U-jdk_x64_windows_hotspot_17.0.13_11\\jdk-17.0.13+11"
+            proguard {
+                isEnabled = true
+                configurationFiles.from(project.file("compose-desktop.pro"))
+                obfuscate = true
+                optimize = true
+                joinOutputJars = true
+            }
         }
 
         nativeDistributions {
@@ -126,7 +135,11 @@ compose.desktop {
             description = "Access to the Alterland world"
             vendor = "Alterland"
 
+            includeAllModules = true
+
+            //Use Other installer for Windows. E.g.: Inno Setup. IMPORTANT! - copy upgradeUuid value to the custom installer.
             windows {
+                upgradeUuid = "375BA0BB-0A64-41A3-8D75-37315D837DE1"
                 shortcut = true
             }
             macOS {
@@ -135,12 +148,3 @@ compose.desktop {
         }
     }
 }
-
-libres {
-//    generatedClassName = "MainRes" // "Res" by default
-//    generateNamedArguments = true // false by default
-    baseLocaleLanguageCode = "ru" // "en" by default
-//    camelCaseNamesForAppleFramework = false // false by default
-}
-tasks.getByPath("desktopProcessResources").dependsOn("libresGenerateResources")
-tasks.getByPath("desktopSourcesJar").dependsOn("libresGenerateResources")

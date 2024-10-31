@@ -1,5 +1,7 @@
 package ru.alterland.launcher.ui.screen.auth.container
 
+import alterlandlauncher.composeapp.generated.resources.Res
+import alterlandlauncher.composeapp.generated.resources.background_auth
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,12 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.FadeTransition
-import ru.alterland.launcher.Res
+import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.ui.screen.auth.sign_in.SignInScreen
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.Logo
@@ -26,7 +27,7 @@ fun AuthContainer(
 ) {
 
     Image(
-        painter = painterResource(Res.image.background_auth),
+        painter = painterResource(Res.drawable.background_auth),
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxHeight()

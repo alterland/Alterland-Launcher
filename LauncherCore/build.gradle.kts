@@ -1,16 +1,17 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.buildConfig)
-    alias(libs.plugins.kotlinx.serialization)
 }
 
 buildConfig {
     buildConfigField("String", "CLIENT_API_BASE_URL", "\"client.alterland.ru/api\"")
     //buildConfigField("String", "CLIENT_API_BASE_URL", "\"localhost:3200\"")
     buildConfigField("String", "MOJANG_ASSETS_HOST", "\"https://resources.download.minecraft.net\"")
-    buildConfigField("String", "WORK_FOLDER", "\"alterland\"")
     buildConfigField("String", "SERVER_PROFILES_FOLDER", "\"server-profiles\"")
     buildConfigField("String", "CLIENT_PROFILES_FOLDER", "\"client-profiles\"")
+    buildConfigField("String", "WORK_FOLDER", "\"alterland\"")
+    buildConfigField("boolean", "MATCH_LAUNCHER_FOLDER", "${false}")
 
     useKotlinOutput { internalVisibility = true }
 }
@@ -31,11 +32,11 @@ kotlin {
             implementation(libs.ktor.logging)
             implementation(libs.koin.core)
             implementation(libs.dnsjava)
-            implementation(libs.log4j)
+            implementation(libs.logback)
         }
         desktopMain.dependencies {
-            implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.okhttp)
         }
     }
 }

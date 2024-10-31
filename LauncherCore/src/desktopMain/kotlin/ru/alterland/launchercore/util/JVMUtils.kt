@@ -23,7 +23,7 @@ val DEVICE_RAM = OPERATING_SYSTEM_MXBEAN.totalMemorySize.shr(20).coerceAtMost(if
 
 val IS_POSIX: Boolean = FileSystems.getDefault().supportedFileAttributeViews().contains("posix")
 val BIN_POSIX_PERMISSIONS: Set<PosixFilePermission> = setOf(
-    PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE, // Owner
-    PosixFilePermission.GROUP_READ, PosixFilePermission.GROUP_EXECUTE, // Group
-    PosixFilePermission.OTHERS_READ, PosixFilePermission.OTHERS_EXECUTE // Others
+    PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE,
+    PosixFilePermission.GROUP_READ, PosixFilePermission.GROUP_EXECUTE,
+    PosixFilePermission.OTHERS_READ, PosixFilePermission.OTHERS_EXECUTE
 )

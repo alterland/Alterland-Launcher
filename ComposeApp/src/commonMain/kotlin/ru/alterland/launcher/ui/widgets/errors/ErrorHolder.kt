@@ -1,5 +1,8 @@
 package ru.alterland.launcher.ui.widgets.errors
 
+import alterlandlauncher.composeapp.generated.resources.Res
+import alterlandlauncher.composeapp.generated.resources.ic_close
+import alterlandlauncher.composeapp.generated.resources.ic_error
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
@@ -15,11 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.alterland.launcher.Res
+import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.ui.theme.AppTheme
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -32,8 +34,8 @@ fun ErrorHolder(
     val shape = RoundedCornerShape(14.dp)
     val closeShape = RoundedCornerShape(9.dp)
 
-    val icError = painterResource(Res.image.ic_error)
-    val icClose = painterResource(Res.image.ic_close)
+    val icError = painterResource(Res.drawable.ic_error)
+    val icClose = painterResource(Res.drawable.ic_close)
 
     var isCloseButtonVisible by remember { mutableStateOf(false) }
 

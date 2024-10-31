@@ -1,5 +1,7 @@
 package ru.alterland.launcher.ui.screen.main.clients
 
+import alterlandlauncher.composeapp.generated.resources.Res
+import alterlandlauncher.composeapp.generated.resources.client_cover
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,11 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.skia.Image
-import ru.alterland.launcher.Res
 import ru.alterland.launcher.ui.screen.main.container.MenuItem
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.theme.defaultElementsShape
@@ -27,7 +28,7 @@ fun MenuClientItem(
 ) {
 
     val bitmap = item.favicon?.let { Image.Companion.makeFromEncoded(it).toComposeImageBitmap() }
-    val defaultImage = painterResource(Res.image.client_cover)
+    val defaultImage = painterResource(Res.drawable.client_cover)
 
     Row(
         modifier = modifier

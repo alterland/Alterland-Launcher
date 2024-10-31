@@ -29,6 +29,7 @@ import ru.alterland.launchercore.util.*
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import kotlin.io.path.*
 
 
@@ -47,7 +48,11 @@ class ClientRepositoryImpl(
         explicitNulls = false
     }
 
-    private val workPath = Path("$USER_HOME/${BuildConfig.WORK_FOLDER}")
+    private val workPath = if (BuildConfig.MATCH_LAUNCHER_FOLDER) {
+        Paths.get("").toAbsolutePath()
+    } else {
+        Path("$USER_HOME/${BuildConfig.WORK_FOLDER}")
+    }
     private val serverProfilesPath = workPath.resolve(SERVER_PROFILES_FOLDER)
     private val clientProfilesPath = workPath.resolve(CLIENT_PROFILES_FOLDER)
 
@@ -102,15 +107,12 @@ class ClientRepositoryImpl(
     }
 
     private fun ClientProfile.cleanStrictPaths() {
-        val startTime = System.currentTimeMillis()
         strict.forEach {
             workPath.resolve(it).walk().forEach { path ->
                 val index = downloads.firstOrNull { index -> path.endsWith(index.path) }
                 if (index == null) path.deleteIfExists()
             }
         }
-        val endTime = System.currentTimeMillis()
-        println("elapsed:${endTime-startTime} ms")
     }
 
     private suspend fun ClientProfile.updateClient(): Boolean {

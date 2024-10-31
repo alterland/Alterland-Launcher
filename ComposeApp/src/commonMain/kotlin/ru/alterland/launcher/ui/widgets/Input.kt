@@ -1,5 +1,8 @@
 package ru.alterland.launcher.ui.widgets
 
+import alterlandlauncher.composeapp.generated.resources.Res
+import alterlandlauncher.composeapp.generated.resources.ic_eye_off
+import alterlandlauncher.composeapp.generated.resources.ic_eye_on
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -10,14 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.alterland.launcher.Res
+import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.theme.defaultElementsShape
 import ru.alterland.launcher.ui.theme.defaultInputHeight
@@ -40,8 +42,8 @@ fun Input(
     var backgroundColor by remember { mutableStateOf(colors.transparent) }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    val showPasswordImg = painterResource(Res.image.ic_eye_on)
-    val hidePasswordImg = painterResource(Res.image.ic_eye_off)
+    val showPasswordImg = painterResource(Res.drawable.ic_eye_on)
+    val hidePasswordImg = painterResource(Res.drawable.ic_eye_off)
 
     var textFieldValueState by remember { mutableStateOf(TextFieldValue(text))  }
 

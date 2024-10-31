@@ -1,3 +1,5 @@
+package ru.alterland.launcher
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,7 +12,6 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import org.koin.core.context.startKoin
-import ru.alterland.launcher.App
 import ru.alterland.launcher.di.commonModule
 import ru.alterland.launcher.di.desktopModule
 import java.awt.Dimension
