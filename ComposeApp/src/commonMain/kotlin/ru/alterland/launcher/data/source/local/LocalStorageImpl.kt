@@ -10,15 +10,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okio.Path.Companion.toPath
+import kotlinx.io.files.FileNotFoundException
+import kotlinx.io.files.Path
+import kotlinx.io.files.SystemFileSystem
 import ru.alterland.launcher.PlatformConfiguration
 import ru.alterland.launcher.data.source.local.LocalStoreFields.RAM
 import ru.alterland.launcher.data.source.local.LocalStoreFields.REMEMBER
 import ru.alterland.launcher.data.source.local.model.Store
 import ru.alterland.launcher.domain.repository.LocalStorage
-import kotlin.io.path.Path
-import kotlin.io.path.createParentDirectories
-import kotlin.io.path.exists
 
 class LocalStorageImpl(
     private val dispatcherIo: CoroutineDispatcher,
@@ -27,8 +26,14 @@ class LocalStorageImpl(
 ) : LocalStorage {
 
     private val store: KStore<Store> = storeOf(
-        file = platformConfiguration.storeDir.toPath(),
-        enableCache = true
+        file = Path(platformConfiguration.storeDir),
+        enableCache = true,
+        default = Store(
+            settings = mapOf(
+                REMEMBER to DEFAULT_REMEMBER_ME.toString(),
+                RAM to DEFAULT_RAM.toString()
+            )
+        )
     )
 
     private val tempCookies: MutableStateFlow<Map<String, List<PersistentCookie>>> = MutableStateFlow(mapOf())
@@ -55,17 +60,30 @@ class LocalStorageImpl(
         }
 
     init {
-        createStoreIfNotExist()
+        applicationIoScope.launch {
+            createStoreDirIfNotExist()
+        }
     }
 
     override suspend fun getSettings(): Map<String, String> = store.get()?.settings ?: mapOf()
 
-    override suspend fun storeSetting(key: String, value: Any) = withContext(dispatcherIo) {
-        store.update {
-            it?.settings?.let { settings ->
-                val settingsMutable = settings.toMutableMap()
-                settingsMutable[key] = value.toString()
-                it.copy(settings = settingsMutable)
+    override suspend fun storeSetting(key: String, value: Any) {
+        storeSetting(key, value, true)
+    }
+
+    private suspend fun storeSetting(key: String, value: Any, retryOnFail: Boolean): Unit = withContext(dispatcherIo) {
+        try {
+            store.update {
+                it?.settings?.let { settings ->
+                    val settingsMutable = settings.toMutableMap()
+                    settingsMutable[key] = value.toString()
+                    it.copy(settings = settingsMutable)
+                }
+            }
+        } catch (e: FileNotFoundException) {
+            if (retryOnFail) {
+                createStoreDirIfNotExist()
+                storeSetting(key, value, false)
             }
         }
     }
@@ -138,24 +156,18 @@ class LocalStorageImpl(
         }
     }
 
-    private fun createStoreIfNotExist() = applicationIoScope.launch {
+    private fun createStoreDirIfNotExist() {
         val storePath = Path(platformConfiguration.storeDir)
-        if (!storePath.exists()) {
-            storePath.createParentDirectories()
-            store.set(
-                Store(
-                    settings = mapOf(
-                        REMEMBER to DEFAULT_REMEMBER_ME.toString(),
-                        RAM to DEFAULT_RAM.toString()
-                    )
-                )
-            )
+        with(SystemFileSystem) {
+            if(!exists(storePath)) {
+                storePath.parent?.let { createDirectories(it) }
+            }
         }
     }
 
     companion object {
         //default launcher settings
         private const val DEFAULT_REMEMBER_ME = true
-        private const val DEFAULT_RAM: Double = 4.0
+        private const val DEFAULT_RAM = 4.0
     }
 }

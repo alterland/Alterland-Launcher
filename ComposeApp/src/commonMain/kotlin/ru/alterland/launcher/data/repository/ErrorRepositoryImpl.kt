@@ -5,15 +5,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ru.alterland.launcher.domain.entity.AppError
 import ru.alterland.launcher.domain.repository.ErrorRepository
-import java.util.*
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ErrorRepositoryImpl: ErrorRepository {
     private val _errors: MutableStateFlow<List<AppError>> = MutableStateFlow(listOf())
     override val errors: StateFlow<List<AppError>> = _errors.asStateFlow()
 
+    @ExperimentalUuidApi
     override suspend fun addError(throwable: Throwable) {
         val appError = AppError(
-            id = UUID.randomUUID().toString(),
+            id = Uuid.random().toString(),
             error = throwable
         )
         errors.value.toMutableList().apply {

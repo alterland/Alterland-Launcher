@@ -1,10 +1,11 @@
 package ru.alterland.launchercore.dto
 
-import java.util.*
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 data class PlayerProfile(
-    val uuid: UUID,
+    val uuid: Uuid,
     val username: String,
-//    val assets: Map<String, Texture>,
     val properties: Map<String, String>
 )
