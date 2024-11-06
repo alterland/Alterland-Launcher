@@ -1,6 +1,8 @@
 <resources>
     <string name="sign_up">Регистрация</string>
     <string name="sign_in">Вход</string>
+    <string name="google_sign_up">Создать через Google</string>
+    <string name="vk_sign_up">Создать через Вконтакте</string>
     <string name="nickname">Ник</string>
     <string name="email">Email</string>
     <string name="password">Пароль</string>
@@ -9,11 +11,24 @@
     <string name="remember_me">Запомнить меня</string>
     <string name="string_continue">Продолжить</string>
     <string name="back">Назад</string>
+    <string name="out_of">из</string>
     <plurals name="error_update_files">
         <item quantity="one">Не удалось загрузить %1$d файл</item>
         <item quantity="few">Не удалось загрузить %1$d файла</item>
         <item quantity="other">Не удалось загрузить %1$d файлов</item>
     </plurals>
+
+    <plurals name="bytes">
+        <item quantity="one">%1$d байт</item>
+        <item quantity="few">%1$d байта</item>
+        <item quantity="other">%1$d байтов</item>
+    </plurals>
+    <string name="kilobytes">КБ</string>
+    <string name="megabytes">МБ</string>
+    <string name="gigabytes">ГБ</string>
+    <string name="terabytes">ТБ</string>
+    <string name="petabytes">ПБ</string>
+    <string name="exabytes">ЭБ</string>
 
     <string name="settings">Настройки</string>
     <string name="jvm_settings">Java</string>

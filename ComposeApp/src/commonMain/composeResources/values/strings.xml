@@ -1,8 +1,8 @@
 <resources>
     <string name="sign_up">Sign Up</string>
     <string name="sign_in">Sign In</string>
-    <string name="google_sign_up">Создать через Google</string>
-    <string name="vk_sign_up">Создать через Вконтакте</string>
+    <string name="google_sign_up">Create with Google</string>
+    <string name="vk_sign_up">Create with Vk</string>
     <string name="nickname">Nickname</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -11,10 +11,22 @@
     <string name="remember_me">Remember me</string>
     <string name="string_continue">Continue</string>
     <string name="back">Back</string>
+    <string name="out_of">out of</string>
     <plurals name="error_update_files">
         <item quantity="one">Failed to download %1$d file</item>
         <item quantity="other">Failed to download %1$d files</item>
     </plurals>
+
+    <plurals name="bytes">
+        <item quantity="one">%1$d byte</item>
+        <item quantity="other">%1$d bytes</item>
+    </plurals>
+    <string name="kilobytes">KB</string>
+    <string name="megabytes">MB</string>
+    <string name="gigabytes">GB</string>
+    <string name="terabytes">TB</string>
+    <string name="petabytes">PB</string>
+    <string name="exabytes">EB</string>
 
     <string name="settings">Settings</string>
     <string name="jvm_settings">Java</string>

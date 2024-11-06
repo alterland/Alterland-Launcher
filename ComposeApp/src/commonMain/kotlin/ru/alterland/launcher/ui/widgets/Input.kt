@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.theme.defaultElementsShape
 import ru.alterland.launcher.ui.theme.defaultInputHeight
@@ -45,7 +46,7 @@ fun Input(
     val showPasswordImg = painterResource(Res.drawable.ic_eye_on)
     val hidePasswordImg = painterResource(Res.drawable.ic_eye_off)
 
-    var textFieldValueState by remember { mutableStateOf(TextFieldValue(text))  }
+    var textFieldValueState by remember { mutableStateOf(TextFieldValue(text)) }
 
     val textValue = textFieldValueState.copy(text = text)
 
@@ -73,8 +74,7 @@ fun Input(
             .fillMaxWidth()
             .defaultMinSize(minHeight = defaultInputHeight),
         decorationBox = { innerTextField ->
-            Row (
-                Modifier
+            Row(modifier = Modifier
                     .background(backgroundColor, defaultElementsShape)
                     .border(BorderStroke(2.dp, outlineColor), defaultElementsShape)
                     .fillMaxWidth(),
@@ -91,7 +91,10 @@ fun Input(
                 }
                 Box(modifier = Modifier.padding(start = 10.dp).fillMaxWidth()) {
                     if (text.isEmpty()) {
-                        Text(hint, color = colors.labelSecondary)
+                        Text(
+                            text = hint,
+                            color = colors.labelSecondary
+                        )
                     }
                     if (type == InputType.PASSWORD) {
                         Image(
@@ -114,15 +117,16 @@ fun Input(
                                 .size(16.dp)
                         )
                     }
-                    if (isLoading)
+                    if (isLoading) {
                         AppleCircularProgressIndicator(
-                            color =  AppTheme.colors.gray,
+                            color = AppTheme.colors.gray,
                             strokeWidth = 2.dp,
                             modifier = Modifier
                                 .padding(start = 16.dp, end = 20.dp)
                                 .align(Alignment.CenterEnd)
                                 .size(14.dp)
                         )
+                    }
                     Box(Modifier.padding(end = if (type == InputType.PASSWORD) 48.dp else 16.dp)) {
                         innerTextField()
                     }
@@ -132,12 +136,12 @@ fun Input(
         enabled = enabled
     )
 }
-//
-//@Composable
-//@Preview
-//private fun InputPreview() {
-//    Input()
-//}
+
+@Composable
+@Preview
+private fun InputPreview() {
+    Input()
+}
 
 enum class InputType {
     TEXT, PASSWORD
