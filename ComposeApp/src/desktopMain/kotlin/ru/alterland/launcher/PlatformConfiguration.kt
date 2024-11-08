@@ -1,6 +1,5 @@
 package ru.alterland.launcher
 
-import AlterlandLauncher.ComposeApp.BuildConfig
 import ru.alterland.launcher.util.OS
 import ru.alterland.launcher.util.v
 

@@ -18,6 +18,8 @@ buildConfig {
     buildConfigField("String", "WORK_FOLDER", "\"alterland\"")
 
     useKotlinOutput { internalVisibility = true }
+
+    packageName = "ru.alterland.launcher"
 }
 
 kotlin {
@@ -40,6 +42,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.coil.network.okhttp)
         }
         commonMain.dependencies {
             implementation(project(":LauncherCore"))
@@ -50,7 +53,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.composeImageLoader)
+            implementation(libs.coil.compose)
 
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
@@ -78,6 +81,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.coil.network.okhttp)
         }
     }
 }

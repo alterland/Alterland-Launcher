@@ -362,7 +362,7 @@ class ClientRepositoryImpl(
 
     companion object {
         private val USER_OS = OS(name = OS_NAME, arch = OS_ARCH, version = OS_VERSION)
-        private const val PING_DELAY = 5000L
+        private const val PING_DELAY = 10000L
     }
 
 }
