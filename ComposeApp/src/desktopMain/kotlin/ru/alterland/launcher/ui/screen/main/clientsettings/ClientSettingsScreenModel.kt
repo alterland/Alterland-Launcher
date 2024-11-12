@@ -2,6 +2,7 @@ package ru.alterland.launcher.ui.screen.main.clientsettings
 
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.ui.base.BaseScreenModel
+import ru.alterland.launcher.ui.screen.auth.sign_in.SignInContract
 
 class ClientSettingsScreenModel(
     private val localStorage: LocalStorage
@@ -9,7 +10,7 @@ class ClientSettingsScreenModel(
     initialState = ClientSettingsContract.State()
 ) {
 
-    private val recommendedCustomRam = RamSettings.CustomRamSettings(TEMP_RECOMMENDED_MEM, 32, 1024f, 16384f)
+    private val recommendedCustomRam = RamSettings.CustomRamSettings(TEMP_RECOMMENDED_MEM, 16, 1024f, 16384f)
 
     init {
         initRamSettings()
@@ -23,6 +24,13 @@ class ClientSettingsScreenModel(
             is ClientSettingsContract.Event.OnLaunchFullScreen -> handleOnLaunchFullScreen()
             is ClientSettingsContract.Event.OnAutoConnect -> handleOnAutoConnect()
             is ClientSettingsContract.Event.OnApplyResolution -> handleApplyResolution()
+            is ClientSettingsContract.Event.OnDefaultDirectory -> handleDefaultDirectory()
+
+            is ClientSettingsContract.Event.OnWidthInput -> setState { copy(width = event.data) }
+            is ClientSettingsContract.Event.OnHeightInput -> setState { copy(height = event.data) }
+
+            is ClientSettingsContract.Event.OnPathChange -> setState { copy(directoryPath = event.path)}
+            is ClientSettingsContract.Event.OnBrowseDirectory -> {} //-
         }
     }
 
@@ -50,11 +58,15 @@ class ClientSettingsScreenModel(
         setState { copy(screenResolution = !screenResolution) }
     }
 
+    private fun handleDefaultDirectory() {
+        setState { copy(defaultDirectory = !defaultDirectory)}
+    }
+
     private fun initRamSettings() {
         setState { copy(ramSettings = recommendedCustomRam) }
     }
 
     companion object {
-        private const val TEMP_RECOMMENDED_MEM = 6144.0f
+        private const val TEMP_RECOMMENDED_MEM = 6445.0f
     }
 }

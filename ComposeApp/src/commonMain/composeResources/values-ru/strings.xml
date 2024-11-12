@@ -16,10 +16,11 @@
     </plurals>
 
     <string name="settings">Настройки</string>
-    <string name="jvm_settings">Java</string>
-    <string name="jvm_settings_use_recommended_ram">Use recommended value</string>
+    <string name="jvm_settings">Память (ОЗУ)</string>
+    <string name="jvm_settings_use_recommended_ram">Авто-выбор значения</string>
     <string name="client_settings">Игра</string>
     <string name="client_settings_launch_after_update">Запускать после обновления</string>
     <string name="client_settings_launch_fullscreen">Полноэкранный режим</string>
+    <string name ="client_settings_default_directory">Директория по умолчанию</string>
     <string name="client_settings_auto_connect">Подключаться к серверу автоматически</string>
 </resources>

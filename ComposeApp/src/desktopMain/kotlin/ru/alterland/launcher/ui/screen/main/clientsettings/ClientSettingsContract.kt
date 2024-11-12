@@ -14,6 +14,13 @@ class ClientSettingsContract {
         data object OnLaunchFullScreen : Event()
         data object OnAutoConnect : Event()
         data class OnApplyResolution(val width: Int, val height: Int) : Event()
+        data object OnDefaultDirectory : Event()
+
+        data class OnWidthInput(val data: String): Event()
+        data class OnHeightInput(val data: String): Event()
+
+        data class OnPathChange(val path: String) : Event()
+        data object OnBrowseDirectory : Event()
     }
 
     data class State(
@@ -22,7 +29,13 @@ class ClientSettingsContract {
         val launchAfterUpdate: Boolean = false,
         var launchFullScreen: Boolean = false,
         val autoConnect: Boolean = false,
-        val screenResolution: Boolean = false
+        val screenResolution: Boolean = false,
+
+        val width: String = "",
+        val height: String = "",
+
+        val directoryPath: String = "",
+        val defaultDirectory: Boolean = false,
 
     ): UiState
 

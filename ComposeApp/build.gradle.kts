@@ -118,7 +118,6 @@ compose.desktop {
         mainClass = "ru.alterland.launcher.MainKt"
 
         buildTypes.release {
-            javaHome = "C:\\Users\\Roman\\Documents\\OpenJDK17U-jdk_x64_windows_hotspot_17.0.13_11\\jdk-17.0.13+11"
             proguard {
                 isEnabled = true
                 configurationFiles.from(project.file("compose-desktop.pro"))
