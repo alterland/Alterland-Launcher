@@ -228,7 +228,7 @@ class ClientRepositoryImpl(
         }
         serverProfiles.sortBy { it.sortIndex }
         _serverProfiles.tryEmit(serverProfiles)
-        pingServers()
+        //pingServers()
     }
 
     private fun initClientProfiles() {
@@ -333,22 +333,26 @@ class ClientRepositoryImpl(
 
     private fun pingServers() {
         applicationIoScope.launch {
-            val serverPings = serverProfiles.value
-                .filter { it.address != null }
-                .map {
-                    async {
-                        val pong = serverRepository.ping(it.address!!.ip, it.address.port)
-                        val updateClients = serverProfiles.value.map { updateClient ->
-                            if (updateClient.id == it.id) {
-                                updateClient.copy(pong = pong)
-                            } else updateClient
+            runCatching {
+                val serverPings = serverProfiles.value
+                    .filter { it.address != null }
+                    .map {
+                        async {
+                            val pong = serverRepository.ping(it.address!!.ip, it.address.port)
+                            val updateClients = serverProfiles.value.map { updateClient ->
+                                if (updateClient.id == it.id) {
+                                    updateClient.copy(pong = pong)
+                                } else updateClient
+                            }
+                            _serverProfiles.emit(updateClients)
                         }
-                        _serverProfiles.emit(updateClients)
                     }
-                }
-            serverPings.awaitAll()
-            delay(PING_DELAY)
-            pingServers()
+                serverPings.awaitAll()
+                delay(PING_DELAY)
+                pingServers()
+            }.onFailure {
+                println(it)
+            }
         }
     }
 
@@ -362,7 +366,7 @@ class ClientRepositoryImpl(
 
     companion object {
         private val USER_OS = OS(name = OS_NAME, arch = OS_ARCH, version = OS_VERSION)
-        private const val PING_DELAY = 10000L
+        private const val PING_DELAY = 5000L
     }
 
 }

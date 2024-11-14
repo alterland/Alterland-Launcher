@@ -29,6 +29,7 @@ kotlin {
             implementation(libs.ktor.json)
             implementation(libs.ktor.serialization)
             implementation(libs.ktor.kotlin.json)
+            implementation(libs.ktor.network)
             implementation(libs.ktor.logging)
             implementation(libs.koin.core)
             implementation(libs.dnsjava)

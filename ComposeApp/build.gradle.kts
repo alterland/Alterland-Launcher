@@ -138,8 +138,6 @@ compose.desktop {
             description = "Access to the Alterland world"
             vendor = "Alterland"
 
-            includeAllModules = true
-
             //Use Other installer for Windows. E.g.: Inno Setup. IMPORTANT! - copy upgradeUuid value to the custom installer.
             windows {
                 upgradeUuid = "375BA0BB-0A64-41A3-8D75-37315D837DE1"
