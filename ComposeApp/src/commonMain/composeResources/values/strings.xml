@@ -35,6 +35,14 @@
     <string name="client_settings_launch_fullscreen">Run in full-screen mode</string>
     <string name="client_settings_auto_connect">Connect to the server automatically</string>
 
-    <string name="server_status_polling">Установка соединения</string>
-    <string name="server_status_offline">Офлайн</string>
+    <string name="server_status_polling">Connecting</string>
+    <string name="server_status_offline">Offline</string>
+
+    <string name="play">Play</string>
+    <string name="launching">Launching</string>
+    <string name="launched">Launched</string>
+    <string name="update">Update</string>
+    <string name="retry">Retry</string>
+
+    <string name="client_service_offline">Files synchronization server is unavailable</string>
 </resources>

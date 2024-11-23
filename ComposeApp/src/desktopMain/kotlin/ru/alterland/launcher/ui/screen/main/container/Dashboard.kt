@@ -2,6 +2,7 @@ package ru.alterland.launcher.ui.screen.main.container
 
 import alterlandlauncher.composeapp.generated.resources.Res
 import alterlandlauncher.composeapp.generated.resources.avatar_rofl
+import alterlandlauncher.composeapp.generated.resources.client_service_offline
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -14,6 +15,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideOrientation
 import cafe.adriel.voyager.transitions.SlideTransition
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.alterland.launcher.ui.screen.main.clients.MenuClientsList
 import ru.alterland.launcher.ui.screen.main.container.miniprofile.MiniProfile
 import ru.alterland.launcher.ui.screen.main.serverinfo.ServerInfoScreen
@@ -65,7 +67,7 @@ fun Dashboard(
                     modifier = Modifier.fillMaxWidth().background(AppTheme.colors.red).padding(4.dp)
                 ) {
                     Text(
-                        text = "Сервер синхронизации файлов игры временно недоступен",
+                        text = stringResource(Res.string.client_service_offline),
                         color = AppTheme.colors.forceWhitePrimary
                     )
                 }

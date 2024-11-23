@@ -38,4 +38,15 @@
     <string name="client_settings_launch_fullscreen">Полноэкранный режим</string>
     <string name ="client_settings_default_directory">Директория по умолчанию</string>
     <string name="client_settings_auto_connect">Подключаться к серверу автоматически</string>
+
+    <string name="server_status_polling">Установка соединения</string>
+    <string name="server_status_offline">Офлайн</string>
+
+    <string name="play">Играть</string>
+    <string name="launching">Запуск</string>
+    <string name="launched">Запущено</string>
+    <string name="update">Обновить</string>
+    <string name="retry">Повторить</string>
+
+    <string name="client_service_offline">Сервер синхронизации игровых файлов недоступен</string>
 </resources>
