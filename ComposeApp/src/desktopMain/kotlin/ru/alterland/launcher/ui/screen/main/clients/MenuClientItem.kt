@@ -2,6 +2,8 @@ package ru.alterland.launcher.ui.screen.main.clients
 
 import alterlandlauncher.composeapp.generated.resources.Res
 import alterlandlauncher.composeapp.generated.resources.client_cover
+import alterlandlauncher.composeapp.generated.resources.server_status_offline
+import alterlandlauncher.composeapp.generated.resources.server_status_polling
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,18 +18,30 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.skia.Image
 import ru.alterland.launcher.ui.screen.main.container.MenuItem
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.theme.defaultElementsShape
+import ru.alterland.launchercore.domain.model.MinecraftServerStatus
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
+@OptIn(ExperimentalEncodingApi::class)
 @Composable
 fun MenuClientItem(
     item: MenuItem,
     modifier: Modifier = Modifier,
 ) {
 
-    val bitmap = item.favicon?.let { Image.Companion.makeFromEncoded(it).toComposeImageBitmap() }
+    val bitmap = if (item.serverStatus is MinecraftServerStatus.Online) {
+        item.serverStatus.favicon?.let {
+            val imageByteArray = Base64.decode(it.replace("data:image/png;base64,", ""))
+            Image.Companion.makeFromEncoded(imageByteArray).toComposeImageBitmap()
+        }
+    } else {
+        null
+    }
     val defaultImage = painterResource(Res.drawable.client_cover)
 
     Row(
@@ -62,19 +76,37 @@ fun MenuClientItem(
                     fontSize = 12.sp,
                     modifier = Modifier.padding(start = 16.dp)
                 )
-                if (item.serverStatus == ru.alterland.launchercore.domain.model.ServerStatus.ONLINE) {
-                    Text(
-                        "Игроков: ${item.online} / ${item.max}",
-                        color = AppTheme.colors.labelPrimary,
-                        fontSize = 8.sp,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                    Text(
-                        "Пинг: ${item.ping} мс",
-                        color = AppTheme.colors.labelPrimary,
-                        fontSize = 8.sp,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
+                when(item.serverStatus) {
+                    is MinecraftServerStatus.Online -> {
+                        Text(
+                            "Игроков: ${item.serverStatus.onlinePlayers} / ${item.serverStatus.maxPlayers}",
+                            color = AppTheme.colors.labelPrimary,
+                            fontSize = 8.sp,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                        Text(
+                            "Пинг: ${item.serverStatus.latency} мс",
+                            color = AppTheme.colors.labelPrimary,
+                            fontSize = 8.sp,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                    MinecraftServerStatus.Polling -> {
+                        Text(
+                            stringResource(Res.string.server_status_polling),
+                            color = AppTheme.colors.labelPrimary,
+                            fontSize = 8.sp,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                    MinecraftServerStatus.Offline -> {
+                        Text(
+                            stringResource(Res.string.server_status_offline),
+                            color = AppTheme.colors.labelPrimary,
+                            fontSize = 8.sp,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
                 }
             }
         }

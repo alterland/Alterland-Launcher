@@ -228,7 +228,7 @@ class ClientRepositoryImpl(
         }
         serverProfiles.sortBy { it.sortIndex }
         _serverProfiles.tryEmit(serverProfiles)
-        //pingServers()
+        pingServers()
     }
 
     private fun initClientProfiles() {
@@ -335,16 +335,22 @@ class ClientRepositoryImpl(
         applicationIoScope.launch {
             runCatching {
                 val serverPings = serverProfiles.value
-                    .filter { it.address != null }
                     .map {
                         async {
-                            val pong = serverRepository.ping(it.address!!.ip, it.address.port)
-                            val updateClients = serverProfiles.value.map { updateClient ->
-                                if (updateClient.id == it.id) {
-                                    updateClient.copy(pong = pong)
-                                } else updateClient
+                            it.address?.let { address ->
+                                val serverStatus = try {
+                                    serverRepository.ping(address.host, address.port)
+                                } catch (e: Exception) {
+                                    println(e)
+                                    MinecraftServerStatus.Offline
+                                }
+                                val updateClients = serverProfiles.value.map { updateClient ->
+                                    if (updateClient.id == it.id) {
+                                        updateClient.copy(serverStatus = serverStatus)
+                                    } else updateClient
+                                }
+                                _serverProfiles.emit(updateClients)
                             }
-                            _serverProfiles.emit(updateClients)
                         }
                     }
                 serverPings.awaitAll()

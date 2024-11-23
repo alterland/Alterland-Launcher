@@ -1,9 +1,5 @@
 package ru.alterland.launchercore.domain.model
 
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-
-@Serializable
 data class ServerProfile(
     val sortIndex: Int,
     val id: String,
@@ -16,5 +12,5 @@ data class ServerProfile(
     val backgroundLocalPath: String,
     val address: ServerAddress?,
     val clientProfile: String?,
-    @Transient val pong: ServerPong = ServerPong()
+    val serverStatus: MinecraftServerStatus = MinecraftServerStatus.Polling
 )

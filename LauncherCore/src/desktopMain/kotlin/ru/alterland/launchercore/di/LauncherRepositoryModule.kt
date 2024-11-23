@@ -10,7 +10,7 @@ import ru.alterland.launchercore.domain.repository.LaunchRepository
 import ru.alterland.launchercore.domain.repository.ServerRepository
 
 internal val launcherRepositoryModule = module {
-    single<ServerRepository> { ServerRepositoryImpl(get()) }
+    single<ServerRepository> { ServerRepositoryImpl(get(named(DISPATCHER_IO)), get()) }
     single<ClientRepository> { ClientRepositoryImpl(
         get(named(DISPATCHER_IO)), get(named(APPLICATION_SCOPE)), get(named(APPLICATION_IO_SCOPE)), get(), get(), get(), get())
     }

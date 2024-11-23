@@ -34,4 +34,7 @@
     <string name="client_settings">Game</string>
     <string name="client_settings_launch_fullscreen">Run in full-screen mode</string>
     <string name="client_settings_auto_connect">Connect to the server automatically</string>
+
+    <string name="server_status_polling">Установка соединения</string>
+    <string name="server_status_offline">Офлайн</string>
 </resources>

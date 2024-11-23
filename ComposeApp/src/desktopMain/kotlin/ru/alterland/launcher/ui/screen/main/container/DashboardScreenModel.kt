@@ -71,11 +71,7 @@ class DashboardScreenModel(
             val menuItems = servers.map { server: ServerProfile ->
                 MenuItem(
                     name = server.title,
-                    serverStatus = server.pong.serverStatus,
-                    ping = server.pong.ping,
-                    max = server.pong.max,
-                    online = server.pong.online,
-                    favicon = server.pong.favicon
+                    serverStatus = server.serverStatus
                 )
             }
             setState { copy(menuItems = menuItems) }

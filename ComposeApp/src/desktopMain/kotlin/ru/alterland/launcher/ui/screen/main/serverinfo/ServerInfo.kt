@@ -4,7 +4,6 @@ import alterlandlauncher.composeapp.generated.resources.Res
 import alterlandlauncher.composeapp.generated.resources.ic_settings
 import alterlandlauncher.composeapp.generated.resources.role_play_bg
 import alterlandlauncher.composeapp.generated.resources.rp_logo
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -27,7 +26,6 @@ import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.Button
 import ru.alterland.launchercore.domain.model.ClientStatus
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ServerInfo(
     state: ServerInfoContract.State,

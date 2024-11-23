@@ -20,6 +20,6 @@ fun ServerProfileRaw.toDomain() = ServerProfile(
 )
 
 fun ServerAddressRaw.toDomain() = ServerAddress(
-    ip = ip.orEmpty(),
+    host = ip.orEmpty(),
     port = port ?: 0
 )
