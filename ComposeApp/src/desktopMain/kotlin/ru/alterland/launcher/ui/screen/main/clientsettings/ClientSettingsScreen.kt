@@ -14,13 +14,12 @@ class ClientSettingsScreen: Screen {
     override fun Content() {
         val screenModel = koinScreenModel<ClientSettingsScreenModel>()
         val state by screenModel.state.collectAsState()
-        val effect by screenModel.effect.collectAsState(null)
 
         val navigator = LocalNavigator.currentOrThrow
 
         ClientSettings(
             state = state,
-            setEvent = { e -> screenModel.setEvent(e) },
+            onEvent = { e -> screenModel.onEvent(e) },
             navigateBack = { navigator.pop() }
         )
     }

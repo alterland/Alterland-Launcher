@@ -19,5 +19,5 @@ class ServerInfoContract {
         val serversCount: Int = 0
     ): UiState
 
-    sealed class Effect: UiEffect
+    sealed class Effect: UiEffect()
 }

@@ -29,7 +29,7 @@ import ru.alterland.launcher.ui.widgets.Input
 @Composable
 fun ClientSettings(
     state: ClientSettingsContract.State,
-    setEvent: (e: ClientSettingsContract.Event) -> Unit,
+    onEvent: (e: ClientSettingsContract.Event) -> Unit,
     navigateBack: () -> Unit
 ) {
 
@@ -37,7 +37,7 @@ fun ClientSettings(
 //        contract = ActivityResultContracts.OpenDocumentTree()
 //    ) { uri: Uri? ->
 //        uri?.let {
-//            setEvent(ClientSettingsContract.Event.OnPathChange(it.toString()))
+//            onEvent(ClientSettingsContract.Event.OnPathChange(it.toString()))
 //        }
 //    }
 
@@ -87,7 +87,7 @@ fun ClientSettings(
 
                 Button(
                     text = "Обзор...",
-                    onClick = { setEvent(ClientSettingsContract.Event.OnBrowseDirectory) },
+                    onClick = { onEvent(ClientSettingsContract.Event.OnBrowseDirectory) },
 //                    onClick = { directoryPickerLauncher.launch(null)},
                 )
             }
@@ -101,7 +101,7 @@ fun ClientSettings(
                     modifier = Modifier.padding(end = 8.dp),
                     text = stringResource(Res.string.client_settings_default_directory),
                 ) {
-                    setEvent(ClientSettingsContract.Event.OnDefaultDirectory)
+                    onEvent(ClientSettingsContract.Event.OnDefaultDirectory)
                     if (!state.defaultDirectory) {
                         directoryPath = "C:/users/user/alterland"
                     }
@@ -136,7 +136,7 @@ fun ClientSettings(
                         ),
                         onValueChange = { sliderPosition = it },
                         onValueChangeFinished = {
-                            setEvent(ClientSettingsContract.Event.OnRamSliderValueSelected(sliderPosition))
+                            onEvent(ClientSettingsContract.Event.OnRamSliderValueSelected(sliderPosition))
                         },
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -145,7 +145,7 @@ fun ClientSettings(
                         checked = state.useRecommendedRamValue,
                         text = stringResource(Res.string.jvm_settings_use_recommended_ram),
                     ) {
-                        setEvent(ClientSettingsContract.Event.OnUseRecommendedRamValueClick)
+                        onEvent(ClientSettingsContract.Event.OnUseRecommendedRamValueClick)
 
                         if (!state.useRecommendedRamValue) {
                             sliderPosition = state.ramSettings.value
@@ -230,7 +230,7 @@ fun ClientSettings(
                     modifier = Modifier.padding(end = 8.dp),
                     text = stringResource(Res.string.client_settings_launch_fullscreen),
                 ) {
-                    setEvent(ClientSettingsContract.Event.OnLaunchFullScreen)
+                    onEvent(ClientSettingsContract.Event.OnLaunchFullScreen)
                     if (!state.launchFullScreen) {
                         width = ""
                         height = ""
@@ -257,13 +257,13 @@ fun ClientSettings(
                 checked = state.launchAfterUpdate,
                 text = stringResource(Res.string.client_settings_launch_after_update),
             ) {
-                setEvent(ClientSettingsContract.Event.OnLaunchAfterUpdate)
+                onEvent(ClientSettingsContract.Event.OnLaunchAfterUpdate)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             CheckBox(checked = state.autoConnect, text = stringResource(Res.string.client_settings_auto_connect)) {
-                setEvent(ClientSettingsContract.Event.OnAutoConnect)
+                onEvent(ClientSettingsContract.Event.OnAutoConnect)
             }
 
             Spacer(modifier = Modifier.height(20.dp))

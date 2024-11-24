@@ -21,7 +21,7 @@ class AuthContainerScreenModel(
         subscribeToErrors()
     }
 
-    override fun handleEvent(event: AuthContainerContract.Event) {
+    override fun onEvent(event: AuthContainerContract.Event) {
         when(event) {
             is AuthContainerContract.Event.OnMessageClose -> onMessageClose(event.id)
         }

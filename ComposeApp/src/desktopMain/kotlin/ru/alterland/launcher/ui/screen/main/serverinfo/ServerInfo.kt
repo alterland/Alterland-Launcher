@@ -29,14 +29,14 @@ import ru.alterland.launchercore.domain.model.ClientStatus
 @Composable
 fun ServerInfo(
     state: ServerInfoContract.State,
-    setEvent: (e: ServerInfoContract.Event) -> Unit,
+    onEvent: (e: ServerInfoContract.Event) -> Unit,
     navigateToClientSettings: () -> Unit
 ) {
     val pagerState = rememberPagerState(pageCount = { state.serversCount })
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            setEvent(ServerInfoContract.Event.OnServerSelected(page))
+            onEvent(ServerInfoContract.Event.OnServerSelected(page))
         }
     }
 
@@ -106,7 +106,7 @@ fun ServerInfo(
                     state.currentClientProfile != null -> {
                         Row {
                             PlayButton(clientStatus = state.currentClientProfile.status) {
-                                setEvent(ServerInfoContract.Event.OnPlayClicked(state.currentClientProfile))
+                                onEvent(ServerInfoContract.Event.OnPlayClicked(state.currentClientProfile))
                             }
                             Button(
                                 icon = painterResource(Res.drawable.ic_settings),

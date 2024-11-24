@@ -1,11 +1,11 @@
 package ru.alterland.launcher.ui.screen.auth.sign_up
 
-import ru.alterland.launcher.util.base.Resource
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import ru.alterland.launcher.domain.repository.UserRepository
 import ru.alterland.launcher.ui.base.BaseScreenModel
+import ru.alterland.launcher.util.base.Resource
 import ru.alterland.launcher.util.extentions.launchSafe
 
 class SignUpScreenModel(
@@ -16,7 +16,7 @@ class SignUpScreenModel(
 
     private var searchNickJob: Job? = null
 
-    override fun handleEvent(event: SignUpContract.Event) {
+    override fun onEvent(event: SignUpContract.Event) {
         when(event) {
             is SignUpContract.Event.OnInitialLoginSet -> onInitialLoginSet(event.data)
 

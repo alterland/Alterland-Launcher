@@ -19,7 +19,7 @@ class SignUpScreen: Screen {
 
         SignUp(
             state = state,
-            setEvent = { e -> screenModel.setEvent(e) },
+            onEvent = { e -> screenModel.onEvent(e) },
             navigateBack = { navigator.pop() }
         )
     }

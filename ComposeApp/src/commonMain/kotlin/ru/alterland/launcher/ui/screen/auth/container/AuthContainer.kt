@@ -23,7 +23,7 @@ import ru.alterland.launcher.ui.widgets.errors.BaseErrorHandler
 @Composable
 fun AuthContainer(
     state: AuthContainerContract.State,
-    setEvent: (e: AuthContainerContract.Event) -> Unit,
+    onEvent: (e: AuthContainerContract.Event) -> Unit,
 ) {
 
     Image(
@@ -38,7 +38,7 @@ fun AuthContainer(
                 modifier = Modifier.fillMaxHeight().padding(bottom = 10.dp, top = 50.dp),
                 itemsModifier = Modifier.padding(vertical = 3.dp, horizontal = 15.dp),
                 errors = state.errors,
-                onMessageClose = { setEvent(AuthContainerContract.Event.OnMessageClose(it)) }
+                onMessageClose = { onEvent(AuthContainerContract.Event.OnMessageClose(it)) }
             )
         }
         Column(

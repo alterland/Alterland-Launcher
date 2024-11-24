@@ -16,14 +16,13 @@ class ServerInfoScreen: Screen {
     override fun Content() {
         val screenModel = koinScreenModel<ServerInfoScreenModel>()
         val state by screenModel.state.collectAsState()
-        val effect by screenModel.effect.collectAsState(null)
 
         val navigator = LocalNavigator.currentOrThrow
         val clientSettingsScreen = rememberScreen(MainScreenProvider.ClientSettings)
 
         ServerInfo(
             state = state,
-            setEvent = { e -> screenModel.setEvent(e) },
+            onEvent = { e -> screenModel.onEvent(e) },
             navigateToClientSettings = { navigator.push(clientSettingsScreen) }
         )
     }

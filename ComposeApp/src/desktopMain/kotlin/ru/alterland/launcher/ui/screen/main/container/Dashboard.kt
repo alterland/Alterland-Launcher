@@ -26,7 +26,7 @@ import ru.alterland.launcher.ui.widgets.errors.BaseErrorHandler
 @Composable
 fun Dashboard(
     state: DashboardContract.State,
-    setEvent: (e: DashboardContract.Event) -> Unit
+    onEvent: (e: DashboardContract.Event) -> Unit
 ) {
     val avatar = painterResource(Res.drawable.avatar_rofl)
 
@@ -49,7 +49,7 @@ fun Dashboard(
                     avatar = avatar,
                     modifier = Modifier.padding(start = 16.dp, bottom = 16.dp, end = 11.dp)
                 ) {
-                    setEvent(DashboardContract.Event.OnSignOutClicked)
+                    onEvent(DashboardContract.Event.OnSignOutClicked)
                 }
             }
         }
@@ -80,7 +80,7 @@ fun Dashboard(
                     .padding(top = 18.dp, end = 16.dp),
                 itemsModifier = Modifier.padding(vertical = 3.dp),
                 errors = state.errors,
-                onMessageClose = { setEvent(DashboardContract.Event.OnMessageClose(it)) }
+                onMessageClose = { onEvent(DashboardContract.Event.OnMessageClose(it)) }
             )
         }
     }

@@ -23,7 +23,7 @@ class SignInScreen: Screen {
 
         SignIn(
             state = state,
-            setEvent = { e -> screenModel.setEvent(e) },
+            onEvent = { e -> screenModel.onEvent(e) },
             navigateToRecovery = { navigator.push(recoveryScreen) },
             navigateToSignUp = { navigator.push(signUpScreen) }
         )

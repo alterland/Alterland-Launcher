@@ -2,8 +2,10 @@ package ru.alterland.launcher.ui.base
 
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -15,29 +17,22 @@ abstract class BaseScreenModel<Event : UiEvent, State : UiState, Effect : UiEffe
 
     val errorRepository: ErrorRepository by inject()
 
-    private val _event : MutableSharedFlow<Event> = MutableSharedFlow()
-    val event = _event.asSharedFlow()
+    private val _effects: MutableStateFlow<List<Effect>> = MutableStateFlow(emptyList())
+    val effects: StateFlow<List<Effect>> = _effects.asStateFlow() //for one-time actions like navigation
 
-    private val _effect : Channel<Effect> = Channel() //for one-time actions like toasts
-    val effect = _effect.receiveAsFlow()
-
-    init {
-        event.onEach { e ->
-            handleEvent(e)
-        }.launchIn(screenModelScope)
-    }
-
-    abstract fun handleEvent(event: Event)
-
-    fun setEvent(event : Event) =
-        screenModelScope.launch { _event.emit(event) }
+    abstract fun onEvent(event: Event)
 
     protected inline fun setState(reduce: State.() -> State) {
         mutableState.value = state.value.reduce()
     }
 
-    protected fun setEffect(builder: () -> Effect) =
-        screenModelScope.launch { _effect.send(builder()) }
+    protected fun setEffect(builder: () -> Effect) = _effects.update { it.plus(builder()) }
+
+    fun onEffectHandled(handledEffect: Effect) = _effects.update {
+        it.filterNot { effect ->
+            effect.uniqueId == handledEffect.uniqueId
+        }
+    }
 
     open fun onError(throwable: Throwable) {
         print("Error: $throwable")

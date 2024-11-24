@@ -16,5 +16,5 @@ class RecoveryContract {
         val sendCodeProgress: Boolean = false,
     ): UiState
 
-    sealed class Effect: UiEffect
+    sealed class Effect: UiEffect()
 }

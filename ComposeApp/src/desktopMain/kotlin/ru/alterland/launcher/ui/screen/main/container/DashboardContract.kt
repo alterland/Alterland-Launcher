@@ -19,7 +19,7 @@ class DashboardContract {
         val isClientServiceOffline: Boolean = false
     ): UiState
 
-    sealed class Effect: UiEffect {
+    sealed class Effect: UiEffect() {
         data object OnNavigateToAuth: Effect()
     }
 }

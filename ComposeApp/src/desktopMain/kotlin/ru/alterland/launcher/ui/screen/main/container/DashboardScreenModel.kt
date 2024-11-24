@@ -29,7 +29,7 @@ class DashboardScreenModel(
         getUser()
     }
 
-    override fun handleEvent(event: DashboardContract.Event) {
+    override fun onEvent(event: DashboardContract.Event) {
         when(event) {
             is DashboardContract.Event.OnMessageClose -> onMessageClose(event.id)
             is DashboardContract.Event.OnSignOutClicked -> signOut()

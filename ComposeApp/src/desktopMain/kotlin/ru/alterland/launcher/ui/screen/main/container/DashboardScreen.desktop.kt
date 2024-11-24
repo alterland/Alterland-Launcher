@@ -1,6 +1,7 @@
 package ru.alterland.launcher.ui.screen.main.container
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import cafe.adriel.voyager.core.registry.ScreenRegistry
@@ -21,20 +22,22 @@ actual class DashboardScreen: Screen {
 
         val screenModel = koinScreenModel<DashboardScreenModel>()
         val state by screenModel.state.collectAsState()
-        val effect by screenModel.effect.collectAsState(null)
+        val effects by screenModel.effects.collectAsState()
 
         val navigator = LocalNavigator.currentOrThrow
 
-        when(effect) {
-            DashboardContract.Effect.OnNavigateToAuth -> {
-                navigator.popAll()
+        effects.firstOrNull()?.let { effect ->
+            LaunchedEffect(effect) {
+                when (effect) {
+                    DashboardContract.Effect.OnNavigateToAuth -> navigator.popAll()
+                }
             }
-            else -> {}
+            screenModel.onEffectHandled(effect)
         }
 
         Dashboard(
             state = state,
-            setEvent = { e -> screenModel.setEvent(e) }
+            onEvent = { e -> screenModel.onEvent(e) }
         )
     }
 }

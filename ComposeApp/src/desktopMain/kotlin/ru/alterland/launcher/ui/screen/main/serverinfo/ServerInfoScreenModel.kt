@@ -25,7 +25,7 @@ class ServerInfoScreenModel(
         initSubscribes()
     }
 
-    override fun handleEvent(event: ServerInfoContract.Event) {
+    override fun onEvent(event: ServerInfoContract.Event) {
         when(event) {
             is ServerInfoContract.Event.OnServerSelected -> handleServerSelected(event.page)
             is ServerInfoContract.Event.OnPlayClicked -> handlePlayClick(event.clientProfile)

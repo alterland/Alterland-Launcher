@@ -15,7 +15,7 @@ class AuthContainerContract {
         val errors: List<AppError> = listOf()
     ): UiState
 
-    sealed class Effect: UiEffect {
+    sealed class Effect: UiEffect() {
         data object OnNavigateToDashboard: Effect()
     }
 }

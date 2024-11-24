@@ -27,7 +27,7 @@ class SignInContract {
         val googleSignInProgress: Boolean = false,
     ) : UiState
 
-    sealed class Effect: UiEffect {
+    sealed class Effect: UiEffect() {
         data object ShowToastSocialsSignInNotYetDone: Effect()
         data object OnNavigateToDashboard: Effect()
     }

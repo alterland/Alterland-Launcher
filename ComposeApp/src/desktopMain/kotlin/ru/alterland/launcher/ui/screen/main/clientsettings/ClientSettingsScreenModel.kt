@@ -2,7 +2,6 @@ package ru.alterland.launcher.ui.screen.main.clientsettings
 
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.ui.base.BaseScreenModel
-import ru.alterland.launcher.ui.screen.auth.sign_in.SignInContract
 
 class ClientSettingsScreenModel(
     private val localStorage: LocalStorage
@@ -16,7 +15,7 @@ class ClientSettingsScreenModel(
         initRamSettings()
     }
 
-    override fun handleEvent(event: ClientSettingsContract.Event) {
+    override fun onEvent(event: ClientSettingsContract.Event) {
         when(event) {
             is ClientSettingsContract.Event.OnRamSliderValueSelected -> handleRamSliderValueSelected(event.value)
             ClientSettingsContract.Event.OnUseRecommendedRamValueClick -> handleOnUseRecommendedRamValueClick()

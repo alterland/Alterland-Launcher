@@ -10,7 +10,7 @@ class RecoveryScreenModel(
 ): BaseScreenModel<RecoveryContract.Event, RecoveryContract.State, RecoveryContract.Effect>(
     initialState = RecoveryContract.State()
 ) {
-    override fun handleEvent(event: RecoveryContract.Event) {
+    override fun onEvent(event: RecoveryContract.Event) {
         when(event) {
             is RecoveryContract.Event.OnEmailInput -> setState { copy(email = event.data) }
             is RecoveryContract.Event.OnResetPasswordClicked -> resetPassword()

@@ -1,9 +1,9 @@
 package ru.alterland.launcher.ui.screen.auth.sign_up
 
-import ru.alterland.launcher.util.base.Resource
 import ru.alterland.launcher.ui.base.UiEffect
 import ru.alterland.launcher.ui.base.UiEvent
 import ru.alterland.launcher.ui.base.UiState
+import ru.alterland.launcher.util.base.Resource
 
 class SignUpContract {
     sealed class Event : UiEvent {
@@ -27,7 +27,7 @@ class SignUpContract {
         val googleSignUpProgress: Boolean = false,
     ) : UiState
 
-    sealed class Effect: UiEffect {
+    sealed class Effect: UiEffect() {
         data object ShowToastSocialsSignInNotYetDone: Effect()
     }
 }

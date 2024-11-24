@@ -20,7 +20,7 @@ import ru.alterland.launcher.ui.widgets.InputType
 @Composable
 fun SignIn(
     state: SignInContract.State,
-    setEvent: (e: SignInContract.Event) -> Unit,
+    onEvent: (e: SignInContract.Event) -> Unit,
     navigateToRecovery: () -> Unit,
     navigateToSignUp: () -> Unit
 ) {
@@ -39,7 +39,7 @@ fun SignIn(
             hint = stringResource(Res.string.email),
             text = state.login,
             icon = icLogin,
-            onInput = { setEvent(SignInContract.Event.OnLoginInput(it)) },
+            onInput = { onEvent(SignInContract.Event.OnLoginInput(it)) },
             enabled = true,
             singleLine = true
         )
@@ -47,7 +47,7 @@ fun SignIn(
             hint = stringResource(Res.string.password),
             text = state.password,
             icon = icPassword,
-            onInput = { setEvent(SignInContract.Event.OnPasswordInput(it)) },
+            onInput = { onEvent(SignInContract.Event.OnPasswordInput(it)) },
             type = InputType.PASSWORD,
             singleLine = true,
             enabled = true,
@@ -58,7 +58,7 @@ fun SignIn(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CheckBox(checked = state.remember, text = stringResource(Res.string.remember_me)) {
-                setEvent(SignInContract.Event.OnRememberMeChecked)
+                onEvent(SignInContract.Event.OnRememberMeChecked)
             }
             Text(
                 text = stringResource(Res.string.forgot_password),
@@ -72,7 +72,7 @@ fun SignIn(
             text = stringResource(Res.string.sign_in),
             isEnabled = !isQueryInProgress(),
             isLoading = state.signInProgress,
-            onClick = { setEvent(SignInContract.Event.OnSignInClicked) },
+            onClick = { onEvent(SignInContract.Event.OnSignInClicked) },
             modifier = Modifier.fillMaxWidth().padding(top = 14.dp)
         )
 //        SocialButton(
@@ -81,7 +81,7 @@ fun SignIn(
 //            isEnabled = !isQueryInProgress(),
 //            isLoading = state.vkSignInProgress,
 //            modifier = Modifier.padding(top = elementsPadding),
-//            onClick = { setEvent(SignInContract.Event.OnVkSignInClicked) },
+//            onClick = { onEvent(SignInContract.Event.OnVkSignInClicked) },
 //        )
 //        SocialButton(
 //            "Войти через Google",
@@ -89,7 +89,7 @@ fun SignIn(
 //            isEnabled = !isQueryInProgress(),
 //            isLoading = state.googleSignInProgress,
 //            modifier = Modifier.padding(top = elementsPadding/2),
-//            onClick = { setEvent(SignInContract.Event.OnGoogleSignInClicked) },
+//            onClick = { onEvent(SignInContract.Event.OnGoogleSignInClicked) },
 //        )
         Row(
             modifier = Modifier

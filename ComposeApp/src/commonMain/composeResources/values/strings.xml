@@ -35,6 +35,8 @@
     <string name="client_settings_launch_fullscreen">Run in full-screen mode</string>
     <string name="client_settings_auto_connect">Connect to the server automatically</string>
 
+    <string name="server_status_latency">Latency: %1$d ms</string>
+    <string name="server_status_players">Players: %1$d / %2$d</string>
     <string name="server_status_polling">Connecting</string>
     <string name="server_status_offline">Offline</string>
 

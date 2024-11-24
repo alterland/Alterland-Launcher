@@ -1,9 +1,6 @@
 package ru.alterland.launcher.ui.screen.main.clients
 
-import alterlandlauncher.composeapp.generated.resources.Res
-import alterlandlauncher.composeapp.generated.resources.client_cover
-import alterlandlauncher.composeapp.generated.resources.server_status_offline
-import alterlandlauncher.composeapp.generated.resources.server_status_polling
+import alterlandlauncher.composeapp.generated.resources.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -79,13 +76,16 @@ fun MenuClientItem(
                 when(item.serverStatus) {
                     is MinecraftServerStatus.Online -> {
                         Text(
-                            "Игроков: ${item.serverStatus.onlinePlayers} / ${item.serverStatus.maxPlayers}",
+                            text = stringResource(Res.string.server_status_players, item.serverStatus.onlinePlayers, item.serverStatus.maxPlayers),
                             color = AppTheme.colors.labelPrimary,
                             fontSize = 8.sp,
                             modifier = Modifier.padding(start = 16.dp)
                         )
                         Text(
-                            "Пинг: ${item.serverStatus.latency} мс",
+                            text = stringResource(
+                                Res.string.server_status_latency,
+                                item.serverStatus.latency
+                            ),
                             color = AppTheme.colors.labelPrimary,
                             fontSize = 8.sp,
                             modifier = Modifier.padding(start = 16.dp)

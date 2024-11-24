@@ -20,7 +20,7 @@ import ru.alterland.launcher.util.base.Resource
 @Composable
 fun SignUp(
     state: SignUpContract.State,
-    setEvent: (e: SignUpContract.Event) -> Unit,
+    onEvent: (e: SignUpContract.Event) -> Unit,
     navigateBack: () -> Unit
 ) {
 
@@ -50,14 +50,14 @@ fun SignUp(
                 }
                 else -> null
             }
-        ) { setEvent(SignUpContract.Event.OnNickInput(it)) }
+        ) { onEvent(SignUpContract.Event.OnNickInput(it)) }
         Input(
             hint = stringResource(Res.string.email),
             text = state.email,
             icon = icEmail,
             enabled = !isIOInProgress(),
             modifier = Modifier.padding(top = elementsPadding),
-        ) { setEvent(SignUpContract.Event.OnEmailInput(it)) }
+        ) { onEvent(SignUpContract.Event.OnEmailInput(it)) }
         Input(
             hint = stringResource(Res.string.password),
             text = state.password,
@@ -65,26 +65,26 @@ fun SignUp(
             type = InputType.PASSWORD,
             enabled = !isIOInProgress(),
             modifier = Modifier.padding(top = elementsPadding),
-        ) { setEvent(SignUpContract.Event.OnPasswordInput(it)) }
+        ) { onEvent(SignUpContract.Event.OnPasswordInput(it)) }
         Button(
             text = stringResource(Res.string.string_continue),
             isLoading = state.signUpProgress,
             modifier = Modifier.fillMaxWidth().padding(top = elementsPadding)
-        ) { setEvent(SignUpContract.Event.OnSignUpClicked) }
+        ) { onEvent(SignUpContract.Event.OnSignUpClicked) }
 //        SocialButton(
 //            text = stringResource(Res.string.vk_sign_up),
 //            icVk,
 //            isEnabled = !isIOInProgress(),
 //            isLoading = state.vkSignUpProgress,
 //            modifier = Modifier.padding(top = elementsPadding),
-//        ) { setEvent(SignUpContract.Event.OnVkSignUpClicked) }
+//        ) { onEvent(SignUpContract.Event.OnVkSignUpClicked) }
 //        SocialButton(
 //            text = stringResource(Res.string.google_sign_up),
 //            icGoogle,
 //            isEnabled = !isIOInProgress(),
 //            isLoading = state.googleSignUpProgress,
 //            modifier = Modifier.padding(top = elementsPadding/2),
-//        ) { setEvent(SignUpContract.Event.OnGoogleSignUpClicked) }
+//        ) { onEvent(SignUpContract.Event.OnGoogleSignUpClicked) }
         Row(
             modifier = Modifier
                 .fillMaxWidth()

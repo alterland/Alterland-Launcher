@@ -17,7 +17,7 @@ class SignInScreenModel(
     initialState = SignInContract.State()
 ) {
 
-    override fun handleEvent(event: SignInContract.Event) {
+    override fun onEvent(event: SignInContract.Event) {
         when(event) {
             is SignInContract.Event.OnLoginInput -> setState { copy(login = event.data) }
             is SignInContract.Event.OnPasswordInput -> setState { copy(password = event.data) }

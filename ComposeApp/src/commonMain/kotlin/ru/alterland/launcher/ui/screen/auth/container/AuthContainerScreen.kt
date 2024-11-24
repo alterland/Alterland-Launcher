@@ -1,6 +1,7 @@
 package ru.alterland.launcher.ui.screen.auth.container
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import cafe.adriel.voyager.core.registry.rememberScreen
@@ -16,22 +17,26 @@ class AuthContainerScreen: Screen {
     override fun Content() {
         val screenModel = koinScreenModel<AuthContainerScreenModel>()
         val state by screenModel.state.collectAsState()
-        val effect by screenModel.effect.collectAsState(null)
+        val effects by screenModel.effects.collectAsState()
 
         val navigator = LocalNavigator.currentOrThrow
 
         val dashboardContainer = rememberScreen(ContainerScreenProvider.Dashboard)
 
-        when(effect) {
-            is AuthContainerContract.Effect.OnNavigateToDashboard -> {
-                navigator.push(dashboardContainer)
+        effects.firstOrNull()?.let { effect ->
+            LaunchedEffect(effect) {
+                when (effect) {
+                    AuthContainerContract.Effect.OnNavigateToDashboard -> {
+                        navigator.push(dashboardContainer)
+                    }
+                }
             }
-            else -> {}
+            screenModel.onEffectHandled(effect)
         }
 
         AuthContainer(
             state = state,
-            setEvent = { e -> screenModel.setEvent(e) }
+            onEvent = { e -> screenModel.onEvent(e) }
         )
     }
 }
