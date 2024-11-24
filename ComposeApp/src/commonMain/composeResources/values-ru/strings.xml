@@ -39,9 +39,8 @@
     <string name ="client_settings_default_directory">Директория по умолчанию</string>
     <string name="client_settings_auto_connect">Подключаться к серверу автоматически</string>
 
-    <string name="server_status_latency">Пинг</string>
-    <string name="server_status_latency_milliseconds">мс</string>
-    <string name="server_status_players_count">Игроков</string>
+    <string name="server_status_latency">Пинг: %1$d мс</string>
+    <string name="server_status_players">Игроков: %1$d / %2$d</string>
     <string name="server_status_polling">Установка соединения</string>
     <string name="server_status_offline">Офлайн</string>
 
