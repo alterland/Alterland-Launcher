@@ -27,8 +27,8 @@ class AlterlandHttpClient(
         }
         defaultRequest {
             url {
-                protocol = URLProtocol.HTTPS
-                host = BuildConfig.CLIENT_API_BASE_URL
+                protocol = if (BuildConfig.DEV_ENV) URLProtocol.HTTP else URLProtocol.HTTPS
+                host = if (BuildConfig.DEV_ENV) BuildConfig.DEV_API_BASE_URL else BuildConfig.PROD_API_BASE_URL
             }
             header("Content-Type", "application/json; charset=UTF-8")
         }

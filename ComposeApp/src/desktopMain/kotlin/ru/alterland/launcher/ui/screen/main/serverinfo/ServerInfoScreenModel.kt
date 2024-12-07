@@ -3,6 +3,8 @@ package ru.alterland.launcher.ui.screen.main.serverinfo
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import ru.alterland.launcher.data.source.local.LocalStoreFields
+import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.domain.repository.UserRepository
 import ru.alterland.launcher.ui.base.BaseScreenModel
 import ru.alterland.launcher.util.base.AppException
@@ -13,7 +15,8 @@ import ru.alterland.launchercore.domain.model.*
 
 class ServerInfoScreenModel(
     private val launcher: Launcher,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val localStorage: LocalStorage
 ): BaseScreenModel<ServerInfoContract.Event, ServerInfoContract.State, ServerInfoContract.Effect>(
     initialState = ServerInfoContract.State()
 ) {
@@ -44,10 +47,10 @@ class ServerInfoScreenModel(
 
         launcher.clients.onEach {
             clients = it
-            clients.firstOrNull { client -> client.id == state.value.currentClientProfile?.id }?.let {
-                setState { copy(currentClientProfile = it) }
-                if (it.status is ClientStatus.UpdateError) {
-                    onError(AppException.UpdateException(((it.status as ClientStatus.UpdateError).errorCount)))
+            clients.firstOrNull { client -> client.id == state.value.currentClientProfile?.id }?.let { clientProfile ->
+                setState { copy(currentClientProfile = clientProfile) }
+                if (clientProfile.status is ClientStatus.UpdateError) {
+                    onError(AppException.UpdateException(((clientProfile.status as ClientStatus.UpdateError).errorCount)))
                 }
             }
         }.handleErrors(::onError).launchIn(screenModelScope)
@@ -82,12 +85,15 @@ class ServerInfoScreenModel(
             launcher.toggleDownload(clientProfile)
         } else {
             setState { copy(currentClientProfile = clientProfile.copy(status = ClientStatus.Verification)) }
+
             val user = userRepository.getUser()
+            val accessToken = localStorage.getString(LocalStoreFields.ACCESS_TOKEN) ?: ""
+
             val options = Options(
                 clientProfile = clientProfile,
                 player = Player(
                     id = user.id,
-                    accessToken = user.accessToken,
+                    accessToken = accessToken,
                     nickname = user.nickname
                 ),
                 features = mapOf(Feature.HAS_CUSTOM_RESOLUTION to false)

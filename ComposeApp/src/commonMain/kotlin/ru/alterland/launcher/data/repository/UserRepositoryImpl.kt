@@ -3,6 +3,7 @@ package ru.alterland.launcher.data.repository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import ru.alterland.launcher.data.mapper.toDomain
+import ru.alterland.launcher.data.source.local.LocalStoreFields.ACCESS_TOKEN
 import ru.alterland.launcher.data.source.network.UserApi
 import ru.alterland.launcher.data.source.network.model.request.ResetPasswordRequest
 import ru.alterland.launcher.data.source.network.model.request.SignInRequest
@@ -28,8 +29,12 @@ class UserRepositoryImpl(
                     password = password
                 )
             )
-            cachedUser = result.toDomain()
-            cachedUser
+            result.accessToken?.let {
+                localStorage.store(ACCESS_TOKEN, it)
+            }
+            result.toDomain().also {
+                cachedUser = it
+            }
         }
     }
 
@@ -42,8 +47,12 @@ class UserRepositoryImpl(
                     password = password
                 )
             )
-            cachedUser = result.toDomain()
-            cachedUser
+            result.accessToken?.let {
+                localStorage.store(ACCESS_TOKEN, it)
+            }
+            result.toDomain().also {
+                cachedUser = it
+            }
         }
     }
 
@@ -59,8 +68,9 @@ class UserRepositoryImpl(
             runCatching {
                 userApi.signOut()
             }.onFailure {
-                localStorage.removeAllCookies()
+                //do nothing
             }
+            localStorage.remove(ACCESS_TOKEN)
             cachedUser = null
         }
     }
@@ -86,5 +96,5 @@ class UserRepositoryImpl(
         }
     }
 
-    private suspend fun fetchUser() = userApi.getUser().toDomain()
+    private suspend fun fetchUser() = userApi.getUser().toDomain().also { cachedUser = it }
 }
