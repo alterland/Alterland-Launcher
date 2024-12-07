@@ -194,7 +194,9 @@ class ClientRepositoryImpl(
             .filter { index ->
                 val indexPath = workPath.resolve(index.path)
                 val checkSum = if (indexPath.exists()) indexPath.getCheckSumFromFile() else null
-                checkSum == null || index.checkSum != checkSum && !index.allowChanges
+                (checkSum == null || index.checkSum != checkSum && !index.allowChanges).also {
+                    if (it) println("Хеш файла ${indexPath.toAbsolutePath()} отличается.\nОжидается: ${index.checkSum}\nФактически: ${checkSum}")
+                }
             }
     }
 

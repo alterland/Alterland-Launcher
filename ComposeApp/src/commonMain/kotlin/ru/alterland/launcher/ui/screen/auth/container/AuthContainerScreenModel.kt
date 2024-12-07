@@ -2,10 +2,9 @@ package ru.alterland.launcher.ui.screen.auth.container
 
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import ru.alterland.launcher.AppConfig
+import ru.alterland.launcher.data.source.local.LocalStoreFields
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.ui.base.BaseScreenModel
 import ru.alterland.launcher.util.extentions.handleErrors
@@ -17,7 +16,7 @@ class AuthContainerScreenModel(
 ) {
 
     init {
-        subscribeToCookies()
+        subscribeToStore()
         subscribeToErrors()
     }
 
@@ -27,11 +26,9 @@ class AuthContainerScreenModel(
         }
     }
 
-    private fun subscribeToCookies() {
-        localStorage.cookiesFlow.map { cookies ->
-            cookies[AppConfig.apiBaseUrl] ?: listOf()
-        }.onEach { cookies ->
-            if (cookies.find { cookie -> cookie.name == ACCESS_TOKEN_COOKIE_NAME } != null) {
+    private fun subscribeToStore() {
+        localStorage.storeFlow.onEach { store ->
+            store[LocalStoreFields.ACCESS_TOKEN]?.apply {
                 errorRepository.clearErrors()
                 setEffect { AuthContainerContract.Effect.OnNavigateToDashboard }
             }
@@ -46,9 +43,5 @@ class AuthContainerScreenModel(
 
     private fun onMessageClose(id: String) = screenModelScope.launch {
         errorRepository.removeError(id)
-    }
-
-    companion object {
-        private const val ACCESS_TOKEN_COOKIE_NAME = "access_token"
     }
 }

@@ -5,18 +5,16 @@ import io.github.xxfast.kstore.file.storeOf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.io.files.FileNotFoundException
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
+import kotlinx.serialization.SerializationException
 import ru.alterland.launcher.PlatformConfiguration
 import ru.alterland.launcher.data.source.local.LocalStoreFields.RAM
 import ru.alterland.launcher.data.source.local.LocalStoreFields.REMEMBER
-import ru.alterland.launcher.data.source.local.model.Store
 import ru.alterland.launcher.domain.repository.LocalStorage
 
 class LocalStorageImpl(
@@ -25,135 +23,69 @@ class LocalStorageImpl(
     private val platformConfiguration: PlatformConfiguration
 ) : LocalStorage {
 
-    private val store: KStore<Store> = storeOf(
-        file = Path(platformConfiguration.storeDir),
+    private val path = Path(platformConfiguration.storeDir)
+
+    private val store: KStore<Map<String, String>> = storeOf(
+        file = path,
         enableCache = true,
-        default = Store(
-            settings = mapOf(
-                REMEMBER to DEFAULT_REMEMBER_ME.toString(),
-                RAM to DEFAULT_RAM.toString()
-            )
+        default = mapOf(
+            REMEMBER to DEFAULT_REMEMBER_ME.toString(),
+            RAM to DEFAULT_RAM.toString()
         )
     )
 
-    private val tempCookies: MutableStateFlow<Map<String, List<PersistentCookie>>> = MutableStateFlow(mapOf())
-
-    override val settingsFlow: Flow<Map<String, String>> = store.updates.map { it?.settings ?: mapOf() }
-
-    override val cookiesFlow: Flow<Map<String, List<PersistentCookie>>> =
-        store.updates.map { it?.cookies ?: mapOf() }.combine(tempCookies) {
-            cookies: Map<String, List<PersistentCookie>>, tempCookies: Map<String, List<PersistentCookie>> ->
-            val result = cookies.toMutableMap()
-            tempCookies.forEach { (domain, tempDomainCookies) ->
-                val storeDomainCookies = cookies[domain]
-                if (storeDomainCookies != null) {
-                    val mergeCookies = storeDomainCookies.filter { storeCookie ->
-                        tempDomainCookies.find { it.name == storeCookie.name } != null
-                    }.toMutableList()
-                    mergeCookies.addAll(tempDomainCookies)
-                    result[domain] = mergeCookies
-                } else {
-                    result[domain] = tempDomainCookies
-                }
-            }
-            result
-        }
+    override val storeFlow: Flow<Map<String, String>> = store.updates.map { it ?: mapOf() }
 
     init {
         applicationIoScope.launch {
             createStoreDirIfNotExist()
+            runMigrations()
         }
     }
 
-    override suspend fun getSettings(): Map<String, String> = store.get()?.settings ?: mapOf()
+    override suspend fun getAll(): Map<String, String> = store.get() ?: mapOf()
 
-    override suspend fun storeSetting(key: String, value: Any) {
-        storeSetting(key, value, true)
+    override suspend fun store(key: String, value: Any) {
+        store(key, value, true)
     }
 
-    private suspend fun storeSetting(key: String, value: Any, retryOnFail: Boolean): Unit = withContext(dispatcherIo) {
+    override suspend fun remove(key: String) {
         try {
-            store.update {
-                it?.settings?.let { settings ->
-                    val settingsMutable = settings.toMutableMap()
-                    settingsMutable[key] = value.toString()
-                    it.copy(settings = settingsMutable)
+            store.update { store ->
+                store?.toMutableMap()?.also {
+                    it.remove(key)
+                }
+            }
+        } catch (e: FileNotFoundException) {
+            createStoreDirIfNotExist()
+        }
+    }
+
+    private suspend fun store(key: String, value: Any, retryOnFail: Boolean): Unit = withContext(dispatcherIo) {
+        try {
+            store.update { store ->
+                store?.toMutableMap()?.also {
+                    it[key] = value.toString()
                 }
             }
         } catch (e: FileNotFoundException) {
             if (retryOnFail) {
                 createStoreDirIfNotExist()
-                storeSetting(key, value, false)
+                store(key, value, false)
             }
         }
     }
 
     override suspend fun getString(key: String) = store.get()?.let { store ->
-        store.settings[key]
+        store[key]
     }
 
     override suspend fun getBoolean(key: String) = store.get()?.let { store ->
-        store.settings[key]?.toBooleanStrictOrNull()
+        store[key]?.toBooleanStrictOrNull()
     }
 
     override suspend fun getDouble(key: String) = store.get()?.let { store ->
-        store.settings[key]?.toDoubleOrNull()
-    }
-
-    override suspend fun storeCookie(domain: String, cookie: PersistentCookie) {
-        if (getBoolean(REMEMBER) == true) {
-            store.update { store ->
-                val cookies = store?.cookies?.toMutableMap() ?: mutableMapOf()
-                val domainCookies =
-                    cookies[domain]?.filterNot { it.name == cookie.name }?.toMutableList() ?: mutableListOf()
-                if (cookie.value.isNotEmpty()) {
-                    //if cookie value is empty then it is a remove cookie call
-                    domainCookies.add(cookie)
-                }
-                cookies[domain] = domainCookies
-                store?.copy(cookies = cookies)
-            }
-        } else {
-            val temp = tempCookies.value.toMutableMap()
-            val domainCookies =
-                temp[domain]?.filterNot { it.name == cookie.name }?.toMutableList() ?: mutableListOf()
-            if (cookie.value.isNotEmpty()) {
-                //if cookie value is empty then it is a remove cookie call
-                domainCookies.add(cookie)
-            }
-            temp[domain] = domainCookies
-            tempCookies.emit(temp)
-        }
-    }
-
-    override suspend fun getAllCookies(domain: String): List<PersistentCookie> {
-        val allCookies = mutableListOf<PersistentCookie>()
-        val tempDomainCookies = tempCookies.value[domain] ?: listOf()
-        val domainCookies = store.get()?.let { store ->
-            store.cookies[domain]?.filter { it.value.isNotEmpty() }
-        } ?: listOf()
-        allCookies.addAll(tempDomainCookies)
-        allCookies.addAll(domainCookies)
-        return allCookies
-    }
-
-    override suspend fun removeAllCookies() {
-        store.update { it?.copy(cookies = mapOf()) }
-    }
-
-    override suspend fun removeCookie(domain: String, cookieName: String) {
-        val cookies = store.get()?.cookies?.toMutableMap() ?: mutableMapOf()
-        val domainCookies = cookies[domain]?.toMutableList() ?: mutableListOf()
-        if (domainCookies.isNotEmpty()) {
-           val index = domainCookies.indexOfFirst { it.name == cookieName }
-            if (index != -1) {
-                domainCookies.removeAt(index)
-                cookies[domain] = domainCookies
-                store.update { store ->
-                    store?.copy(cookies = cookies)
-                }
-            }
-        }
+        store[key]?.toDoubleOrNull()
     }
 
     private fun createStoreDirIfNotExist() {
@@ -161,6 +93,16 @@ class LocalStorageImpl(
         with(SystemFileSystem) {
             if(!exists(storePath)) {
                 storePath.parent?.let { createDirectories(it) }
+            }
+        }
+    }
+
+    private suspend fun runMigrations() {
+        try {
+            store.get()
+        } catch (e: SerializationException) {
+            with(SystemFileSystem) {
+                delete(path)
             }
         }
     }

@@ -12,7 +12,7 @@ plugins {
 }
 
 buildConfig {
-    buildConfigField("boolean", "DEV_ENV", "${false}") //used to store cookies
+    buildConfigField("boolean", "DEV_ENV", "${true}")
     buildConfigField("String", "DEV_API_BASE_URL", "\"localhost:3000\"")
     buildConfigField("String", "PROD_API_BASE_URL", "\"alterland.ru/api\"")
     buildConfigField("String", "WORK_FOLDER", "\"alterland\"")
@@ -60,6 +60,7 @@ kotlin {
             implementation(libs.voyager.koin)
 
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.auth)
             implementation(libs.ktor.negotiation)
             implementation(libs.ktor.json)
             implementation(libs.ktor.kotlin.json)

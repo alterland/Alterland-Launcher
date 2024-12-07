@@ -5,5 +5,6 @@ object LocalStoreFields {
     const val REMEMBER = "remember"
     const val PATH = "path"
     const val RAM = "ram"
+    const val ACCESS_TOKEN = "access_token"
 }
 
