@@ -76,6 +76,8 @@ kotlin {
 
             implementation(libs.kstore)
             implementation(libs.kstore.file)
+
+            implementation(libs.filekit.compose)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
