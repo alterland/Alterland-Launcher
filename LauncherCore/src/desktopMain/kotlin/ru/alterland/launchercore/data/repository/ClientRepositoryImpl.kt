@@ -2,7 +2,6 @@ package ru.alterland.launchercore.data.repository
 
 import AlterlandLauncher.LauncherCore.BuildConfig
 import AlterlandLauncher.LauncherCore.BuildConfig.CLIENT_PROFILES_FOLDER
-import AlterlandLauncher.LauncherCore.BuildConfig.SERVER_PROFILES_FOLDER
 import io.ktor.client.call.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.*
@@ -17,14 +16,11 @@ import kotlinx.serialization.json.encodeToStream
 import ru.alterland.launchercore.data.mapper.toDomain
 import ru.alterland.launchercore.data.source.local.model.AssetsExternalIndexesTypeRaw
 import ru.alterland.launchercore.data.source.local.model.ClientProfileRaw
-import ru.alterland.launchercore.data.source.local.model.ServerProfileRaw
 import ru.alterland.launchercore.data.source.network.ClientApi
 import ru.alterland.launchercore.domain.model.*
 import ru.alterland.launchercore.domain.model.externalindex.ExternalIndexType
 import ru.alterland.launchercore.domain.repository.ClientRepository
 import ru.alterland.launchercore.domain.repository.LaunchRepository
-import ru.alterland.launchercore.domain.repository.ServerRepository
-import ru.alterland.launchercore.dto.LaunchOptions
 import ru.alterland.launchercore.util.*
 import java.io.File
 import java.nio.file.Files
@@ -37,8 +33,6 @@ import kotlin.io.path.*
 class ClientRepositoryImpl(
     private val dispatcherIo: CoroutineDispatcher,
     private val applicationScope: CoroutineScope,
-    private val applicationIoScope: CoroutineScope,
-    private val serverRepository: ServerRepository,
     private val launchRepository: LaunchRepository,
     private val clientApi: ClientApi,
     private val jsonReader: Json
@@ -53,35 +47,18 @@ class ClientRepositoryImpl(
     } else {
         Path("$USER_HOME/${BuildConfig.WORK_FOLDER}")
     }
-    private val serverProfilesPath = workPath.resolve(SERVER_PROFILES_FOLDER)
     private val clientProfilesPath = workPath.resolve(CLIENT_PROFILES_FOLDER)
-
-    private val _serverProfiles = MutableStateFlow<List<ServerProfile>>(listOf())
-    override val serverProfiles = _serverProfiles.asStateFlow()
 
     private val _clientProfiles = MutableStateFlow<List<ClientProfile>>(listOf())
     override val clientProfiles = _clientProfiles.asStateFlow()
 
-    private val _isOffline = MutableStateFlow(false)
-    override val isOffline = _isOffline.asStateFlow()
-
-    init {
-        initProfiles()
-    }
-
-    override suspend fun fetchClientProfile(clientProfileId: String): ClientProfile? = withContext(dispatcherIo) {
-        try {
-            val rawProfile = clientApi.getClientProfile(clientProfileId)
-            rawProfile.id?.let { jsonWriter.encodeToStream(rawProfile, clientProfilesPath.resolve(it).outputStream()) }
-            val profile = rawProfile.toDomain(jsonReader)
-            val updateClientProfiles = _clientProfiles.value.toMutableList().apply { add(profile) }
-            _clientProfiles.emit(updateClientProfiles)
-            _isOffline.emit(false)
-            profile
-        } catch (e: Exception) {
-            _isOffline.emit(true)
-            clientProfiles.value.firstOrNull { it.id == clientProfileId }
-        }
+    override suspend fun fetchClientProfile(clientProfileId: String, force: Boolean): ClientProfile? = withContext(dispatcherIo) {
+        val rawProfile = clientApi.getClientProfile(clientProfileId)
+        rawProfile.id?.let { jsonWriter.encodeToStream(rawProfile, clientProfilesPath.resolve(it).outputStream()) }
+        val profile = rawProfile.toDomain(jsonReader)
+        val updateClientProfiles = _clientProfiles.value.toMutableList().apply { add(profile) }
+        _clientProfiles.emit(updateClientProfiles)
+        profile
     }
 
     override fun play(options: Options) {
@@ -91,7 +68,7 @@ class ClientRepositoryImpl(
         options.clientProfile.updateClientStatus(ClientStatus.Verification)
 
         applicationScope.launch {
-            val clientProfile = fetchClientProfile(options.clientProfile.id) ?: options.clientProfile
+            val clientProfile = fetchClientProfile(options.clientProfile.id, true) ?: options.clientProfile
             val isUpdatedSuccessFully = clientProfile.updateClient()
             if (isUpdatedSuccessFully) {
                 clientProfile.cleanStrictPaths()
@@ -195,42 +172,9 @@ class ClientRepositoryImpl(
                 val indexPath = workPath.resolve(index.path)
                 val checkSum = if (indexPath.exists()) indexPath.getCheckSumFromFile() else null
                 (checkSum == null || index.checkSum != checkSum && !index.allowChanges).also {
-                    if (it) println("Хеш файла ${indexPath.toAbsolutePath()} отличается.\nОжидается: ${index.checkSum}\nФактически: ${checkSum}")
+                    if (it) println("Хеш файла ${indexPath.toAbsolutePath()} отличается.\nОжидается: ${index.checkSum}\nФактически: $checkSum")
                 }
             }
-    }
-
-    private fun initProfiles() = applicationIoScope.launch {
-        serverProfilesPath.createDirectories()
-        clientProfilesPath.createDirectories()
-        try {
-            val profiles = clientApi.getServerProfiles()
-            profiles.forEach { profile ->
-                profile.id?.let { jsonWriter.encodeToStream(profile, serverProfilesPath.resolve(it).outputStream()) }
-            }
-            _isOffline.emit(false)
-        } catch (e: Exception) {
-            println(e)
-            _isOffline.emit(true)
-        } finally {
-            initServerProfiles()
-            initClientProfiles()
-        }
-    }
-
-    private fun initServerProfiles() {
-        println("Поиск профилей серверов в папке $serverProfilesPath")
-        val serverProfiles = mutableListOf<ServerProfile>()
-        serverProfilesPath.walk().forEach { path ->
-            if (path.isRegularFile()) {
-                val serverProfileRaw = jsonReader.decodeFromStream<ServerProfileRaw>(path.inputStream())
-                val serverProfile = serverProfileRaw.toDomain()
-                serverProfiles.add(serverProfile)
-            }
-        }
-        serverProfiles.sortBy { it.sortIndex }
-        _serverProfiles.tryEmit(serverProfiles)
-        pingServers()
     }
 
     private fun initClientProfiles() {
@@ -297,71 +241,12 @@ class ClientRepositoryImpl(
         stream.close()
     }
 
-    private fun testRules(
-        rules: List<ClientProfile.Rule>,
-        enabledFeatures: Map<String, Boolean>? = null
-    ): Boolean {
+    private fun testRules(rules: List<ClientProfile.Rule>, enabledFeatures: Map<String, Boolean>? = null): Boolean {
         var testPass = true
         for (rule in rules) {
-            if (rule.action == null) continue
-
-            if (rule.os != null) {
-                val osNameMatch = if (rule.os.name != null && USER_OS.name != null) {
-                    USER_OS.name == rule.os.name
-                } else true
-
-                val osArchMatch = if (rule.os.arch != null && USER_OS.arch != null) {
-                    USER_OS.arch == rule.os.arch
-                } else true
-
-                val osVersionMatch = if (rule.os.version != null && USER_OS.version != null) {
-                    Regex(rule.os.version).containsMatchIn(USER_OS.version)
-                } else true
-
-                testPass = when(rule.action) {
-                    ActionRule.ALLOW -> osNameMatch && osArchMatch && osVersionMatch
-                    ActionRule.DISALLOW -> !osNameMatch || !osArchMatch || !osVersionMatch
-                }
-            }
-
-            if (enabledFeatures != null) {
-                rule.features.forEach { feature ->
-                    testPass = testPass && feature.value == (enabledFeatures[feature.key] ?: false)
-                }
-            }
+            testPass = rule.test(USER_OS, enabledFeatures)
         }
         return testPass
-    }
-
-    private fun pingServers() {
-        applicationIoScope.launch {
-            runCatching {
-                val serverPings = serverProfiles.value
-                    .map {
-                        async {
-                            it.address?.let { address ->
-                                val serverStatus = try {
-                                    serverRepository.ping(address.host, address.port)
-                                } catch (e: Exception) {
-                                    println(e)
-                                    MinecraftServerStatus.Offline
-                                }
-                                val updateClients = serverProfiles.value.map { updateClient ->
-                                    if (updateClient.id == it.id) {
-                                        updateClient.copy(serverStatus = serverStatus)
-                                    } else updateClient
-                                }
-                                _serverProfiles.emit(updateClients)
-                            }
-                        }
-                    }
-                serverPings.awaitAll()
-                delay(PING_DELAY)
-                pingServers()
-            }.onFailure {
-                println(it)
-            }
-        }
     }
 
     private fun ClientProfile.updateClientStatus(newStatus: ClientStatus) {
@@ -374,7 +259,5 @@ class ClientRepositoryImpl(
 
     companion object {
         private val USER_OS = OS(name = OS_NAME, arch = OS_ARCH, version = OS_VERSION)
-        private const val PING_DELAY = 5000L
     }
-
 }

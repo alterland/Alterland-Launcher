@@ -1,6 +1,6 @@
 package ru.alterland.launcher.domain.repository
 
-import ru.alterland.launcher.domain.entity.User
+import ru.alterland.launcher.domain.model.User
 
 interface UserRepository {
     suspend fun signIn(login: String, password: String)

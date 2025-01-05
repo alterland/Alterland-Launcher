@@ -1,7 +1,7 @@
 package ru.alterland.launcher.domain.repository
 
 import kotlinx.coroutines.flow.StateFlow
-import ru.alterland.launcher.domain.entity.AppError
+import ru.alterland.launcher.domain.model.AppError
 
 interface ErrorRepository {
     suspend fun addError(throwable: Throwable)

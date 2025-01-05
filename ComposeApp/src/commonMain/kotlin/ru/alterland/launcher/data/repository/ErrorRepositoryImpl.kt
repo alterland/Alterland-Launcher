@@ -3,7 +3,7 @@ package ru.alterland.launcher.data.repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import ru.alterland.launcher.domain.entity.AppError
+import ru.alterland.launcher.domain.model.AppError
 import ru.alterland.launcher.domain.repository.ErrorRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

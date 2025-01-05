@@ -11,6 +11,5 @@ data class ServerProfile(
     val backgroundUrl: String,
     val backgroundLocalPath: String,
     val address: ServerAddress?,
-    val clientProfile: String?,
-    val serverStatus: MinecraftServerStatus = MinecraftServerStatus.Polling
+    val clientProfile: String?
 )

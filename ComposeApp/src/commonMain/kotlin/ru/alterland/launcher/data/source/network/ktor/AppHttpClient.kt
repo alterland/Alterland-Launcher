@@ -35,6 +35,11 @@ internal class AppHttpClient(
                         BearerTokens(it, null)
                     }
                 }
+                refreshTokens {
+                    localStorage.getString(LocalStoreFields.ACCESS_TOKEN)?.let {
+                        BearerTokens(it, null)
+                    }
+                }
             }
         }
         install(ContentNegotiation) {

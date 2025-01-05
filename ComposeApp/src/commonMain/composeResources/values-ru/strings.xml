@@ -50,5 +50,17 @@
     <string name="update">Обновить</string>
     <string name="retry">Повторить</string>
 
-    <string name="client_service_offline">Сервер синхронизации игровых файлов недоступен</string>
+    <string name="servers_empty_placeholder_title">Список серверов пуст</string>
+    <string name="no_internet">Отсутствует подключение к интернету</string>
+    <string name="unknown_exception">Неизвестная ошибка</string>
+    <string name="just_empty">Пустота есть форма, а форма есть пустота</string>
+
+    <string name="edit_server_title">Название</string>
+    <string name="edit_server_description">Описание</string>
+    <string name="edit_server_ip">IP</string>
+    <string name="edit_server_port">Порт</string>
+    <string name="edit_server_client_profile">Связанный клиент</string>
+    <string name="edit_server_client_profile_edit">Редактировать клиент</string>
+    <string name="add">Добавить</string>
+    <string name="save">Сохранить</string>
 </resources>

@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.pluralStringResource
-import ru.alterland.launcher.domain.entity.AppError
+import ru.alterland.launcher.domain.model.AppError
 import ru.alterland.launcher.util.base.AppException
 
 @Composable
@@ -20,8 +20,8 @@ fun BaseErrorHandler(
 ) {
     if (errors.isEmpty()) return
     val messages = errors.map { appError ->
-        val message = when (val throwable = appError.error) {
-            is AppException.ValidationException -> throwable.fields.entries.joinToString {
+        val message = when (val exception = appError.error) {
+            is AppException.ValidationException -> exception.fields.entries.joinToString {
                 it.value.joinToString { validationException ->
                     when (validationException) {
                         is AppException.ValidationException.TooLongException -> {
@@ -38,9 +38,9 @@ fun BaseErrorHandler(
                     }
                 }
             }
-            is AppException.UpdateException -> pluralStringResource(Res.plurals.error_update_files, throwable.errorCount, throwable.errorCount)
+            is AppException.UpdateException -> pluralStringResource(Res.plurals.error_update_files, exception.errorCount, exception.errorCount)
             is AppException -> {
-                when (throwable) {
+                when (exception) {
                     AppException.AlreadySignedInException -> "Вы уже выполнили вход"
                     AppException.CantAccessEmailException -> "Не удалось получить почту из вашего профиля в соц. сети"
                     AppException.ClientException -> "Ошибка"
@@ -59,7 +59,7 @@ fun BaseErrorHandler(
                     else -> "Ошибка"
                 }
             }
-            else -> throwable.message ?: "Неизвестная ошибка"
+            else -> exception.message ?: "Неизвестная ошибка"
         }
         ErrorMessage(
             id = appError.id,

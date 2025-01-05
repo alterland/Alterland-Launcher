@@ -26,39 +26,47 @@ fun AuthContainer(
     onEvent: (e: AuthContainerContract.Event) -> Unit,
 ) {
 
-    Image(
-        painter = painterResource(Res.drawable.background_auth),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxHeight()
-    )
-    Row(Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.fillMaxHeight().weight(1f)) {
-            BaseErrorHandler(
-                modifier = Modifier.fillMaxHeight().padding(bottom = 10.dp, top = 50.dp),
-                itemsModifier = Modifier.padding(vertical = 3.dp, horizontal = 15.dp),
-                errors = state.errors,
-                onMessageClose = { onEvent(AuthContainerContract.Event.OnMessageClose(it)) }
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val isMobile = maxWidth < 540.dp
+        val authWidth = if (isMobile) 1f else 0.54f
+        if (!isMobile) {
+            Image(
+                painter = painterResource(Res.drawable.background_auth),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxHeight()
             )
         }
-        Column(
-            Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.54f)
-                .background(AppTheme.colors.backgroundSecondary)
-                .padding(
-                    start = 70.dp,
-                    end = 70.dp,
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Logo(modifier = Modifier.padding(top = 50.dp, bottom = 26.dp))
+        Row(Modifier.fillMaxWidth()) {
+            if (!isMobile) {
+                Column(modifier = Modifier.fillMaxHeight().weight(1f)) {
+                    BaseErrorHandler(
+                        modifier = Modifier.fillMaxHeight().padding(bottom = 10.dp, top = 50.dp),
+                        itemsModifier = Modifier.padding(vertical = 3.dp, horizontal = 15.dp),
+                        errors = state.errors,
+                        onMessageClose = { onEvent(AuthContainerContract.Event.OnMessageClose(it)) }
+                    )
+                }
+            }
+            Column(
+                Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(authWidth)
+                    .background(AppTheme.colors.backgroundSecondary)
+                    .padding(
+                        start = 70.dp,
+                        end = 70.dp,
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Logo(modifier = Modifier.padding(top = 50.dp, bottom = 26.dp))
 
-            Navigator(SignInScreen()) { navigator ->
-                FadeTransition(
-                    navigator = navigator,
-                    disposeScreenAfterTransitionEnd = true
-                )
+                Navigator(SignInScreen()) { navigator ->
+                    FadeTransition(
+                        navigator = navigator,
+                        disposeScreenAfterTransitionEnd = true
+                    )
+                }
             }
         }
     }

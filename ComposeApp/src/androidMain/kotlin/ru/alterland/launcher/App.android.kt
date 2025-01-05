@@ -1,20 +1,22 @@
 package ru.alterland.launcher
 
 import android.app.Application
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import org.koin.core.context.GlobalContext.startKoin
+import ru.alterland.launcher.di.androidModule
+import ru.alterland.launcher.di.commonModule
 
 class AndroidApp : Application() {
-    companion object {
-        lateinit var INSTANCE: AndroidApp
-    }
 
     override fun onCreate() {
         super.onCreate()
-        INSTANCE = this
+
+        startKoin {
+            modules(commonModule)
+            modules(androidModule())
+        }
     }
 }
 

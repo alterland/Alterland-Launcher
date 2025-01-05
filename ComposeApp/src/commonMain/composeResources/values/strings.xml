@@ -46,5 +46,17 @@
     <string name="update">Update</string>
     <string name="retry">Retry</string>
 
-    <string name="client_service_offline">Files synchronization server is unavailable</string>
+    <string name="servers_empty_placeholder_title">The list of servers is empty</string>
+    <string name="no_internet">There is no internet connection</string>
+    <string name="unknown_exception">Unknown error</string>
+    <string name="just_empty">It's just empty</string>
+
+    <string name="edit_server_title">Title</string>
+    <string name="edit_server_description">Description</string>
+    <string name="edit_server_ip">IP</string>
+    <string name="edit_server_port">Port</string>
+    <string name="edit_server_client_profile">Connected client</string>
+    <string name="edit_server_client_profile_edit">Edit client profile</string>
+    <string name="add">Add</string>
+    <string name="save">Save</string>
 </resources>

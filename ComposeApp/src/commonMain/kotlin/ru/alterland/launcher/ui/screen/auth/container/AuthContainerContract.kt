@@ -1,6 +1,6 @@
 package ru.alterland.launcher.ui.screen.auth.container
 
-import ru.alterland.launcher.domain.entity.AppError
+import ru.alterland.launcher.domain.model.AppError
 import ru.alterland.launcher.ui.base.UiEffect
 import ru.alterland.launcher.ui.base.UiEvent
 import ru.alterland.launcher.ui.base.UiState

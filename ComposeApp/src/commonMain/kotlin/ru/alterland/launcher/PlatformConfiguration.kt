@@ -2,7 +2,7 @@ package ru.alterland.launcher
 
 import ru.alterland.launcher.util.OS
 
-expect class PlatformConfiguration() {
+expect class PlatformConfiguration {
     val rootDir: String
     val storeDir: String
     val os: OS

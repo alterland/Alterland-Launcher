@@ -1,6 +1,6 @@
 package ru.alterland.launchercore.domain.repository
 
-import ru.alterland.launchercore.dto.LaunchOptions
+import ru.alterland.launchercore.domain.model.LaunchOptions
 
 interface LaunchRepository {
 

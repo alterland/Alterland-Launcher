@@ -14,7 +14,7 @@ plugins {
 buildConfig {
     buildConfigField("boolean", "DEV_ENV", "${true}")
     buildConfigField("String", "DEV_API_BASE_URL", "\"localhost:3000\"")
-    buildConfigField("String", "PROD_API_BASE_URL", "\"alterland.ru/api\"")
+    buildConfigField("String", "PROD_API_BASE_URL", "\"alterland-alapi-ktor-25de.twc1.net\"")
     buildConfigField("String", "WORK_FOLDER", "\"alterland\"")
 
     useKotlinOutput { internalVisibility = true }
@@ -45,8 +45,6 @@ kotlin {
             implementation(libs.coil.network.okhttp)
         }
         commonMain.dependencies {
-            implementation(project(":LauncherCore"))
-
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
@@ -65,9 +63,8 @@ kotlin {
             implementation(libs.ktor.json)
             implementation(libs.ktor.kotlin.json)
             implementation(libs.ktor.serialization)
+            implementation(libs.ktor.network)
             implementation(libs.ktor.logging)
-
-            implementation(libs.logback)
 
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
@@ -79,10 +76,13 @@ kotlin {
             implementation(libs.kstore.file)
         }
         desktopMain.dependencies {
+            implementation(project(":LauncherCore"))
+
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.coil.network.okhttp)
+            implementation(libs.logback)
         }
     }
 }
@@ -92,7 +92,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "ru.alterland.launcher.androidApp"
+        applicationId = "ru.alterland.launcher"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -101,6 +101,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/INDEX.LIST"
         }
     }
     buildTypes {

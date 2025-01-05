@@ -1,7 +1,7 @@
 package ru.alterland.launchercore.data.repository
 
+import ru.alterland.launchercore.domain.model.LaunchOptions
 import ru.alterland.launchercore.domain.repository.LaunchRepository
-import ru.alterland.launchercore.dto.LaunchOptions
 import ru.alterland.launchercore.util.BIN_POSIX_PERMISSIONS
 import ru.alterland.launchercore.util.IS_POSIX
 import java.io.File

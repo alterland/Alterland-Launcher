@@ -43,5 +43,42 @@ data class ClientProfile(
         val action: ActionRule?,
         val os: OS?,
         val features: Map<String, Boolean>
-    )
+    ) {
+
+        fun test(
+            userOS: OS,
+            enabledFeatures: Map<String, Boolean>? = null
+        ): Boolean {
+            var testPass = true
+
+            if (action == null) return true
+
+            if (os != null) {
+                val osNameMatch = if (os.name != null && userOS.name != null) {
+                    userOS.name == os.name
+                } else true
+
+                val osArchMatch = if (os.arch != null && userOS.arch != null) {
+                    userOS.arch == os.arch
+                } else true
+
+                val osVersionMatch = if (os.version != null && userOS.version != null) {
+                    Regex(os.version).containsMatchIn(userOS.version)
+                } else true
+
+                testPass = when(action) {
+                    ActionRule.ALLOW -> osNameMatch && osArchMatch && osVersionMatch
+                    ActionRule.DISALLOW -> !osNameMatch || !osArchMatch || !osVersionMatch
+                }
+            }
+
+            if (enabledFeatures != null) {
+                features.forEach { feature ->
+                    testPass = testPass && feature.value == (enabledFeatures[feature.key] ?: false)
+                }
+            }
+
+            return testPass
+        }
+    }
 }
