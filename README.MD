@@ -9,9 +9,9 @@ To run the application on android device/emulator:
  - open project in Android Studio and run imported android run configuration
 
 To build the application bundle:
- - run `./gradlew :composeApp:assembleDebug`
- - find `.apk` file in `composeApp/build/outputs/apk/debug/composeApp-debug.apk`
+ - run `./gradlew :launcherApp:assembleDebug`
+ - find `.apk` file in `launcherApp/build/outputs/apk/debug/launcherApp-debug.apk`
 
 ### Desktop
-Run the desktop application: `./gradlew :composeApp:run`
+Run the desktop application: `./gradlew :launcherApp:run`
 

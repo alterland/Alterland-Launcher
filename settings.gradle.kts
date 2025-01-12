@@ -1,6 +1,5 @@
 rootProject.name = "AlterlandLauncher"
-include(":ComposeApp")
-include(":LauncherCore")
+include(":LauncherApp")
 
 pluginManagement {
     repositories {

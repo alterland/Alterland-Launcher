@@ -32,7 +32,7 @@ DisableProgramGroupPage=yes
 ;PrivilegesRequired=lowest
 OutputDir=C:\Users\Roman\Desktop
 OutputBaseFilename=Alterland Launcher setup
-SetupIconFile=C:\Users\Roman\Documents\GitHub\Alterland-Launcher\ComposeApp\build\compose\binaries\main-release\app\AlterlandLauncher\AlterlandLauncher.ico
+SetupIconFile=C:\Users\Roman\Documents\GitHub\Alterland-Launcher\LauncherApp\build\compose\binaries\main-release\app\AlterlandLauncher\AlterlandLauncher.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -45,8 +45,8 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Roman\Documents\GitHub\Alterland-Launcher\ComposeApp\build\compose\binaries\main-release\app\AlterlandLauncher\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Roman\Documents\GitHub\Alterland-Launcher\ComposeApp\build\compose\binaries\main-release\app\AlterlandLauncher\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Roman\Documents\GitHub\Alterland-Launcher\LauncherApp\build\compose\binaries\main-release\app\AlterlandLauncher\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Roman\Documents\GitHub\Alterland-Launcher\LauncherApp\build\compose\binaries\main-release\app\AlterlandLauncher\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

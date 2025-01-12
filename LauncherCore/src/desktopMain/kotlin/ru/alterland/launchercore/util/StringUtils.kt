@@ -1,7 +1,0 @@
-package ru.alterland.launchercore.util
-
-import java.nio.file.FileSystems
-
-private val SEPARATOR = FileSystems.getDefault().separator
-
-infix fun String.v(subPath: String): String = "$this$SEPARATOR$subPath"
