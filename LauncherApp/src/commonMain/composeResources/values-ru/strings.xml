@@ -53,7 +53,7 @@
     <string name="servers_empty_placeholder_title">Список серверов пуст</string>
     <string name="no_internet">Отсутствует подключение к интернету</string>
     <string name="unknown_exception">Неизвестная ошибка</string>
-    <string name="just_empty">Пустота есть форма, а форма есть пустота</string>
+    <string name="just_empty">Попробуйте повторить или зайдите попозже</string>
 
     <string name="edit_server_title">Название</string>
     <string name="edit_server_description">Описание</string>

@@ -144,7 +144,7 @@ private fun ServersPlaceholder(
         )
         if (canAddServer) {
             Button(
-                text = stringResource(Res.string.just_empty),
+                text = stringResource(Res.string.add),
                 onClick = onAddServerClick,
                 modifier = Modifier
                     .padding(top = 8.dp)

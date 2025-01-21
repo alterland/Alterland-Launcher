@@ -49,7 +49,7 @@
     <string name="servers_empty_placeholder_title">The list of servers is empty</string>
     <string name="no_internet">There is no internet connection</string>
     <string name="unknown_exception">Unknown error</string>
-    <string name="just_empty">It's just empty</string>
+    <string name="just_empty">Try again or come back later</string>
 
     <string name="edit_server_title">Title</string>
     <string name="edit_server_description">Description</string>
