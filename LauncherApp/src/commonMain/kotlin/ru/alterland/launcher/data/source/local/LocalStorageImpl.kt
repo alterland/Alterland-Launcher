@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.io.files.FileNotFoundException
+import kotlinx.io.files.FileSystem
 import kotlinx.io.files.Path
-import kotlinx.io.files.SystemFileSystem
 import kotlinx.serialization.SerializationException
 import ru.alterland.launcher.PlatformConfiguration
 import ru.alterland.launcher.data.source.local.LocalStoreFields.RAM
@@ -18,6 +18,7 @@ import ru.alterland.launcher.data.source.local.LocalStoreFields.REMEMBER
 import ru.alterland.launcher.domain.repository.LocalStorage
 
 class LocalStorageImpl(
+    private val fileSystem: FileSystem,
     private val dispatcherIo: CoroutineDispatcher,
     private val applicationIoScope: CoroutineScope,
     private val platformConfiguration: PlatformConfiguration
@@ -90,10 +91,8 @@ class LocalStorageImpl(
 
     private fun createStoreDirIfNotExist() {
         val storePath = Path(platformConfiguration.storeDir)
-        with(SystemFileSystem) {
-            if(!exists(storePath)) {
-                storePath.parent?.let { createDirectories(it) }
-            }
+        if(!fileSystem.exists(storePath)) {
+            storePath.parent?.let { fileSystem.createDirectories(it) }
         }
     }
 
@@ -101,9 +100,7 @@ class LocalStorageImpl(
         try {
             store.get()
         } catch (_: SerializationException) {
-            with(SystemFileSystem) {
-                delete(path)
-            }
+            fileSystem.delete(path)
         }
     }
 

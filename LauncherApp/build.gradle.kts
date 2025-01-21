@@ -18,6 +18,7 @@ buildConfig {
     buildConfigField("String", "MOJANG_ASSETS_HOST", "\"https://resources.download.minecraft.net\"")
     buildConfigField("String", "WORK_FOLDER", "\"alterland\"")
     buildConfigField("String", "CLIENT_PROFILES_FOLDER", "\"client-profiles\"")
+    buildConfigField("String", "SERVER_PROFILES_FOLDER", "\"server-profiles\"")
 
     useKotlinOutput { internalVisibility = true }
 

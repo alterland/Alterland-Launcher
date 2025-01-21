@@ -1,22 +1,63 @@
 package ru.alterland.launcher.data.repository
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
+import ru.alterland.launcher.PlatformConfiguration
 import ru.alterland.launcher.data.model.ArgValue
-import ru.alterland.launcher.domain.model.clientprofile.LaunchParams
+import ru.alterland.launcher.domain.model.clientprofile.*
+import ru.alterland.launcher.domain.repository.ClientProfilesRepository
 import ru.alterland.launcher.domain.repository.LaunchRepository
 import ru.alterland.launcher.util.BIN_POSIX_PERMISSIONS
+import ru.alterland.launcher.util.ClientProfileUtils.testRules
 import ru.alterland.launcher.util.IS_POSIX
+import ru.alterland.launcher.util.extentions.v
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 import kotlin.io.path.exists
 
-class LaunchRepositoryImpl(): LaunchRepository {
+class LaunchRepositoryImpl(
+    private val clientProfilesRepository: ClientProfilesRepository,
+    private val platformConfiguration: PlatformConfiguration,
+    private val dispatcherMain: CoroutineDispatcher
+): LaunchRepository {
 
-    override fun launch(options: LaunchParams) {
-        val gameArgsWithValues = addArgValues(options.gameArguments, options)
-        val jvmArgsWithValues = addArgValues(options.jvmArguments, options).toMutableList()
+    override suspend fun launch(
+        clientProfile: ClientProfile,
+        player: Player,
+        features: Map<Feature, Boolean>
+    ) {
+        clientProfilesRepository.setClientStatus(clientProfile, ClientStatus.Launching)
+
+        val features = features.mapKeys { it.key.value }
+        val gameArguments = clientProfile.gameArguments.filter { testRules(it.rules, features) }.flatMap { it.value }
+        val jvmArguments = clientProfile.jvmArguments.filter { testRules(it.rules, features) }.flatMap { it.value }
+        val classPath = clientProfile.downloads.filter { it.classPath && testRules(it.rules) }.map { "${platformConfiguration.rootDir}${it.path}" }
+
+        val launchParams = LaunchParams(
+            id = clientProfile.id,
+            gameArguments = gameArguments,
+            jvmArguments = jvmArguments,
+            workDir = platformConfiguration.rootDir,
+            accessToken = player.accessToken,
+            uuid = player.id,
+            nickname = player.nickname,
+            classPath = classPath.joinToString(File.pathSeparator),
+            mainClass = clientProfile.mainClass
+        )
+        withContext(dispatcherMain) {
+            launch(launchParams)
+            clientProfilesRepository.setClientStatus(clientProfile, ClientStatus.Launched)
+        }
+    }
+
+    private fun launch(params: LaunchParams) {
+
+        val gameArgsWithValues = addArgValues(params.gameArguments, params)
+        val jvmArgsWithValues = addArgValues(params.jvmArguments, params).toMutableList()
 
         jvmArgsWithValues.firstOrNull()?.let {
-            val jvmPath = options.workPath.resolve(it)
+            val jvmPath = Path.of(it)
             if (IS_POSIX && jvmPath.exists()) {
                 Files.setPosixFilePermissions(jvmPath, BIN_POSIX_PERMISSIONS)
             }
@@ -24,12 +65,12 @@ class LaunchRepositoryImpl(): LaunchRepository {
 
         val args = mutableListOf<String>()
         args.addAll(jvmArgsWithValues)
-        args.add(options.mainClass)
+        args.add(params.mainClass)
         args.addAll(gameArgsWithValues)
 
         println("Launch command: ${args.joinToString(" ")}")
 
-        val gameDir = options.workPath.resolve(options.id).toFile()
+        val gameDir = File(params.workDir v params.id)
         val builder = ProcessBuilder(args).redirectErrorStream(true)
         builder.directory(gameDir)
         builder.inheritIO()
@@ -45,14 +86,14 @@ class LaunchRepositoryImpl(): LaunchRepository {
                 ArgValue.AUTH_PLAYER_NAME -> options.nickname
                 ArgValue.VERSION_TYPE -> "release"
                 ArgValue.VERSION_NAME -> options.id
-                ArgValue.GAME_DIRECTORY -> options.workPath.resolve(options.id).toString()
+                ArgValue.GAME_DIRECTORY -> options.workDir v options.id
                 ArgValue.AUTH_UUID -> options.uuid
                 ArgValue.AUTH_ACCESS_TOKEN -> options.accessToken
                 ArgValue.USER_TYPE -> "msa"
                 ArgValue.LAUNCHER_NAME -> "Alterland Launcher"
                 ArgValue.LAUNCHER_VERSION -> "1.0"
                 ArgValue.CLASSPATH -> options.classPath
-                ArgValue.WORK_PATH -> options.workPath.toString()
+                ArgValue.WORK_DIR -> options.workDir
                 ArgValue.CLASSPATH_SEPARATOR -> File.pathSeparator
                 ArgValue.UNKNOWN -> ""
             }

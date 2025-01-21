@@ -9,9 +9,10 @@ import ru.alterland.launcher.domain.repository.*
 
 internal val repositoryModule = module {
     singleOf<ErrorRepository>(::ErrorRepositoryImpl)
-    single<AppEventRepository> { AppEventRepositoryImpl(scope = get(named(APPLICATION_SCOPE)),) }
+    single<AppEventRepository> { AppEventRepositoryImpl(scope = get(named(APPLICATION_SCOPE))) }
     single<LocalStorage> {
         LocalStorageImpl(
+            fileSystem = get(),
             dispatcherIo = get(named(DISPATCHER_IO)),
             applicationIoScope = get(named(APPLICATION_IO_SCOPE)),
             platformConfiguration = get()
@@ -31,15 +32,22 @@ internal val repositoryModule = module {
     }
     single<ServerProfilesRepository> {
         ServerProfilesRepositoryImpl(
+            fileSystem = get(),
             serverProfilesApi = get(),
-            dispatcherDefault = get(named(DISPATCHER_DEFAULT))
+            dispatcherDefault = get(named(DISPATCHER_DEFAULT)),
+            dispatcherIo = get(named(DISPATCHER_IO)),
+            platformConfiguration = get(),
+            json = get()
         )
     }
     single<ClientProfilesRepository> {
         ClientProfilesRepositoryImpl(
+            fileSystem = get(),
             clientProfilesApi = get(),
             dispatcherDefault = get(named(DISPATCHER_DEFAULT)),
-            platformConfiguration = get()
+            dispatcherIo = get(named(DISPATCHER_IO)),
+            platformConfiguration = get(),
+            json = get()
         )
     }
 }

@@ -1,7 +1,7 @@
 package ru.alterland.launcher
 
 import ru.alterland.launcher.util.OS
-import ru.alterland.launcher.util.v
+import ru.alterland.launcher.util.extentions.v
 
 actual class PlatformConfiguration {
     actual val rootDir: String = System.getProperty("user.home") v BuildConfig.WORK_FOLDER

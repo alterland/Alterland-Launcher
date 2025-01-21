@@ -1,5 +1,6 @@
 package ru.alterland.launcher.di
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.qualifier.named
@@ -16,13 +17,13 @@ const val APPLICATION_IO_SCOPE = "applicationIoScope"
 const val APPLICATION_UNCONFINED_SCOPE = "applicationUnconfinedScope"
 
 internal val coroutineModule = module {
-    single(named(DISPATCHER_MAIN)) { Dispatchers.Main.immediate }
-    single(named(DISPATCHER_IO)) { Dispatchers.IO }
-    single(named(DISPATCHER_DEFAULT)) { Dispatchers.Default }
-    single(named(DISPATCHER_UNCONFINED)) { Dispatchers.Unconfined }
+    single<CoroutineDispatcher>(named(DISPATCHER_MAIN)) { Dispatchers.Main.immediate }
+    single<CoroutineDispatcher>(named(DISPATCHER_IO)) { Dispatchers.IO }
+    single<CoroutineDispatcher>(named(DISPATCHER_DEFAULT)) { Dispatchers.Default }
+    single<CoroutineDispatcher>(named(DISPATCHER_UNCONFINED)) { Dispatchers.Unconfined }
 
-    factory(named(APPLICATION_SCOPE)) { CoroutineScope(Dispatchers.Main.immediate) }
-    factory(named(APPLICATION_IO_SCOPE)) { CoroutineScope(Dispatchers.IO) }
-    factory(named(APPLICATION_DEFAULT_SCOPE)) { CoroutineScope(Dispatchers.Default) }
-    factory(named(APPLICATION_UNCONFINED_SCOPE)) { CoroutineScope(Dispatchers.Unconfined) }
+    factory<CoroutineScope>(named(APPLICATION_SCOPE)) { CoroutineScope(Dispatchers.Main.immediate) }
+    factory<CoroutineScope>(named(APPLICATION_IO_SCOPE)) { CoroutineScope(Dispatchers.IO) }
+    factory<CoroutineScope>(named(APPLICATION_DEFAULT_SCOPE)) { CoroutineScope(Dispatchers.Default) }
+    factory<CoroutineScope>(named(APPLICATION_UNCONFINED_SCOPE)) { CoroutineScope(Dispatchers.Unconfined) }
 }

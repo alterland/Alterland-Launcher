@@ -74,7 +74,7 @@ data class ClientProfile(
 
             if (enabledFeatures != null) {
                 features.forEach { feature ->
-                    testPass = testPass && feature.value == (enabledFeatures[feature.key] ?: false)
+                    testPass = testPass && feature.value == (enabledFeatures[feature.key] == true)
                 }
             }
 

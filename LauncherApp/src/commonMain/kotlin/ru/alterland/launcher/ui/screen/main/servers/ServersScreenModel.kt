@@ -39,7 +39,8 @@ class ServersScreenModel(
             setState {
                 copy(
                     serversCount = servers.size,
-                    currentServerProfile = it
+                    currentServerProfile = it,
+                    currentClientProfile = it.clientProfile
                 )
             }
         }

@@ -13,12 +13,12 @@ kotlinx-serialization = "1.7.3"
 kotlinx-datetime = "0.6.1"
 voyager = "1.1.0-beta03"
 coil = "3.0.4"
-logback = "1.5.15"
-buildConfig = "5.5.0"
+logback = "1.5.16"
+buildConfig = "5.5.1"
 ktor = "3.0.3"
-koin = "4.0.0"
-kstore = "0.9.0"
-dnsjava = "3.6.2"
+koin = "4.0.1"
+kstore = "0.9.1"
+kotlinx-crypto = "0.0.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
@@ -56,8 +56,6 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 
 kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
 kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" }
-
-dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -1,6 +1,8 @@
 package ru.alterland.launcher.ui.screen.main.servers
 
-import alterlandlauncher.launcherapp.generated.resources.*
+import alterlandlauncher.launcherapp.generated.resources.Res
+import alterlandlauncher.launcherapp.generated.resources.role_play_bg
+import alterlandlauncher.launcherapp.generated.resources.rp_logo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,9 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
-import ru.alterland.launcher.domain.model.User
 import ru.alterland.launcher.ui.theme.AppTheme
-import ru.alterland.launcher.ui.widgets.Button
 
 @Composable
 fun Servers(
@@ -85,7 +85,7 @@ fun Servers(
                 )
             }
             Column(
-                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 20.dp),
+                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(bottom = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
@@ -101,26 +101,28 @@ fun Servers(
                     modifier = Modifier.padding(bottom = 14.dp)
                 )
                 clientNavigation()
-            }
-            Button(
-                icon = painterResource(Res.drawable.ic_apparel),
-                backgroundColor = AppTheme.colors.backgroundElevatedTertiary,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 16.dp, bottom = 16.dp)
-                    .size(34.dp),
-                onClick = navigateToClientSettings
-            )
-            if (state.userStrength >= User.Role.MIN_EDIT_STRENGTH) {
-                Button(
-                    icon = painterResource(Res.drawable.ic_edit),
-                    backgroundColor = AppTheme.colors.backgroundElevatedTertiary,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 16.dp, bottom = 16.dp)
-                        .size(34.dp),
-                    onClick = { navigateToEditServer(state.currentServerProfile.id) }
-                )
+//                Row(
+//                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    Button(
+//                        icon = painterResource(Res.drawable.ic_apparel),
+//                        backgroundColor = AppTheme.colors.backgroundElevatedTertiary,
+//                        modifier = Modifier.size(34.dp),
+//                        onClick = navigateToClientSettings
+//                    )
+//                    clientNavigation()
+//                    if (state.userStrength >= User.Role.MIN_EDIT_STRENGTH) {
+//                        Button(
+//                            icon = painterResource(Res.drawable.ic_edit),
+//                            backgroundColor = AppTheme.colors.backgroundElevatedTertiary,
+//                            modifier = Modifier.size(34.dp),
+//                            onClick = { navigateToEditServer(state.currentServerProfile.id) }
+//                        )
+//                    } else {
+//                        Box(modifier = Modifier.size(34.dp))
+//                    }
+//                }
             }
         }
     }

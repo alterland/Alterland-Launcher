@@ -1,4 +1,4 @@
-package ru.alterland.launcher.util
+package ru.alterland.launcher.util.extentions
 
 import kotlinx.io.files.SystemPathSeparator
 

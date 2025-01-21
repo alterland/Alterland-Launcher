@@ -1,12 +1,6 @@
 package ru.alterland.launcher.ui.screen.main.container.components
 
-import alterlandlauncher.launcherapp.generated.resources.Res
-import alterlandlauncher.launcherapp.generated.resources.avatar_rofl
-import alterlandlauncher.launcherapp.generated.resources.just_empty
-import alterlandlauncher.launcherapp.generated.resources.no_internet
-import alterlandlauncher.launcherapp.generated.resources.retry
-import alterlandlauncher.launcherapp.generated.resources.servers_empty_placeholder_title
-import alterlandlauncher.launcherapp.generated.resources.unknown_exception
+import alterlandlauncher.launcherapp.generated.resources.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.io.IOException
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.alterland.launcher.domain.model.User
@@ -27,7 +22,6 @@ import ru.alterland.launcher.ui.widgets.AppleCircularProgressIndicator
 import ru.alterland.launcher.ui.widgets.Button
 import ru.alterland.launcher.ui.widgets.errors.BaseErrorHandler
 import ru.alterland.launcher.util.base.Resource
-import java.io.IOException
 
 @Composable
 actual fun Dashboard(

@@ -5,7 +5,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.alterland.launcher.data.source.local.LocalStoreFields
 import ru.alterland.launcher.domain.model.clientprofile.ClientProfile
-import ru.alterland.launcher.domain.repository.*
+import ru.alterland.launcher.domain.model.clientprofile.Feature
+import ru.alterland.launcher.domain.model.clientprofile.Player
+import ru.alterland.launcher.domain.repository.ClientFilesRepository
+import ru.alterland.launcher.domain.repository.ClientProfilesRepository
+import ru.alterland.launcher.domain.repository.LocalStorage
+import ru.alterland.launcher.domain.repository.UserRepository
 import ru.alterland.launcher.ui.base.BaseScreenModel
 import ru.alterland.launcher.util.extentions.handleErrors
 import ru.alterland.launcher.util.extentions.launchSafe
@@ -14,8 +19,7 @@ class ClientScreenModel(
     private val userRepository: UserRepository,
     private val localStorage: LocalStorage,
     private val clientProfilesRepository: ClientProfilesRepository,
-    private val downloadRepository: DownloadRepository,
-    private val launchRepository: LaunchRepository,
+    private val clientFilesRepository: ClientFilesRepository,
     private val payload: ClientPayload
 ): BaseScreenModel<ClientContract.Event, ClientContract.State, ClientContract.Effect>(
     initialState = ClientContract.State()
@@ -43,20 +47,15 @@ class ClientScreenModel(
     }) {
         clientProfile?.let {
             val user = userRepository.getUser(force = false)
-            val accessToken = localStorage.getString(LocalStoreFields.ACCESS_TOKEN) ?: ""
-
-            downloadRepository.update(it)
-//
-//            val options = LaunchOptions(
-//                clientProfile = it,
-//                player = Player(
-//                    id = user.id,
-//                    accessToken = accessToken,
-//                    nickname = user.nickname
-//                ),
-//                features = mapOf(Feature.HAS_CUSTOM_RESOLUTION to false)
-//            )
-//            launchRepository.launch(options)
+            clientFilesRepository.updateAndLaunch(
+                clientProfile = it,
+                player = Player(
+                    id = user.id,
+                    accessToken = localStorage.getString(LocalStoreFields.ACCESS_TOKEN) ?: "",
+                    nickname = user.nickname
+                ),
+                features = mapOf(Feature.HAS_CUSTOM_RESOLUTION to false)
+            )
         }
     }
 

@@ -4,7 +4,7 @@ import kotlinx.serialization.json.*
 import ru.alterland.launcher.data.source.network.model.response.ClientProfileResponse
 import ru.alterland.launcher.domain.model.clientprofile.*
 import ru.alterland.launcher.domain.model.clientprofile.externalindex.ExternalIndexType
-import java.nio.file.Path
+import ru.alterland.launcher.util.extentions.v
 
 
 fun ClientProfileResponse.toDomain(json: Json) = ClientProfile(
@@ -13,7 +13,7 @@ fun ClientProfileResponse.toDomain(json: Json) = ClientProfile(
     mainClass = mainClass.orEmpty(),
     gameArguments = arguments?.game?.map { it.getArgument(json) } ?: listOf(),
     jvmArguments = arguments?.jvm?.map { it.getArgument(json) } ?: listOf(),
-    downloads = downloads?.mapNotNull { it.toDomain(null) } ?: listOf(),
+    downloads = downloads?.mapNotNull { it.toDomain() } ?: listOf(),
     externals = externals?.mapNotNull { it.getExternalIndex() } ?: listOf(),
     modules = modules ?: listOf(),
     strict = strict ?: listOf(),
@@ -50,10 +50,10 @@ private fun ClientProfileResponse.OS.getOS() = OS(
     version = version
 )
 
-fun ClientProfileResponse.DownloadIndex.toDomain(basePath: Path?): ClientProfile.DownloadIndex? =
+fun ClientProfileResponse.DownloadIndex.toDomain(basePath: String = ""): ClientProfile.DownloadIndex? =
     if (path != null && checkSum != null  && size != null && url != null) {
         ClientProfile.DownloadIndex(
-            path = basePath?.resolve(path)?.toString() ?: path,
+            path = basePath v path,
             checkSum = checkSum,
             size = size,
             url = url,
