@@ -60,9 +60,4 @@
 -dontwarn org.slf4j.**
 -dontwarn ch.qos.logback.core.net.*
 
-#dnsjava
--dontnote org.xbill.DNS.spi.DNSJavaNameServiceDescriptor
--dontwarn org.xbill.DNS.spi.DNSJavaNameServiceDescriptor
--optimizations !code/allocation/variable
-
 -ignorewarnings

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Alterland Launcher"
-#define MyAppVersion "1.1.3"
+#define MyAppVersion "1.3.0"
 #define MyAppPublisher "Alterland"
 #define MyAppURL "https://alterland.ru/"
 #define MyAppExeName "AlterlandLauncher.exe"
