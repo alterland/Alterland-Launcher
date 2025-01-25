@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -27,7 +26,6 @@ buildConfig {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
@@ -138,9 +136,10 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "AlterlandLauncher"
-            packageVersion = "1.1.3"
+            packageVersion = "1.3.0"
             description = "Access to the Alterland world"
             vendor = "Alterland"
+            modules("java.instrument", "jdk.management", "jdk.unsupported")
 
             //Use Other installer for Windows. E.g.: Inno Setup. IMPORTANT! - copy upgradeUuid value to the custom installer.
             windows {
