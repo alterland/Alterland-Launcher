@@ -36,8 +36,9 @@
     <string name="client_settings">Игра</string>
     <string name="client_settings_launch_after_update">Запускать после обновления</string>
     <string name="client_settings_launch_fullscreen">Полноэкранный режим</string>
-    <string name ="client_settings_default_directory">Директория по умолчанию</string>
+    <string name="client_settings_default_directory">Директория по умолчанию</string>
     <string name="client_settings_auto_connect">Подключаться к серверу автоматически</string>
+    <string name="skins">Скины</string>
 
     <string name="server_status_latency">Пинг: %1$d мс</string>
     <string name="server_status_players">Игроков: %1$d / %2$d</string>
@@ -61,6 +62,7 @@
     <string name="edit_server_port">Порт</string>
     <string name="edit_server_client_profile">Связанный клиент</string>
     <string name="edit_server_client_profile_edit">Редактировать клиент</string>
+    <string name="edit">Редактировать</string>
     <string name="add">Добавить</string>
     <string name="save">Сохранить</string>
 </resources>

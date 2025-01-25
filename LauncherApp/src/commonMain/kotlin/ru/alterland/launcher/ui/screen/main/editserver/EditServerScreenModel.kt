@@ -20,7 +20,7 @@ class EditServerScreenModel(
 ) {
 
     init {
-        getServerProfile()
+        setServerProfile()
         getClientProfiles()
     }
 
@@ -34,12 +34,9 @@ class EditServerScreenModel(
         }
     }
 
-    private fun getServerProfile() = screenModelScope.launchSafe(onError = ::onError) {
+    private fun setServerProfile() {
         if (payload is EditServerPayload.Edit) {
-            val serverProfile = serverProfilesRepository.getServerProfile(payload.serverProfileId)
-            if (serverProfile != null) {
-                setState { copy(serverProfile = serverProfile) }
-            }
+            setState { copy(serverProfile = payload.serverProfile) }
         }
     }
 

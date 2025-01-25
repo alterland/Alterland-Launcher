@@ -10,7 +10,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import org.koin.core.parameter.parameterSetOf
 
-data class EditServerScreen(val payload: EditServerPayload): Screen {
+data class EditServerScreen(private val payload: EditServerPayload): Screen {
 
     @Composable
     override fun Content() {

@@ -1,16 +1,16 @@
-package ru.alterland.launcher.ui.screen.main.servers
+package ru.alterland.launcher.ui.screen.main.server
 
 import ru.alterland.launcher.domain.model.ServerProfile
 import ru.alterland.launcher.ui.base.UiEffect
 import ru.alterland.launcher.ui.base.UiEvent
 import ru.alterland.launcher.ui.base.UiState
 
-class ServersContract {
+class ServerContract {
+
     sealed class Event : UiEvent
 
     data class State(
-        val serverProfiles: List<ServerProfile> = listOf(),
-        val userStrength: Int = 0
+        val serverProfile: ServerProfile
     ): UiState
 
     sealed class Effect: UiEffect()

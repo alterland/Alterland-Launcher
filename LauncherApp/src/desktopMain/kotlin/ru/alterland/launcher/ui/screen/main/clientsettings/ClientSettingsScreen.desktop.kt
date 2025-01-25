@@ -7,8 +7,9 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import ru.alterland.launcher.ui.screen.main.servers.client.ClientPayload
 
-actual class ClientSettingsScreen: Screen {
+actual class ClientSettingsScreen actual constructor(private val payload: ClientPayload): Screen {
 
     @Composable
     override fun Content() {

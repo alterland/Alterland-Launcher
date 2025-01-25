@@ -39,7 +39,7 @@ actual fun Dashboard(
             .background(AppTheme.colors.backgroundSecondary)
         ) {
             Column(
-                modifier = Modifier.padding(top = 20.dp).fillMaxHeight().fillMaxWidth(),
+                modifier = Modifier.padding(top = 20.dp).fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 LazyColumn {

@@ -2,24 +2,20 @@ package ru.alterland.launcher.ui.screen.main.clientsettings
 
 import alterlandlauncher.launcherapp.generated.resources.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
 import ru.alterland.launcher.ui.theme.AppTheme
-import ru.alterland.launcher.ui.widgets.CheckBox
 import ru.alterland.launcher.ui.widgets.Button
-
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.*
-import androidx.compose.ui.graphics.Color
+import ru.alterland.launcher.ui.widgets.CheckBox
 import ru.alterland.launcher.ui.widgets.Input
 
 //import androidx.activity.compose.rememberLauncherForActivityResult
@@ -264,23 +260,6 @@ fun ClientSettings(
 
             CheckBox(checked = state.autoConnect, text = stringResource(Res.string.client_settings_auto_connect)) {
                 onEvent(ClientSettingsContract.Event.OnAutoConnect)
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Button(
-                    text = stringResource(Res.string.back),
-                    onClick =  navigateBack,
-                    modifier = Modifier
-                        .padding(top = 14.dp)
-                        .width(155.dp)
-                        .height(35.dp)
-                )
             }
         }
     }

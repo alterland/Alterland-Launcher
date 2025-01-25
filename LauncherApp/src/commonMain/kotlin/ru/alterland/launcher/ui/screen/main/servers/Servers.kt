@@ -1,128 +1,115 @@
 package ru.alterland.launcher.ui.screen.main.servers
 
-import alterlandlauncher.launcherapp.generated.resources.Res
-import alterlandlauncher.launcherapp.generated.resources.role_play_bg
-import alterlandlauncher.launcherapp.generated.resources.rp_logo
-import androidx.compose.foundation.Image
+import alterlandlauncher.launcherapp.generated.resources.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.painterResource
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import cafe.adriel.voyager.core.registry.ScreenRegistry
+import cafe.adriel.voyager.navigator.tab.CurrentTab
+import cafe.adriel.voyager.navigator.tab.Tab
+import cafe.adriel.voyager.navigator.tab.TabNavigator
+import cafe.adriel.voyager.navigator.tab.TabOptions
+import org.jetbrains.compose.resources.stringResource
+import ru.alterland.launcher.domain.model.User
+import ru.alterland.launcher.ui.screen.main.MainScreenProvider
+import ru.alterland.launcher.ui.screen.main.editserver.EditServerPayload
+import ru.alterland.launcher.ui.screen.main.editserver.EditServerScreen
+import ru.alterland.launcher.ui.screen.main.server.ServerPayload
+import ru.alterland.launcher.ui.screen.main.servers.ServerTab.*
+import ru.alterland.launcher.ui.screen.main.servers.client.ClientPayload
 import ru.alterland.launcher.ui.theme.AppTheme
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(InternalVoyagerApi::class, ExperimentalUuidApi::class)
 @Composable
-fun Servers(
-    state: ServersContract.State,
-    onEvent: (e: ServersContract.Event) -> Unit,
-    clientNavigation: @Composable () -> Unit,
-    navigateToClientSettings: () -> Unit,
-    navigateToEditServer: (String) -> Unit
-) {
-    val pagerState = rememberPagerState(pageCount = { state.serversCount })
-
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            onEvent(ServersContract.Event.OnServerSelected(page))
-        }
-    }
-
-    if (state.currentServerProfile == null) return
+fun Servers(state: ServersContract.State) {
 
     VerticalPager(
-        state = pagerState,
-        modifier = Modifier.fillMaxHeight().fillMaxWidth()
-    ) {
-        Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
-            Image(
-                painter = painterResource(Res.drawable.role_play_bg),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color(0, 0, 0, 0x4D),
-                                    Color(0, 0, 0, 0x00),
+        state = rememberPagerState(pageCount = { state.serverProfiles.size }),
+        modifier = Modifier.fillMaxSize()
+    ) { page ->
+        state.serverProfiles.getOrNull(page)?.let { serverProfile ->
+            val tabs = mutableListOf<Tab>(
+                PlayTab(
+                    tabOptions = TabOptions(
+                        index = 0u,
+                        title = stringResource(Res.string.play)
+                    ),
+                    screen = ScreenRegistry.get(
+                        provider = MainScreenProvider.Server(
+                            payload = ServerPayload(serverProfile = serverProfile)
+                        )
+                    )
+                )
+            ).apply {
+                var i: UShort = 2u
+                serverProfile.clientProfile?.let { id ->
+                    add(
+                        ClientSettingsTab(
+                            tabOptions = TabOptions(
+                                index = i,
+                                title = stringResource(Res.string.settings)
+                            ),
+                            screen = ScreenRegistry.get(
+                                provider = MainScreenProvider.ClientSettings(
+                                    payload = ClientPayload(id = id)
                                 )
                             )
                         )
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color(0, 0, 0, 0x00),
-                                    Color(0, 0, 0, 0x4D)
-                                )
+                    )
+                    i++
+                }
+                if (state.userStrength >= User.Role.MIN_EDIT_STRENGTH) {
+                    add(
+                        EditServerTab(
+                            tabOptions = TabOptions(
+                                index = i,
+                                title = stringResource(Res.string.edit)
+                            ),
+                            screen = EditServerScreen(
+                                payload = EditServerPayload.Edit(serverProfile = serverProfile)
                             )
                         )
-                )
+                    )
+                    i++
+                    add(
+                        AddServerTab(
+                            tabOptions = TabOptions(
+                                index = i,
+                                title = stringResource(Res.string.add)
+                            ),
+                            screen = EditServerScreen(payload = EditServerPayload.Add)
+                        )
+                    )
+                    i++
+                }
             }
-            Column(
-                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(bottom = 20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.rp_logo),
-                    contentDescription = null,
-                    modifier = Modifier.padding(bottom = 14.dp)
-                )
+
+            Column(modifier = Modifier.fillMaxSize().background(AppTheme.colors.backgroundElevatedSecondary)) {
                 Text(
-                    state.currentServerProfile.description,
-                    color = AppTheme.colors.forceWhitePrimary,
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 14.dp)
+                    modifier = Modifier.padding(start = 24.dp, top = 16.dp),
+                    text = serverProfile.title,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 12.sp,
+                    color = AppTheme.colors.labelPrimary
                 )
-                clientNavigation()
-//                Row(
-//                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ) {
-//                    Button(
-//                        icon = painterResource(Res.drawable.ic_apparel),
-//                        backgroundColor = AppTheme.colors.backgroundElevatedTertiary,
-//                        modifier = Modifier.size(34.dp),
-//                        onClick = navigateToClientSettings
-//                    )
-//                    clientNavigation()
-//                    if (state.userStrength >= User.Role.MIN_EDIT_STRENGTH) {
-//                        Button(
-//                            icon = painterResource(Res.drawable.ic_edit),
-//                            backgroundColor = AppTheme.colors.backgroundElevatedTertiary,
-//                            modifier = Modifier.size(34.dp),
-//                            onClick = { navigateToEditServer(state.currentServerProfile.id) }
-//                        )
-//                    } else {
-//                        Box(modifier = Modifier.size(34.dp))
-//                    }
-//                }
+                TabNavigator(tabs.first()) { tabNavigator ->
+                    Row(modifier = Modifier.padding(start = 8.dp, top = 4.dp)) {
+                        tabs.forEach { tab -> TabItem(tab) }
+                    }
+                    CurrentTab()
+                }
             }
         }
     }
