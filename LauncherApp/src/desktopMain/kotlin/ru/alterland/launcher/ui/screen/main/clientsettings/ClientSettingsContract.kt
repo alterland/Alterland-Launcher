@@ -16,11 +16,10 @@ class ClientSettingsContract {
         data class OnApplyResolution(val width: Int, val height: Int) : Event()
         data object OnDefaultDirectory : Event()
 
-        data class OnWidthInput(val data: String): Event()
-        data class OnHeightInput(val data: String): Event()
+        data class OnWidthInput(val width: String): Event()
+        data class OnHeightInput(val height: String): Event()
 
-        data class OnPathChange(val path: String) : Event()
-        data object OnBrowseDirectory : Event()
+        data class OnDirectoryBrowsed(val directory: String): Event()
     }
 
     data class State(
@@ -31,12 +30,11 @@ class ClientSettingsContract {
         val autoConnect: Boolean = false,
         val screenResolution: Boolean = false,
 
-        val width: String = "",
-        val height: String = "",
+        val width: Int = 0,
+        val height: Int = 0,
 
-        val directoryPath: String = "",
-        val defaultDirectory: Boolean = false,
-
+        val directory: String = "",
+        val useDefaultDirectory: Boolean = true,
     ): UiState
 
     sealed class Effect: UiEffect() {

@@ -13,7 +13,6 @@ internal val repositoryModule = module {
     single<LocalStorage> {
         LocalStorageImpl(
             fileSystem = get(),
-            dispatcherIo = get(named(DISPATCHER_IO)),
             applicationIoScope = get(named(APPLICATION_IO_SCOPE)),
             platformConfiguration = get()
         )

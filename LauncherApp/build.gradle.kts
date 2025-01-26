@@ -76,6 +76,9 @@ kotlin {
 
             implementation(libs.kstore)
             implementation(libs.kstore.file)
+
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.compose)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -140,6 +143,9 @@ compose.desktop {
             description = "Access to the Alterland world"
             vendor = "Alterland"
             modules("java.instrument", "jdk.management", "jdk.unsupported")
+            linux {
+                modules("jdk.security.auth")
+            }
 
             //Use Other installer for Windows. E.g.: Inno Setup. IMPORTANT! - copy upgradeUuid value to the custom installer.
             windows {

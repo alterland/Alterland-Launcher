@@ -1,7 +1,6 @@
 package ru.alterland.launcher.data.repository
 
 import ru.alterland.launcher.data.mapper.toDomain
-import ru.alterland.launcher.data.source.local.LocalStoreFields.ACCESS_TOKEN
 import ru.alterland.launcher.data.source.network.UserApi
 import ru.alterland.launcher.data.source.network.model.request.ResetPasswordRequest
 import ru.alterland.launcher.data.source.network.model.request.SignInRequest
@@ -25,9 +24,7 @@ class UserRepositoryImpl(
                 password = password
             )
         )
-        result.accessToken?.let {
-            localStorage.store(ACCESS_TOKEN, it)
-        }
+        localStorage.setAccessToken(result.accessToken.orEmpty())
         result.toDomain().also {
             cachedUser = it
         }
@@ -41,9 +38,7 @@ class UserRepositoryImpl(
                 password = password
             )
         )
-        result.accessToken?.let {
-            localStorage.store(ACCESS_TOKEN, it)
-        }
+        localStorage.setAccessToken(result.accessToken.orEmpty())
         result.toDomain().also {
             cachedUser = it
         }
@@ -57,10 +52,8 @@ class UserRepositoryImpl(
     override suspend fun signOut() {
         runCatching {
             userApi.signOut()
-        }.onFailure {
-            //do nothing
         }
-        localStorage.remove(ACCESS_TOKEN)
+        localStorage.setAccessToken("")
         userApi.clearToken()
         cachedUser = null
     }

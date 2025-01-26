@@ -5,7 +5,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import ru.alterland.launcher.data.source.local.LocalStoreFields
 import ru.alterland.launcher.domain.model.AppEvent
 import ru.alterland.launcher.domain.model.MinecraftServerStatus
 import ru.alterland.launcher.domain.model.ServerProfile
@@ -30,7 +29,7 @@ class DashboardScreenModel(
 
     init {
         subscribeToErrors()
-        subscribeToStore()
+        subscribeToAccessToken()
         subscribeToServersUpdates()
         reload()
     }
@@ -106,9 +105,9 @@ class DashboardScreenModel(
         }
     }
 
-    private fun subscribeToStore() {
-        localStorage.storeFlow.onEach { store ->
-            if (store[LocalStoreFields.ACCESS_TOKEN] == null) {
+    private fun subscribeToAccessToken() {
+        localStorage.accessToken.onEach {
+            if (it.isEmpty()) {
                 errorRepository.clearErrors()
                 setEffect { DashboardContract.Effect.OnNavigateToAuth }
             }

@@ -3,7 +3,6 @@ package ru.alterland.launcher.ui.screen.auth.sign_in
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import ru.alterland.launcher.data.source.local.LocalStoreFields
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.domain.repository.UserRepository
 import ru.alterland.launcher.ui.base.BaseScreenModel
@@ -31,17 +30,15 @@ class SignInScreenModel(
 
     init {
         localStorage.storeFlow.onEach {
-            val remember = it[LocalStoreFields.REMEMBER].toBoolean()
+            val remember = it?.rememberMe == true
             when {
-                remember != state.value.remember ->
-                    setState { copy(remember = remember) }
+                remember != state.value.remember -> setState { copy(remember = remember) }
             }
         }.handleErrors(::onError).launchIn(screenModelScope)
     }
 
     private fun switchRememberMe() = screenModelScope.launchSafe(::onError) {
-        val value = localStorage.getBoolean(LocalStoreFields.REMEMBER) ?: false
-        localStorage.store(LocalStoreFields.REMEMBER, !value)
+        localStorage.update { it?.copy(rememberMe = !state.value.remember) }
     }
 
     private fun signIn() = screenModelScope.launchSafe(

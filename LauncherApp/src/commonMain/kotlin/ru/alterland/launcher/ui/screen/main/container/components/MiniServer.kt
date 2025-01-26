@@ -10,14 +10,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.skia.Image
 import ru.alterland.launcher.domain.model.MinecraftServerStatus
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.theme.defaultElementsShape
+import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 
@@ -28,14 +31,15 @@ fun MiniServer(
     modifier: Modifier = Modifier,
 ) {
 
-//    val bitmap = if (item.serverStatus is MinecraftServerStatus.Online) {
-//        item.serverStatus.favicon?.let {
-//            val imageByteArray = Base64.decode(it.replace("data:image/png;base64,", ""))
-//            Image.Companion.makeFromEncoded(imageByteArray).toComposeImageBitmap()
-//        }
-//    } else {
-//        null
-//    }
+    val bitmap = if (item.serverStatus is MinecraftServerStatus.Online) {
+        item.serverStatus.favicon?.let {
+            val imageByteArray = Base64.decode(it.replace("data:image/png;base64,", ""))
+            Image.Companion.makeFromEncoded(imageByteArray).toComposeImageBitmap()
+        }
+    } else {
+        null
+    }
+
     val defaultImage = painterResource(Res.drawable.client_cover)
 
     Row(
@@ -48,13 +52,13 @@ fun MiniServer(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (null != null) {
-//                Image(
-//                    bitmap = null,
-//                    contentScale = ContentScale.Crop,
-//                    contentDescription = null,
-//                    modifier = Modifier.size(32.dp).clip(defaultElementsShape)
-//                )
+            if (bitmap != null) {
+                Image(
+                    bitmap = bitmap,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp).clip(defaultElementsShape)
+                )
             } else {
                 Image(
                     painter = defaultImage,

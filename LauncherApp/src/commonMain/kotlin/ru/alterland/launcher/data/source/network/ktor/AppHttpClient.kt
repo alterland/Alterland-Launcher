@@ -13,7 +13,6 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import ru.alterland.launcher.AppConfig.apiBaseUrl
 import ru.alterland.launcher.BuildConfig
-import ru.alterland.launcher.data.source.local.LocalStoreFields
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.util.base.throwAppError
 
@@ -31,14 +30,10 @@ internal class AppHttpClient(
         install(Auth) {
             bearer {
                 loadTokens {
-                    localStorage.getString(LocalStoreFields.ACCESS_TOKEN)?.let {
-                        BearerTokens(it, null)
-                    }
+                    BearerTokens(localStorage.accessToken.value, null)
                 }
                 refreshTokens {
-                    localStorage.getString(LocalStoreFields.ACCESS_TOKEN)?.let {
-                        BearerTokens(it, null)
-                    }
+                    BearerTokens(localStorage.accessToken.value, null)
                 }
             }
         }

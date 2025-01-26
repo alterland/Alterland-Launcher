@@ -4,7 +4,6 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import ru.alterland.launcher.data.source.local.LocalStoreFields
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.ui.base.BaseScreenModel
 import ru.alterland.launcher.util.extentions.handleErrors
@@ -16,7 +15,7 @@ class AuthContainerScreenModel(
 ) {
 
     init {
-        subscribeToStore()
+        subscribeToAccessToken()
         subscribeToErrors()
     }
 
@@ -26,9 +25,9 @@ class AuthContainerScreenModel(
         }
     }
 
-    private fun subscribeToStore() {
-        localStorage.storeFlow.onEach { store ->
-            store[LocalStoreFields.ACCESS_TOKEN]?.apply {
+    private fun subscribeToAccessToken() {
+        localStorage.accessToken.onEach {
+            if (it.isNotEmpty()) {
                 errorRepository.clearErrors()
                 setEffect { AuthContainerContract.Effect.OnNavigateToDashboard }
             }

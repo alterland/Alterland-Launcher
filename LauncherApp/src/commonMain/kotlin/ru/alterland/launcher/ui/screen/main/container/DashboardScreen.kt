@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.core.registry.ScreenRegistry
+import cafe.adriel.voyager.core.registry.rememberScreen
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -35,6 +36,8 @@ class DashboardScreen: Screen {
 
         val navigator = LocalNavigator.currentOrThrow
 
+        val addServerScreen = rememberScreen(MainScreenProvider.EditServer(payload = EditServerPayload.Add))
+
         effects.firstOrNull()?.let { effect ->
             LaunchedEffect(effect) {
                 when (effect) {
@@ -57,8 +60,7 @@ class DashboardScreen: Screen {
                 }
             },
             navigateToAddServer = {
-                val screen = ScreenRegistry.get(MainScreenProvider.EditServer(payload = EditServerPayload.Add))
-                navigator.push(screen)
+                navigator.push(addServerScreen)
             }
         )
     }

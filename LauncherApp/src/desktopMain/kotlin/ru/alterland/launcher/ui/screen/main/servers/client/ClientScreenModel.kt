@@ -3,7 +3,6 @@ package ru.alterland.launcher.ui.screen.main.servers.client
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import ru.alterland.launcher.data.source.local.LocalStoreFields
 import ru.alterland.launcher.domain.model.clientprofile.ClientProfile
 import ru.alterland.launcher.domain.model.clientprofile.Feature
 import ru.alterland.launcher.domain.model.clientprofile.Player
@@ -51,7 +50,7 @@ class ClientScreenModel(
                 clientProfile = it,
                 player = Player(
                     id = user.id,
-                    accessToken = localStorage.getString(LocalStoreFields.ACCESS_TOKEN) ?: "",
+                    accessToken = localStorage.accessToken.value,
                     nickname = user.nickname
                 ),
                 features = mapOf(Feature.HAS_CUSTOM_RESOLUTION to false)

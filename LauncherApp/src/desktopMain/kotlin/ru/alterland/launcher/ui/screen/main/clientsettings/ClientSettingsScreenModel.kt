@@ -1,15 +1,23 @@
 package ru.alterland.launcher.ui.screen.main.clientsettings
 
+import ru.alterland.launcher.PlatformConfiguration
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.ui.base.BaseScreenModel
 
 class ClientSettingsScreenModel(
-    private val localStorage: LocalStorage
+    private val localStorage: LocalStorage,
+    private val platformConfiguration: PlatformConfiguration
 ) : BaseScreenModel<ClientSettingsContract.Event, ClientSettingsContract.State, ClientSettingsContract.Effect>(
-    initialState = ClientSettingsContract.State()
+    initialState = ClientSettingsContract.State(
+        directory = "/Users/aviator737/alterland",
+        width = SCREEN_WIDTH_DEFAULT,
+        height = SCREEN_HEIGHT_DEFAULT
+    )
 ) {
 
     private val recommendedCustomRam = RamSettings.CustomRamSettings(TEMP_RECOMMENDED_MEM, 16, 1024f, 16384f)
+
+    private val defaultDirectory = platformConfiguration.rootDir
 
     init {
         initRamSettings()
@@ -25,12 +33,25 @@ class ClientSettingsScreenModel(
             is ClientSettingsContract.Event.OnApplyResolution -> handleApplyResolution()
             is ClientSettingsContract.Event.OnDefaultDirectory -> handleDefaultDirectory()
 
-            is ClientSettingsContract.Event.OnWidthInput -> setState { copy(width = event.data) }
-            is ClientSettingsContract.Event.OnHeightInput -> setState { copy(height = event.data) }
+            is ClientSettingsContract.Event.OnWidthInput -> handleWidthInput(event.width)
+            is ClientSettingsContract.Event.OnHeightInput -> handleHeightInput(event.height)
 
-            is ClientSettingsContract.Event.OnPathChange -> setState { copy(directoryPath = event.path)}
-            is ClientSettingsContract.Event.OnBrowseDirectory -> {} //-
+            is ClientSettingsContract.Event.OnDirectoryBrowsed -> handleDirectoryBrowsed(event.directory)
         }
+    }
+
+    private fun handleDirectoryBrowsed(directory: String) {
+        setState { copy(directory = directory) }
+    }
+
+    private fun handleWidthInput(width: String) {
+        val w = try { width.toInt() } catch (_: Exception) { SCREEN_WIDTH_DEFAULT }
+        setState { copy(width = w) }
+    }
+
+    private fun handleHeightInput(height: String) {
+        val h = try { height.toInt() } catch (_: Exception) { SCREEN_HEIGHT_DEFAULT }
+        setState { copy(width = h) }
     }
 
     private fun handleRamSliderValueSelected(value: Float) {
@@ -58,7 +79,7 @@ class ClientSettingsScreenModel(
     }
 
     private fun handleDefaultDirectory() {
-        setState { copy(defaultDirectory = !defaultDirectory)}
+        //setState { copy(defaultDirectory = !defaultDirectory)}
     }
 
     private fun initRamSettings() {
@@ -66,6 +87,9 @@ class ClientSettingsScreenModel(
     }
 
     companion object {
+        private const val SCREEN_WIDTH_DEFAULT = 600
+        private const val SCREEN_HEIGHT_DEFAULT = 400
+
         private const val TEMP_RECOMMENDED_MEM = 6445.0f
     }
 }

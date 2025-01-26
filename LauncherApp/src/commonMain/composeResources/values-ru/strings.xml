@@ -31,6 +31,8 @@
     <string name="exabytes">ЭБ</string>
 
     <string name="settings">Настройки</string>
+    <string name="client_settings_directory">Расположение</string>
+    <string name="client_settings_directory_browse">Обзор...</string>
     <string name="jvm_settings">Память (ОЗУ)</string>
     <string name="jvm_settings_use_recommended_ram">Авто-выбор значения</string>
     <string name="client_settings">Игра</string>
@@ -62,6 +64,7 @@
     <string name="edit_server_port">Порт</string>
     <string name="edit_server_client_profile">Связанный клиент</string>
     <string name="edit_server_client_profile_edit">Редактировать клиент</string>
+
     <string name="edit">Редактировать</string>
     <string name="add">Добавить</string>
     <string name="save">Сохранить</string>

@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
-import cafe.adriel.voyager.core.registry.ScreenRegistry
+import cafe.adriel.voyager.core.registry.rememberScreen
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
@@ -46,7 +46,7 @@ fun Servers(state: ServersContract.State) {
                         index = 0u,
                         title = stringResource(Res.string.play)
                     ),
-                    screen = ScreenRegistry.get(
+                    screen = rememberScreen(
                         provider = MainScreenProvider.Server(
                             payload = ServerPayload(serverProfile = serverProfile)
                         )
@@ -61,7 +61,7 @@ fun Servers(state: ServersContract.State) {
                                 index = i,
                                 title = stringResource(Res.string.settings)
                             ),
-                            screen = ScreenRegistry.get(
+                            screen = rememberScreen(
                                 provider = MainScreenProvider.ClientSettings(
                                     payload = ClientPayload(id = id)
                                 )

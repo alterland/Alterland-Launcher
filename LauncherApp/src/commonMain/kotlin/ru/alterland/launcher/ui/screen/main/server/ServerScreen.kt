@@ -3,7 +3,7 @@ package ru.alterland.launcher.ui.screen.main.server
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import cafe.adriel.voyager.core.registry.ScreenRegistry
+import cafe.adriel.voyager.core.registry.rememberScreen
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -23,7 +23,7 @@ class ServerScreen(
         val state by screenModel.state.collectAsState()
 
         val clientScreen = state.serverProfile.clientProfile?.let {
-            ScreenRegistry.get(MainScreenProvider.Client(payload = ClientPayload(id = it)))
+            rememberScreen(MainScreenProvider.Client(payload = ClientPayload(id = it)))
         }
 
         Server(
