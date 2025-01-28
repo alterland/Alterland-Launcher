@@ -11,7 +11,7 @@ plugins {
 }
 
 buildConfig {
-    buildConfigField("boolean", "DEV_ENV", "${false}")
+    buildConfigField("boolean", "DEV_ENV", "${true}")
     buildConfigField("String", "DEV_API_BASE_URL", "\"localhost:3000\"")
     buildConfigField("String", "PROD_API_BASE_URL", "\"alterland-alapi-ktor-25de.twc1.net\"")
     buildConfigField("String", "MOJANG_ASSETS_HOST", "\"https://resources.download.minecraft.net\"")
@@ -79,6 +79,8 @@ kotlin {
 
             implementation(libs.filekit.core)
             implementation(libs.filekit.compose)
+
+            implementation(libs.minecraft.skin.renderer)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
