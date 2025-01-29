@@ -50,7 +50,7 @@ class ClientScreenModel(
                 clientProfile = it,
                 player = Player(
                     id = user.id,
-                    accessToken = localStorage.accessToken.value,
+                    accessToken = localStorage.accessToken.value.orEmpty(),
                     nickname = user.nickname
                 ),
                 features = mapOf(Feature.HAS_CUSTOM_RESOLUTION to false)

@@ -26,7 +26,7 @@ class ServerProfilesRepositoryImpl(
     private val json: Json
 ): ServerProfilesRepository {
 
-    private val serverProfilesDir = platformConfiguration.rootDir v BuildConfig.SERVER_PROFILES_FOLDER
+    private val serverProfilesDir = platformConfiguration.defaultDir v BuildConfig.SERVER_PROFILES_FOLDER
     private val serverProfilesPath = Path(serverProfilesDir)
 
     private var cachedServerProfiles: List<ServerProfile> = listOf()

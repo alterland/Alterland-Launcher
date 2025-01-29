@@ -5,11 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StoreV1(
-    @SerialName("accessToken") val accessToken: String? = "",
-    @SerialName("rememberMe") val rememberMe: Boolean? = true,
-    @SerialName("launchAfterUpdate") val launchAfterUpdate: Boolean? = true,
-    @SerialName("launchFullscreen") val launchFullscreen: Boolean? = false,
-    @SerialName("screenWidth") val screenWidth: Int? = 600,
-    @SerialName("screenHeight") val screenHeight: Int? = 400,
-    @SerialName("clientSettings") val clientSettings: Map<String, ClientSettingsV1>? = mapOf()
+    @SerialName("accessToken") val accessToken: String? = null,
+    @SerialName("rememberMe") val rememberMe: Boolean? = null,
+    @SerialName("launchAfterUpdate") val launchAfterUpdate: Boolean? = null,
+    @SerialName("launchFullscreen") val launchFullscreen: Boolean? = null,
+    @SerialName("screenWidth") val screenWidth: Int? = null,
+    @SerialName("screenHeight") val screenHeight: Int? = null,
+    @SerialName("currentDir") val currentDir: String? = null,
+    @SerialName("clientSettings") val clientSettings: Map<String, ClientSettingsV1>? = null
 )

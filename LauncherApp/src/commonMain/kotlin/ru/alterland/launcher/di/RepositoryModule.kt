@@ -12,9 +12,9 @@ internal val repositoryModule = module {
     single<AppEventRepository> { AppEventRepositoryImpl(scope = get(named(APPLICATION_SCOPE))) }
     single<LocalStorage> {
         LocalStorageImpl(
-            fileSystem = get(),
             applicationIoScope = get(named(APPLICATION_IO_SCOPE)),
-            platformConfiguration = get()
+            platformConfiguration = get(),
+            json = get()
         )
     }
     single<UserRepository> {

@@ -1,9 +1,9 @@
 package ru.alterland.launcher.ui.screen.main.clientsettings
 
 import alterlandlauncher.launcherapp.generated.resources.Res
+import alterlandlauncher.launcherapp.generated.resources.client_settings_default_directory
 import alterlandlauncher.launcherapp.generated.resources.client_settings_directory
 import alterlandlauncher.launcherapp.generated.resources.client_settings_directory_browse
-import alterlandlauncher.launcherapp.generated.resources.client_settings_launch_fullscreen
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -49,15 +49,15 @@ fun ClientSettings(
             )
         }
         CheckBox(
-            checked = state.useDefaultDirectory,
+            checked = state.isDefaultDirectory,
             modifier = Modifier.padding(end = 8.dp),
-            text = stringResource(Res.string.client_settings_launch_fullscreen),
+            text = stringResource(Res.string.client_settings_default_directory),
         ) {
-            onEvent(ClientSettingsContract.Event.OnLaunchFullScreen)
+            onEvent(ClientSettingsContract.Event.OnDefaultDirectoryClick)
         }
     }
 }
-//
+
 ////    val directoryPickerLauncher = rememberLauncherForActivityResult(
 ////        contract = ActivityResultContracts.OpenDocumentTree()
 ////    ) { uri: Uri? ->

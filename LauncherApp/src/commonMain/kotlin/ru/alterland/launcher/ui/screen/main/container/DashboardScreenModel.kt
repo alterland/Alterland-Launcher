@@ -107,7 +107,7 @@ class DashboardScreenModel(
 
     private fun subscribeToAccessToken() {
         localStorage.accessToken.onEach {
-            if (it.isEmpty()) {
+            if (it.isNullOrEmpty()) {
                 errorRepository.clearErrors()
                 setEffect { DashboardContract.Effect.OnNavigateToAuth }
             }

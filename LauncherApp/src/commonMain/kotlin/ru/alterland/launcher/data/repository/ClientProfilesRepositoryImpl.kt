@@ -31,7 +31,7 @@ class ClientProfilesRepositoryImpl(
     private val json: Json
 ): ClientProfilesRepository {
 
-    private val clientProfilesDir = platformConfiguration.rootDir v BuildConfig.CLIENT_PROFILES_FOLDER
+    private val clientProfilesDir = platformConfiguration.defaultDir v BuildConfig.CLIENT_PROFILES_FOLDER
     private val clientProfilesPath = Path(clientProfilesDir)
 
     private val _clientProfiles = MutableStateFlow<List<ClientProfile>>(listOf())

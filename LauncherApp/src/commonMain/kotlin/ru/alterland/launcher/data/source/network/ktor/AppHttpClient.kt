@@ -30,10 +30,10 @@ internal class AppHttpClient(
         install(Auth) {
             bearer {
                 loadTokens {
-                    BearerTokens(localStorage.accessToken.value, null)
+                    BearerTokens(localStorage.accessToken.value.orEmpty(), null)
                 }
                 refreshTokens {
-                    BearerTokens(localStorage.accessToken.value, null)
+                    BearerTokens(localStorage.accessToken.value.orEmpty(), null)
                 }
             }
         }

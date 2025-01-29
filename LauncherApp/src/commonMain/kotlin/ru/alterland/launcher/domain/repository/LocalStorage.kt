@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.StateFlow
 import ru.alterland.launcher.domain.model.Store
 
 interface LocalStorage {
-    val accessToken: StateFlow<String>
-    suspend fun setAccessToken(accessToken: String)
+    val accessToken: StateFlow<String?>
+    suspend fun setAccessToken(accessToken: String?)
 
     val storeFlow: Flow<Store?>
     suspend fun get(): Store?

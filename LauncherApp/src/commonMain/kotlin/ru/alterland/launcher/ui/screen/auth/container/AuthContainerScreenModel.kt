@@ -27,7 +27,7 @@ class AuthContainerScreenModel(
 
     private fun subscribeToAccessToken() {
         localStorage.accessToken.onEach {
-            if (it.isNotEmpty()) {
+            if (!it.isNullOrEmpty()) {
                 errorRepository.clearErrors()
                 setEffect { AuthContainerContract.Effect.OnNavigateToDashboard }
             }

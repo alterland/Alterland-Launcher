@@ -31,8 +31,7 @@ data class EditServerScreen(private val payload: EditServerPayload): Screen {
 
         EditServer(
             state = state,
-            onEvent = { e -> screenModel.onEvent(e) },
-            navigateBack = { navigator.pop() }
+            onEvent = { e -> screenModel.onEvent(e) }
         )
     }
 }

@@ -80,7 +80,7 @@ class ClientFilesRepositoryImpl(
         indexes
             .filter { testRules(it.rules) }
             .flatMap { index ->
-                val indexPath = Path(platformConfiguration.rootDir v index.indexPath)
+                val indexPath = Path(platformConfiguration.defaultDir v index.indexPath)
                 val checkSum = if (fileSystem.exists(indexPath)) indexPath.checkSum(fileSystem) else null
                 if (checkSum == null || index.checkSum != checkSum) {
                     fileSystem.delete(indexPath, mustExist = false)
@@ -101,7 +101,7 @@ class ClientFilesRepositoryImpl(
         indexes
             .filter { testRules(it.rules) }
             .filter { index ->
-                val indexPath = Path(platformConfiguration.rootDir v index.path)
+                val indexPath = Path(platformConfiguration.defaultDir v index.path)
                 val checkSum = if (fileSystem.exists(indexPath)) indexPath.checkSum(fileSystem) else null
                 (checkSum == null || index.checkSum != checkSum && !index.allowChanges).also {
                     if (it) println("Хеш файла $indexPath отличается.\nОжидается: ${index.checkSum}\nФактически: $checkSum")
@@ -143,7 +143,7 @@ class ClientFilesRepositoryImpl(
             async {
                 semaphore.acquire()
                 try {
-                    val path = Path(platformConfiguration.rootDir v it.path)
+                    val path = Path(platformConfiguration.defaultDir v it.path)
                     fileSystem.delete(path, mustExist = false)
                     downloadFile(downloadUrl = it.url, savePath = path, onBytesReceived)
                 } catch (e: Exception) {

@@ -5,13 +5,14 @@ import ru.alterland.launcher.data.source.local.model.StoreV1
 import ru.alterland.launcher.domain.model.Store
 
 fun StoreV1.toDomain() = Store(
-    accessToken = accessToken.orEmpty(),
-    rememberMe = rememberMe == true,
-    launchAfterUpdate = launchAfterUpdate == true,
-    launchFullscreen = launchFullscreen == true,
-    screenWidth = screenWidth ?: 0,
-    screenHeight = screenHeight ?: 0,
-    clientSettings = clientSettings?.mapValues { entry -> entry.value.toDomain() }.orEmpty()
+    accessToken = accessToken,
+    rememberMe = rememberMe,
+    launchAfterUpdate = launchAfterUpdate,
+    launchFullscreen = launchFullscreen,
+    screenWidth = screenWidth,
+    screenHeight = screenHeight,
+    currentDir = currentDir,
+    clientSettings = clientSettings?.mapValues { entry -> entry.value.toDomain() }
 )
 
 fun ClientSettingsV1.toDomain() = Store.ClientSettings(
@@ -25,7 +26,8 @@ fun Store.toVersion() = StoreV1(
     launchFullscreen = launchFullscreen,
     screenWidth = screenWidth,
     screenHeight = screenHeight,
-    clientSettings = clientSettings.mapValues { entry -> entry.value.toVersion() }
+    currentDir = currentDir,
+    clientSettings = clientSettings?.mapValues { entry -> entry.value.toVersion() }
 )
 
 fun Store.ClientSettings.toVersion() = ClientSettingsV1(

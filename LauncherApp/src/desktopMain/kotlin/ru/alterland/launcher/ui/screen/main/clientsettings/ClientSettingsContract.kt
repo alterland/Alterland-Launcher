@@ -10,11 +10,11 @@ class ClientSettingsContract {
         data object OnUseRecommendedRamValueClick: Event()
         data class OnRamSliderValueSelected(val value: Float): Event()
 
-        data object OnLaunchAfterUpdate : Event()
-        data object OnLaunchFullScreen : Event()
-        data object OnAutoConnect : Event()
+        data object OnLaunchAfterUpdateClick : Event()
+        data object OnLaunchFullScreenClick : Event()
+        data object OnAutoConnectClick : Event()
         data class OnApplyResolution(val width: Int, val height: Int) : Event()
-        data object OnDefaultDirectory : Event()
+        data object OnDefaultDirectoryClick : Event()
 
         data class OnWidthInput(val width: String): Event()
         data class OnHeightInput(val height: String): Event()
@@ -23,18 +23,18 @@ class ClientSettingsContract {
     }
 
     data class State(
+        val directory: String = "",
+        val isDefaultDirectory: Boolean = false,
+
+        val width: Int = 0,
+        val height: Int = 0,
+
         val ramSettings: RamSettings? = null,
         val useRecommendedRamValue: Boolean = false,
         val launchAfterUpdate: Boolean = false,
         var launchFullScreen: Boolean = false,
         val autoConnect: Boolean = false,
         val screenResolution: Boolean = false,
-
-        val width: Int = 0,
-        val height: Int = 0,
-
-        val directory: String = "",
-        val useDefaultDirectory: Boolean = true,
     ): UiState
 
     sealed class Effect: UiEffect() {

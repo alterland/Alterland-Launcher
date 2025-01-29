@@ -32,13 +32,13 @@ class LaunchRepositoryImpl(
         val features = features.mapKeys { it.key.value }
         val gameArguments = clientProfile.gameArguments.filter { testRules(it.rules, features) }.flatMap { it.value }
         val jvmArguments = clientProfile.jvmArguments.filter { testRules(it.rules, features) }.flatMap { it.value }
-        val classPath = clientProfile.downloads.filter { it.classPath && testRules(it.rules) }.map { "${platformConfiguration.rootDir}${it.path}" }
+        val classPath = clientProfile.downloads.filter { it.classPath && testRules(it.rules) }.map { "${platformConfiguration.defaultDir}${it.path}" }
 
         val launchParams = LaunchParams(
             id = clientProfile.id,
             gameArguments = gameArguments,
             jvmArguments = jvmArguments,
-            workDir = platformConfiguration.rootDir,
+            workDir = platformConfiguration.defaultDir,
             accessToken = player.accessToken,
             uuid = player.id,
             nickname = player.nickname,

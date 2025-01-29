@@ -16,8 +16,7 @@ import ru.alterland.launcher.util.base.Resource
 @Composable
 fun EditServer(
     state: EditServerContract.State,
-    onEvent: (e: EditServerContract.Event) -> Unit,
-    navigateBack: () -> Unit
+    onEvent: (e: EditServerContract.Event) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -95,7 +94,7 @@ fun EditServer(
             state.serverProfile.clientProfile?.let {
                 Button(
                     text = stringResource(Res.string.edit_server_client_profile_edit),
-                    onClick = navigateBack,
+                    onClick = {  },
                     modifier = Modifier.padding(top = 14.dp).height(35.dp)
                 )
             }
@@ -105,15 +104,6 @@ fun EditServer(
             text = stringResource(Res.string.save),
             isLoading = state.isSaveInProgress,
             onClick = { onEvent(EditServerContract.Event.OnSaveClick) },
-            modifier = Modifier
-                .padding(top = 14.dp)
-                .width(155.dp)
-                .height(35.dp)
-        )
-        Button(
-            text = stringResource(Res.string.back),
-            backgroundColor = AppTheme.colors.backgroundElevatedTertiary,
-            onClick = navigateBack,
             modifier = Modifier
                 .padding(top = 14.dp)
                 .width(155.dp)
