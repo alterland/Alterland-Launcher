@@ -60,4 +60,8 @@
 -dontwarn org.slf4j.**
 -dontwarn ch.qos.logback.core.net.*
 
+#FileKit
+-keep class com.sun.jna.** { *; }
+-keep class * implements com.sun.jna.** { *; }
+
 -ignorewarnings
