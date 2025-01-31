@@ -49,4 +49,9 @@ internal val repositoryModule = module {
             json = get()
         )
     }
+    single<SkinRepository> {
+        SkinRepositoryImpl(
+            dispatcherIo = get(named(DISPATCHER_IO))
+        )
+    }
 }

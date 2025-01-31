@@ -17,13 +17,16 @@ class SkinsContract {
         data class DeleteSkin(val skin: Skin) : Event()
 
         data class UpdateNewName(val newName: String) : Event()
+
+        data class ToggleHover(val skin: Skin) : Event()
     }
 
     data class State(
         val currentSkin: Skin? = null,
         val skinLibrary: List<Skin> = emptyList(),
         val renamingSkin: Skin? = null,
-        val newName: String = ""
+        val newName: String = "",
+        val hoveredSkin: Skin? = null,
         ): UiState
 
     sealed class Effect: UiEffect() {

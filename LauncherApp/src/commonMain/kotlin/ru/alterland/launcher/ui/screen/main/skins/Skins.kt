@@ -28,6 +28,7 @@ import androidx.compose.ui.window.DialogProperties
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType
+import io.ktor.http.content.*
 import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.Button
@@ -38,15 +39,12 @@ import ru.alterland.launcher.ui.widgets.Input
 fun Skins(
     state: SkinsContract.State,
     onEvent: (e: SkinsContract.Event) -> Unit,
-    navigateBack: () -> Unit,
 ) {
     val launcher = rememberFilePickerLauncher(
         type = PickerType.Image,
         mode = PickerMode.Single,
         title = "Выберите скин"
     ) { directory -> directory?.path?.let { onEvent(SkinsContract.Event.AddSkin(path = it)) } }
-
-//    var newName by remember { mutableStateOf("") }
 
     state.renamingSkin?.let { renamingSkin ->
         Dialog(
@@ -67,11 +65,14 @@ fun Skins(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Input(
-//                    text = newName,
                     text = state.newName,
                     singleLine = true,
-//                    onInput = { newName = it },
-                    onInput = { onEvent(SkinsContract.Event.UpdateNewName(it))},
+//                    onInput = { onEvent(SkinsContract.Event.UpdateNewName(it))},
+                    onInput = {
+                        if (it.length <= 10) {
+                            onEvent(SkinsContract.Event.UpdateNewName(it))
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -125,7 +126,7 @@ fun Skins(
                     Image(
                         painter = skin.image.toPainter(),
                         contentDescription = null,
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Fit,
                         modifier = Modifier.size(250.dp)
                     )
                 }
@@ -179,8 +180,6 @@ fun Skins(
                 }
 
                 items(state.skinLibrary) { skin ->
-                    var isHovered by remember { mutableStateOf(false) }
-
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -194,12 +193,6 @@ fun Skins(
                             fontSize = 16.sp,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
-//                    }
-
-//                    Text(
-//                        text = skin.name,
-//                        color = Color.White,
-//                    )
                         Box(
                             modifier = Modifier
                                 .size(200.dp)
@@ -207,7 +200,7 @@ fun Skins(
                                 .background(Color.Transparent)
                                 .pointerInput(Unit) {
                                     detectTapGestures(
-                                        onTap = { isHovered = !isHovered }
+                                        onTap = { onEvent(SkinsContract.Event.ToggleHover(skin))}
                                     )
                                 },
                             contentAlignment = Alignment.Center
@@ -222,7 +215,8 @@ fun Skins(
                                         .align(Alignment.Center)
                                 )
 
-                                if (isHovered) {
+                                println(state.hoveredSkin)
+                                if (state.hoveredSkin == skin) {
                                     Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -231,22 +225,26 @@ fun Skins(
                                         verticalArrangement = Arrangement.spacedBy(6.dp),
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                     ) {
+                                        val buttonModifier = Modifier
+                                            .fillMaxWidth(1f)
+                                            .height(25.dp)
+
                                         Button(
                                             text = "Применить",
                                             onClick = { onEvent(SkinsContract.Event.ApplySkin(skin)) },
-                                            modifier = Modifier.height(25.dp),
+                                            modifier = buttonModifier,
                                             backgroundColor = Color.Gray,
                                         )
                                         Button(
                                             text = "Переименовать",
                                             onClick = { onEvent(SkinsContract.Event.RenameSkin(skin)) },
-                                            modifier = Modifier.height(25.dp),
+                                            modifier = buttonModifier,
                                             backgroundColor = Color.Gray
                                         )
                                         Button(
                                             text = "Удалить",
                                             onClick = { onEvent(SkinsContract.Event.DeleteSkin(skin)) },
-                                            modifier = Modifier.height(25.dp),
+                                            modifier = buttonModifier,
                                             backgroundColor = Color.Gray
                                         )
                                     }
@@ -259,11 +257,3 @@ fun Skins(
         }
     }
 }
-//    Button(
-//        text = stringResource(Res.string.back),
-//        onClick = navigateBack,
-//        modifier = Modifier
-//            .padding(top = 12.dp)
-//            .width(155.dp)
-//            .height(35.dp)
-//    )

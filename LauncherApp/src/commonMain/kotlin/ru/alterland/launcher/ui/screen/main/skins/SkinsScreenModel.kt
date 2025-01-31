@@ -1,6 +1,7 @@
 package ru.alterland.launcher.ui.screen.main.skins
 
 import cafe.adriel.voyager.core.model.screenModelScope
+import cafe.adriel.voyager.core.registry.screenModule
 import ru.alterland.launcher.ui.base.BaseScreenModel
 import ru.alterland.launcher.domain.repository.SkinRepository
 import ru.alterland.launcher.domain.model.Skin
@@ -19,22 +20,18 @@ class SkinsScreenModel(
     override fun onEvent(event: SkinsContract.Event) {
         when(event) {
             is SkinsContract.Event.ApplySkin -> setState { copy(currentSkin = event.skin) }
-
             is SkinsContract.Event.AddSkin -> addSkin(event.path)
-
-            is SkinsContract.Event.RenameSkin -> setState { copy(renamingSkin = event.skin) }
-
+            is SkinsContract.Event.RenameSkin -> setState { copy(renamingSkin = event.skin, newName = "") }
             is SkinsContract.Event.UpdateNewName -> setState { copy(newName = event.newName) }
-
-            is SkinsContract.Event.FinishRename -> {
-                val updatedLibrary = state.value.skinLibrary.map {
-                    if (it == event.skin) it.copy(name = event.newName) else it
-                }
-                setState { copy(skinLibrary = updatedLibrary, renamingSkin = null) }
-            }
-//            is ClientSkinSettingsContract.Event.DeleteSkin -> setState { copy(skinLibrary = state.value.skinLibrary.filter { it != event.skin}) }
+            is SkinsContract.Event.FinishRename -> renameSkin(event.skin, event.newName)
             is SkinsContract.Event.DeleteSkin -> deleteSkin(event.skin)
+//            is SkinsContract.Event.ToggleHover -> { setState { copy(hoveredSkin = if (hoveredSkin == event.skin) null else event.skin) }}
+            is SkinsContract.Event.ToggleHover -> handleToggleHover(event.skin)
         }
+    }
+
+    private fun handleToggleHover(skin: Skin) {
+        setState { copy(hoveredSkin = if (hoveredSkin == skin) null else skin) }
     }
 
     private fun addSkin(path: String) = screenModelScope.launchSafe(::onError) {
@@ -47,13 +44,15 @@ class SkinsScreenModel(
         setState { copy(skinLibrary = skins)}
     }
 
-//    private fun deleteSkin(skin: Skin) = screenModelScope.launchSafe(::onError) {
-//        skinRepository.deleteSkin(skin)
-//        loadSkins()
-//    }
+    private fun renameSkin(skin: Skin, newName: String) = screenModelScope.launchSafe(::onError) {
+        skinRepository.renameSkin(skin, newName)
+        loadSkins()
+        setState { copy(renamingSkin = null) }
+    }
 
-    private fun deleteSkin(skin: Skin) = setState {
-        copy(skinLibrary = skinLibrary.filterNot { it == skin })
+    private fun deleteSkin(skin: Skin) = screenModelScope.launchSafe(::onError){
+        skinRepository.deleteSkin(skin)
+        loadSkins()
     }
 
 }

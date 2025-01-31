@@ -42,6 +42,14 @@ sealed class ServerTab @OptIn(ExperimentalUuidApi::class) constructor(
         screen = screen
     )
 
+    data class SkinsTab(
+        private val tabOptions: TabOptions,
+        private val screen: Screen
+    ): ServerTab(
+        tabOptions = tabOptions,
+        screen = screen
+    )
+
     data class EditServerTab(
         private val tabOptions: TabOptions,
         private val screen: Screen

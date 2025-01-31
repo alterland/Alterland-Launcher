@@ -10,6 +10,7 @@ import ru.alterland.launcher.ui.screen.main.container.DashboardScreenModel
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerScreenModel
 import ru.alterland.launcher.ui.screen.main.server.ServerScreenModel
 import ru.alterland.launcher.ui.screen.main.servers.ServersScreenModel
+import ru.alterland.launcher.ui.screen.main.skins.SkinsScreenModel
 
 internal val screenModelModule = module {
     factoryOf(::AuthContainerScreenModel)
@@ -21,4 +22,5 @@ internal val screenModelModule = module {
     factoryOf(::ServersScreenModel)
     factoryOf(::ServerScreenModel)
     factoryOf(::EditServerScreenModel)
+    factoryOf(::SkinsScreenModel)
 }

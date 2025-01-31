@@ -11,6 +11,8 @@ import ru.alterland.launcher.ui.screen.main.server.ServerScreen
 import ru.alterland.launcher.ui.screen.main.servers.ServersScreen
 import ru.alterland.launcher.ui.screen.main.servers.client.ClientPayload
 import ru.alterland.launcher.ui.screen.main.servers.client.ClientScreen
+import ru.alterland.launcher.ui.screen.main.skins.Skins
+import ru.alterland.launcher.ui.screen.main.skins.SkinsScreen
 
 sealed class MainScreenProvider: ScreenProvider {
     data object Dashboard: MainScreenProvider()
@@ -19,6 +21,7 @@ sealed class MainScreenProvider: ScreenProvider {
     data class ClientSettings(val payload: ClientPayload): MainScreenProvider()
     data class Client(val payload: ClientPayload): MainScreenProvider()
     data class EditServer(val payload: EditServerPayload): MainScreenProvider()
+    data object Skins: MainScreenProvider()
 }
 
 val mainScreenModule = screenModule {
@@ -28,4 +31,5 @@ val mainScreenModule = screenModule {
     register<MainScreenProvider.ClientSettings> { provider -> ClientSettingsScreen(payload = provider.payload) }
     register<MainScreenProvider.Client> { provider -> ClientScreen(payload = provider.payload) }
     register<MainScreenProvider.EditServer> { provider -> EditServerScreen(payload = provider.payload) }
+    register<MainScreenProvider.Skins> { SkinsScreen() }
 }

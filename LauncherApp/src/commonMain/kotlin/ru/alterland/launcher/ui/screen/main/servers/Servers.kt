@@ -51,6 +51,15 @@ fun Servers(state: ServersContract.State) {
                             payload = ServerPayload(serverProfile = serverProfile)
                         )
                     )
+                ),
+                SkinsTab(
+                    tabOptions = TabOptions(
+                        index = 1u,
+                        title = stringResource(Res.string.play)
+                    ),
+                    screen = rememberScreen(
+                        provider = MainScreenProvider.Skins
+                    )
                 )
             ).apply {
                 var i: UShort = 2u

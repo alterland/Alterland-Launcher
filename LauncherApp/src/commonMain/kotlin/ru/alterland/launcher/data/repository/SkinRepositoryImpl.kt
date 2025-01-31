@@ -18,27 +18,31 @@ class SkinRepositoryImpl(
     private val dispatcherIo: CoroutineDispatcher
 ): SkinRepository {
 
-    private var skins = listOf<Skin>(
-//        Skin(name = "Steve", imageUrl = "skin1.png"),
-//        Skin(name = "Alex", imageUrl = "skin1.png"),
-//        Skin(name = "Zuri", imageUrl = "skin1.png"),
-//        Skin(name = "Sunny", imageUrl = "skin1.png"),
-//        Skin(name = "Noor", imageUrl = "skin1.png"),
-    )
+    private var skins = listOf<Skin>()
 
-    override suspend fun getSkins(): List<Skin> = withContext(dispatcherIo){
-        skins.toList()
-    }
+    override fun getSkins(): List<Skin> = skins
 
     override suspend fun addSkin(path: String) = withContext(dispatcherIo){
         val image = loadImage(path)
-        val newSkin = Skin(name = "steve", image = image)
-
+        val newSkin = Skin(
+            name = Path(path).fileName.toString().substringBeforeLast(".").take(10),
+            image = image
+        )
+//        skins.add(0, newSkin)
         skins = listOf(newSkin) + skins
     }
 
-    override suspend fun deleteSkin(skin: Skin) = withContext(dispatcherIo) {
-        skins = skins.filter { it != skin }
+    override suspend fun deleteSkin(skin: Skin): Unit = withContext(dispatcherIo) {
+        skins = skins.toMutableList().filter { it.id != skin.id }
+    }
+
+    override suspend fun renameSkin(skin: Skin, newName: String) = withContext(dispatcherIo) {
+        val mutableSkins = skins.toMutableList()
+        val index = mutableSkins.indexOfFirst { it.id == skin.id }
+        if (index != -1) {
+            mutableSkins[index] = mutableSkins[index].copy(name = newName)
+        }
+        skins = mutableSkins
     }
 
     private fun loadImage(path: String): BufferedImage {
@@ -46,11 +50,30 @@ class SkinRepositoryImpl(
         val inputImage = ImageIO.read(image.inputStream())
         val skinPartImage = SkinRenderer.frontOfSkin(inputImage)
 
-        return SkinRenderer.resize(
+        val resizedImage = SkinRenderer.resize(
             skinPartImage,
             skinPartImage.width * 16,
             skinPartImage.height * 16,
             Image.SCALE_REPLICATE
         )
+        return makeTransparent(resizedImage)
+    }
+
+    private fun makeTransparent(image: BufferedImage): BufferedImage {
+        val width = image.width
+        val height = image.height
+        val transparentImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                val pixel = image.getRGB(x, y)
+                if (pixel == 0xFF000000.toInt()) {
+                    transparentImage.setRGB(x, y, 0x00000000)
+                } else {
+                    transparentImage.setRGB(x, y, pixel)
+                }
+            }
+        }
+        return transparentImage
     }
 }
