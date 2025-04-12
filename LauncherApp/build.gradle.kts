@@ -13,7 +13,7 @@ plugins {
 buildConfig {
     buildConfigField("boolean", "DEV_ENV", "${false}")
     buildConfigField("String", "DEV_API_BASE_URL", "\"localhost:3000\"")
-    buildConfigField("String", "PROD_API_BASE_URL", "\"alterland-alapi-ktor-25de.twc1.net\"")
+    buildConfigField("String", "PROD_API_BASE_URL", "\"api.alterland.ru\"")
     buildConfigField("String", "MOJANG_ASSETS_HOST", "\"https://resources.download.minecraft.net\"")
     buildConfigField("String", "WORK_FOLDER", "\"alterland\"")
     buildConfigField("String", "CLIENT_PROFILES_FOLDER", "\"client-profiles\"")
