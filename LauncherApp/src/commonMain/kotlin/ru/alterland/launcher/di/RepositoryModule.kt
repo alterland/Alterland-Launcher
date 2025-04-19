@@ -14,7 +14,8 @@ internal val repositoryModule = module {
         LocalStorageImpl(
             applicationIoScope = get(named(APPLICATION_IO_SCOPE)),
             platformConfiguration = get(),
-            json = get()
+            json = get(),
+            fileSystem = get()
         )
     }
     single<UserRepository> {

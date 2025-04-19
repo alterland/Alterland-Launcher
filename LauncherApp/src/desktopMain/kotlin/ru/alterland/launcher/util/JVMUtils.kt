@@ -5,13 +5,10 @@ import ru.alterland.launcher.domain.model.clientprofile.OsArch
 import ru.alterland.launcher.domain.model.clientprofile.OsName
 import java.lang.management.ManagementFactory
 import java.nio.file.FileSystems
-import java.nio.file.Paths
 import java.nio.file.attribute.PosixFilePermission
 
 private val OPERATING_SYSTEM_MXBEAN: OperatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean
 
-val CURRENT_DIRECTORY: String = Paths.get("").toAbsolutePath().toString()
-val USER_HOME: String = System.getProperty("user.home")
 val OS_NAME: OsName = OsName.getOsType(System.getProperty("os.name"))
 val OS_ARCH: OsArch = OsArch.getOsArchType(System.getProperty("os.arch"))
 val OS_VERSION: String = System.getProperty("os.version")

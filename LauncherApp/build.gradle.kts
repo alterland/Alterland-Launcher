@@ -87,6 +87,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.coil.network.okhttp)
+            implementation(libs.appdirs)
             implementation(libs.logback)
         }
     }

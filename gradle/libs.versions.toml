@@ -3,23 +3,24 @@ agp = "8.5.2"
 android-compileSdk = "34"
 android-minSdk = "26"
 android-targetSdk = "34"
-androidx-activityCompose = "1.9.3"
+androidx-activityCompose = "1.10.1"
 androidx-appcompat = "1.7.0"
-androidx-core-ktx = "1.13.1"
-kotlin = "2.1.0"
+androidx-core-ktx = "1.16.0"
+kotlin = "2.1.20"
 compose-multiplatform = "1.7.3"
 kotlinx-coroutines = "1.10.1"
-kotlinx-serialization = "1.7.3"
+kotlinx-serialization = "1.8.0"
 kotlinx-datetime = "0.6.1"
 voyager = "1.1.0-beta03"
 coil = "3.0.4"
 logback = "1.5.16"
 buildConfig = "5.5.1"
-ktor = "3.0.3"
+ktor = "3.1.2"
 koin = "4.0.1"
 kstore = "0.9.1"
 filekit = "0.8.8"
 miecraft-skin-renderer = "1.0.0"
+appdirs = "1.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
@@ -62,7 +63,9 @@ kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" 
 filekit-core = { group = "io.github.vinceglb", name = "filekit-core", version.ref = "filekit" }
 filekit-compose = { group = "io.github.vinceglb", name = "filekit-compose", version.ref = "filekit" }
 
-minecraft-skin-renderer = { module = "com.github.U61vashka:MinecraftSkinRenderer", version.ref = "miecraft-skin-renderer"}
+minecraft-skin-renderer = { module = "com.github.U61vashka:MinecraftSkinRenderer", version.ref = "miecraft-skin-renderer" }
+
+appdirs = { module = "net.harawata:appdirs", version.ref = "appdirs" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

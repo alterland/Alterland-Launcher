@@ -1,9 +1,10 @@
 package ru.alterland.launcher
 
-import ru.alterland.launcher.util.CURRENT_DIRECTORY
-import ru.alterland.launcher.util.OS
+import net.harawata.appdirs.AppDirsFactory
 
 actual class PlatformConfiguration {
-    actual val defaultDir: String = CURRENT_DIRECTORY
-    actual val os: OS = OS.fromValue(System.getProperty("os.name", "unknown"))
+    private val appDirs = AppDirsFactory.getInstance()
+    private val userDataDir = appDirs.getUserDataDir(BuildConfig.WORK_FOLDER, null, null)
+
+    actual val defaultDir: String = userDataDir
 }

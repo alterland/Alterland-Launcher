@@ -5,6 +5,7 @@ import io.github.xxfast.kstore.file.extensions.storeOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.io.files.FileSystem
 import kotlinx.io.files.Path
 import kotlinx.serialization.json.Json
 import ru.alterland.launcher.PlatformConfiguration
@@ -18,7 +19,8 @@ import ru.alterland.launcher.util.extentions.v
 class LocalStorageImpl(
     private val applicationIoScope: CoroutineScope,
     private val platformConfiguration: PlatformConfiguration,
-    private val json: Json
+    private val json: Json,
+    private val fileSystem: FileSystem,
 ) : LocalStorage {
 
     private val storePath = Path(platformConfiguration.defaultDir v "store.json")
@@ -38,6 +40,7 @@ class LocalStorageImpl(
 
     init {
         applicationIoScope.launch {
+            createStoreDirIfNotExist()
             setAccessToken(store.get()?.accessToken)
         }
     }
@@ -53,5 +56,11 @@ class LocalStorageImpl(
 
     override suspend fun update(operation: (Store?) -> Store?) {
         store.update { operation.invoke(it?.toDomain())?.toVersion() }
+    }
+
+    private fun createStoreDirIfNotExist() {
+        if (!fileSystem.exists(storePath)) {
+            storePath.parent?.let { fileSystem.createDirectories(it) }
+        }
     }
 }
