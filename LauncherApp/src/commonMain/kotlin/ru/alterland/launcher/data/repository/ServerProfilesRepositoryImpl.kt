@@ -1,6 +1,9 @@
 package ru.alterland.launcher.data.repository
 
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import kotlinx.io.files.FileSystem
 import kotlinx.io.files.Path
@@ -29,7 +32,8 @@ class ServerProfilesRepositoryImpl(
     private val serverProfilesDir = platformConfiguration.defaultDir v BuildConfig.SERVER_PROFILES_FOLDER
     private val serverProfilesPath = Path(serverProfilesDir)
 
-    private var cachedServerProfiles: List<ServerProfile> = listOf()
+    private val _serverProfiles: MutableStateFlow<List<ServerProfile>> = MutableStateFlow(listOf())
+    override val serverProfiles: StateFlow<List<ServerProfile>> = _serverProfiles.asStateFlow()
 
     init {
         initServerProfilesPath()
@@ -39,37 +43,42 @@ class ServerProfilesRepositoryImpl(
         serverProfilesApi.addServerProfile(serverProfile.toRequest()).toDomain()
     }
 
-    override suspend fun getServerProfiles(force: Boolean) = if (force || cachedServerProfiles.isEmpty()) {
-        try {
-            serverProfilesApi.getServerProfiles().also {
-                with(fileSystem) {
-                    list(serverProfilesPath).forEach {
-                        metadataOrNull(it)?.isRegularFile?.apply {
-                            delete(it)
-                        }
-                    }
-                    it.forEach {
-                        it.id?.let { id ->
-                            Path(serverProfilesDir v "$id.json").saveJson(it)
-                        }
-                    }
-                }
+    override suspend fun getServerProfiles() {
+        withContext(dispatcherDefault) {
+            runCatching {
+                val profiles = serverProfilesApi.getServerProfiles()
+                _serverProfiles.emit(profiles.map { it.toDomain() })
+                overwriteProfiles(profiles)
+            }.onFailure { e ->
+                val profiles = fileSystem.list(serverProfilesPath).map { it.readJson<ServerProfileResponse>() }
+                _serverProfiles.emit(profiles.map { it.toDomain() })
+                throw e
             }
-        } catch (e: Exception) {
-            val profiles = fileSystem.list(serverProfilesPath).map { it.readJson<ServerProfileResponse>() }
-            if (profiles.isEmpty()) throw e else profiles
-        }.map { it.toDomain() }
-    } else {
-        cachedServerProfiles
+        }
     }
 
-    override suspend fun getServerProfile(id: String) = cachedServerProfiles.firstOrNull { it.id == id }
+    override suspend fun getServerProfile(id: String): ServerProfile? = serverProfiles.value.firstOrNull { it.id == id }
 
     override suspend fun editServerProfile(serverProfile: ServerProfile): ServerProfile = withContext(dispatcherDefault) {
         serverProfilesApi.editServerProfile(
             serverProfileId = serverProfile.id,
             serverProfile = serverProfile.toRequest()
         ).toDomain()
+    }
+
+    private suspend fun overwriteProfiles(newProfiles: List<ServerProfileResponse>) = withContext(dispatcherIo) {
+        with(fileSystem) {
+            list(serverProfilesPath).forEach { filePath ->
+                metadataOrNull(filePath)?.isRegularFile?.apply {
+                    delete(filePath)
+                }
+            }
+            newProfiles.forEach { profile ->
+                profile.id?.let { id ->
+                    Path(serverProfilesDir v "$id.json").saveJson(profile)
+                }
+            }
+        }
     }
 
     private fun initServerProfilesPath() = with(fileSystem) {

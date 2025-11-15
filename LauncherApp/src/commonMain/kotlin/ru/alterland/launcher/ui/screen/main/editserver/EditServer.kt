@@ -16,7 +16,7 @@ import ru.alterland.launcher.util.base.Resource
 @Composable
 fun EditServer(
     state: EditServerContract.State,
-    onEvent: (e: EditServerContract.Event) -> Unit
+    onAction: (EditServerContract.Action) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -31,7 +31,7 @@ fun EditServer(
             Input(
                 hint = stringResource(Res.string.edit_server_title),
                 text = state.serverProfile.title,
-                onInput = { onEvent(EditServerContract.Event.OnTitleInput(it)) },
+                onInput = { onAction(EditServerContract.Action.OnTitleInput(it)) },
                 enabled = true,
                 singleLine = true
             )
@@ -39,7 +39,7 @@ fun EditServer(
             Input(
                 hint = stringResource(Res.string.edit_server_description),
                 text = state.serverProfile.description,
-                onInput = { onEvent(EditServerContract.Event.OnDescriptionInput(it)) },
+                onInput = { onAction(EditServerContract.Action.OnDescriptionInput(it)) },
                 enabled = true
             )
 
@@ -48,7 +48,7 @@ fun EditServer(
                     modifier = Modifier.weight(0.5f),
                     hint = stringResource(Res.string.edit_server_ip),
                     text = state.serverProfile.ip,
-                    onInput = { onEvent(EditServerContract.Event.OnIPInput(it)) },
+                    onInput = { onAction(EditServerContract.Action.OnIPInput(it)) },
                     enabled = true,
                     singleLine = true
                 )
@@ -56,7 +56,7 @@ fun EditServer(
                     modifier = Modifier.weight(0.5f),
                     hint = stringResource(Res.string.edit_server_port),
                     text = state.serverProfile.port.toString(),
-                    onInput = { onEvent(EditServerContract.Event.OnPortInput(it)) },
+                    onInput = { onAction(EditServerContract.Action.OnPortInput(it)) },
                     enabled = true,
                     singleLine = true
                 )
@@ -103,7 +103,7 @@ fun EditServer(
         Button(
             text = stringResource(Res.string.save),
             isLoading = state.isSaveInProgress,
-            onClick = { onEvent(EditServerContract.Event.OnSaveClick) },
+            onClick = { onAction(EditServerContract.Action.OnSaveClick) },
             modifier = Modifier
                 .padding(top = 14.dp)
                 .width(155.dp)

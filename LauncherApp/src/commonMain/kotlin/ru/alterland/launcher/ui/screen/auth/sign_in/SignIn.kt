@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.Button
 import ru.alterland.launcher.ui.widgets.CheckBox
@@ -20,9 +20,7 @@ import ru.alterland.launcher.ui.widgets.InputType
 @Composable
 fun SignIn(
     state: SignInContract.State,
-    onEvent: (e: SignInContract.Event) -> Unit,
-    navigateToRecovery: () -> Unit,
-    navigateToSignUp: () -> Unit
+    onAction: (SignInContract.Action) -> Unit
 ) {
 
     fun isQueryInProgress() = state.signInProgress || state.vkSignInProgress || state.googleSignInProgress
@@ -39,7 +37,7 @@ fun SignIn(
             hint = stringResource(Res.string.email),
             text = state.login,
             icon = icLogin,
-            onInput = { onEvent(SignInContract.Event.OnLoginInput(it)) },
+            onInput = { onAction(SignInContract.Action.OnLoginInput(it)) },
             enabled = true,
             singleLine = true
         )
@@ -47,7 +45,7 @@ fun SignIn(
             hint = stringResource(Res.string.password),
             text = state.password,
             icon = icPassword,
-            onInput = { onEvent(SignInContract.Event.OnPasswordInput(it)) },
+            onInput = { onAction(SignInContract.Action.OnPasswordInput(it)) },
             type = InputType.PASSWORD,
             singleLine = true,
             enabled = true,
@@ -58,21 +56,22 @@ fun SignIn(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CheckBox(checked = state.remember, text = stringResource(Res.string.remember_me)) {
-                onEvent(SignInContract.Event.OnRememberMeChecked)
+                onAction(SignInContract.Action.OnRememberMeChecked)
             }
             Text(
+                modifier = Modifier
+                    .clickable(onClick = { onAction(SignInContract.Action.OnNavigateToRecovery) }),
                 text = stringResource(Res.string.forgot_password),
                 //textDecoration = TextDecoration.Underline,
                 color = AppTheme.colors.primary,
-                fontSize = 12.sp,
-                modifier = Modifier.clickable(onClick = navigateToRecovery)
+                fontSize = 12.sp
             )
         }
         Button(
             text = stringResource(Res.string.sign_in),
             isEnabled = !isQueryInProgress(),
             isLoading = state.signInProgress,
-            onClick = { onEvent(SignInContract.Event.OnSignInClicked) },
+            onClick = { onAction(SignInContract.Action.OnSignInClicked) },
             modifier = Modifier.fillMaxWidth().padding(top = 14.dp)
         )
 //        SocialButton(
@@ -95,7 +94,10 @@ fun SignIn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = elementsPadding)
-                .clickable(enabled = !isQueryInProgress(), onClick = navigateToSignUp),
+                .clickable(
+                    enabled = !isQueryInProgress(),
+                    onClick = { onAction(SignInContract.Action.OnNavigateToSignUp) }
+                ),
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
@@ -117,5 +119,5 @@ fun SignIn(
 @Preview
 @Composable
 fun SignInPreview() {
-    SignIn(SignInContract.State(), {}, {}, {})
+    SignIn(SignInContract.State()) {}
 }

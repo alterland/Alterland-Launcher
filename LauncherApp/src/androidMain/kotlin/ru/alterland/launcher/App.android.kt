@@ -4,7 +4,8 @@ import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import io.github.vinceglb.filekit.core.FileKit
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.init
 import org.koin.core.context.GlobalContext.startKoin
 import ru.alterland.launcher.di.androidModule
 import ru.alterland.launcher.di.commonModule

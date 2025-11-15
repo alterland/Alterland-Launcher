@@ -1,31 +1,53 @@
 [versions]
-agp = "8.5.2"
-android-compileSdk = "34"
+#languages, plugins
+kotlin = "2.2.21"
+agp = "8.12.3"
+buildConfig = "5.7.1"
+compose-multiplatform = "1.10.0-beta01"
+compose-hotreload = "1.0.0-rc03"
+
+#Android
+android-compileSdk = "36"
 android-minSdk = "26"
-android-targetSdk = "34"
-androidx-activityCompose = "1.10.1"
-androidx-appcompat = "1.7.0"
-androidx-core-ktx = "1.16.0"
-kotlin = "2.1.20"
-compose-multiplatform = "1.7.3"
-kotlinx-coroutines = "1.10.1"
-kotlinx-serialization = "1.8.0"
-kotlinx-datetime = "0.6.1"
-voyager = "1.1.0-beta03"
-coil = "3.0.4"
-logback = "1.5.16"
-buildConfig = "5.5.1"
-ktor = "3.1.2"
-koin = "4.0.1"
-kstore = "0.9.1"
-filekit = "0.8.8"
-miecraft-skin-renderer = "1.0.0"
-appdirs = "1.4.0"
+android-targetSdk = "36"
+
+#AndroidX libraries
+androidx-core-ktx = "1.17.0"
+androidx-appcompat = "1.7.1"
+androidx-activity-compose = "1.11.0"
+androidx-lifecycle = "2.10.0-alpha04"
+androidx-nav3 = "1.0.0-alpha04"
+
+#Kotlinx
+kotlinx-coroutines = "1.10.2"
+kotlinx-serialization = "1.9.0"
+kotlinx-datetime = "0.7.1"
+
+#Other libraries
+coil = "3.3.0"
+logback = "1.5.21"
+ktor = "3.3.2"
+koin = "4.1.1"
+kstore = "1.0.0"
+filekit = "0.12.0"
+orbit = "11.0.0"
+junit = "4.13.2"
 
 [libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
+androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-nav3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
+androidx-nav3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "androidx-nav3" }
+
+compose-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "compose-multiplatform" }
+compose-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "compose-multiplatform" }
+compose-material = { group = "org.jetbrains.compose.material", name = "material", version.ref = "compose-multiplatform" }
+compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "compose-multiplatform" }
+compose-components = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "compose-multiplatform" }
+compose-ui-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "compose-multiplatform" }
 
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
@@ -34,11 +56,6 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-
-voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
-voyager-tab-navigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
-voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
-voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
 
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
@@ -55,21 +72,29 @@ ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+orbit-core = { group = "org.orbit-mvi", name = "orbit-core", version.ref = "orbit" }
+orbit-viewmodel = { group = "org.orbit-mvi", name = "orbit-viewmodel", version.ref = "orbit" }
+orbit-compose = { group = "org.orbit-mvi", name = "orbit-compose", version.ref = "orbit" }
+
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koin"}
 
 kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
 kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" }
 
 filekit-core = { group = "io.github.vinceglb", name = "filekit-core", version.ref = "filekit" }
-filekit-compose = { group = "io.github.vinceglb", name = "filekit-compose", version.ref = "filekit" }
+filekit-dialogs = { group = "io.github.vinceglb", name = "filekit-dialogs", version.ref = "filekit" }
+filekit-dialogs-compose = { group = "io.github.vinceglb", name = "filekit-dialogs-compose", version.ref = "filekit" }
+filekit-coil = { group = "io.github.vinceglb", name = "filekit-coil", version.ref = "filekit" }
 
-minecraft-skin-renderer = { module = "com.github.U61vashka:MinecraftSkinRenderer", version.ref = "miecraft-skin-renderer" }
-
-appdirs = { module = "net.harawata:appdirs", version.ref = "appdirs" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hotreload" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

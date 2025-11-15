@@ -9,7 +9,6 @@ import ru.alterland.launcher.domain.repository.*
 
 internal val repositoryModule = module {
     singleOf<ErrorRepository>(::ErrorRepositoryImpl)
-    single<AppEventRepository> { AppEventRepositoryImpl(scope = get(named(APPLICATION_SCOPE))) }
     single<LocalStorage> {
         LocalStorageImpl(
             applicationIoScope = get(named(APPLICATION_IO_SCOPE)),

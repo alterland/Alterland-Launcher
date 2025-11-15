@@ -1,5 +1,8 @@
 package ru.alterland.launcher.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ServerProfile(
     val id: String,
     val title: String,

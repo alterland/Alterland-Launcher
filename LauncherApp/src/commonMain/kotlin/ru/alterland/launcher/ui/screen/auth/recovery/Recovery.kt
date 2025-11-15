@@ -17,35 +17,35 @@ import ru.alterland.launcher.ui.widgets.Input
 @Composable
 fun Recovery(
     state: RecoveryContract.State,
-    onEvent: (e: RecoveryContract.Event) -> Unit,
-    navigateBack: () -> Unit
+    onAction: (RecoveryContract.Action) -> Unit
 ) {
 
-    val top = 18.dp
-
-    Column {
+    Column(
+        modifier = Modifier.padding(top = 18.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp)
+    ) {
         Input(
             text = state.email,
             hint = stringResource(Res.string.email),
             icon = painterResource(Res.drawable.ic_login),
-            modifier = Modifier.padding(top = top),
-            onInput = { onEvent(RecoveryContract.Event.OnEmailInput(it)) }
+            onInput = { onAction(RecoveryContract.Action.OnEmailInput(it)) }
         )
         Button(
             text = stringResource(Res.string.string_continue),
             isEnabled = !state.sendCodeProgress,
             isLoading = state.sendCodeProgress,
-            modifier = Modifier.fillMaxWidth().padding(top = top)
-        ) {  onEvent(RecoveryContract.Event.OnResetPasswordClicked) }
+            modifier = Modifier.fillMaxWidth()
+        ) {  onAction(RecoveryContract.Action.OnResetPasswordClick) }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = top),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
+                modifier = Modifier
+                    .clickable(onClick = { onAction(RecoveryContract.Action.OnBackClick) }),
                 text = stringResource(Res.string.back),
                 color = AppTheme.colors.labelSecondary,
                 fontSize = 12.sp,
-                modifier = Modifier.clickable(onClick = navigateBack)
             )
         }
     }

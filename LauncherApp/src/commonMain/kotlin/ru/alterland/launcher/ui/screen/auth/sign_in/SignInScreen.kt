@@ -1,31 +1,31 @@
 package ru.alterland.launcher.ui.screen.auth.sign_in
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import cafe.adriel.voyager.core.registry.rememberScreen
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import ru.alterland.launcher.ui.screen.auth.AuthScreenProvider
+import org.koin.compose.viewmodel.koinViewModel
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
-class SignInScreen: Screen {
+@Composable
+fun SignInScreen(
+    viewModel: SignInScreenModel = koinViewModel(),
+    navigateToSignUp: () -> Unit,
+    navigateToRecovery: () -> Unit
+) {
+    val state by viewModel.collectAsState()
 
-    @Composable
-    override fun Content() {
-        val screenModel = koinScreenModel<SignInScreenModel>()
-        val state by screenModel.state.collectAsState()
+    viewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            SignInContract.Effect.NavigateToSignUp -> navigateToSignUp()
+            SignInContract.Effect.NavigateToRecovery -> navigateToRecovery()
+            SignInContract.Effect.ShowToastSocialsSignInNotYetDone -> {
 
-        val navigator = LocalNavigator.currentOrThrow
-        val recoveryScreen = rememberScreen(AuthScreenProvider.Recovery)
-        val signUpScreen = rememberScreen(AuthScreenProvider.SignUp)
-
-        SignIn(
-            state = state,
-            onEvent = { e -> screenModel.onEvent(e) },
-            navigateToRecovery = { navigator.push(recoveryScreen) },
-            navigateToSignUp = { navigator.push(signUpScreen) }
-        )
+            }
+        }
     }
+
+    SignIn(
+        state = state,
+        onAction = { viewModel.dispatch(it) }
+    )
 }

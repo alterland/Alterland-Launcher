@@ -1,8 +1,5 @@
 package ru.alterland.launcher.domain.model.clientprofile.externalindex
 
-import ru.alterland.launcher.domain.model.clientprofile.externalindex.ExternalIndexType.entries
-
-
 enum class ExternalIndexType(val value: String) {
     ASSETS("assets"), DEFAULT("default");
 

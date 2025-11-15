@@ -7,5 +7,5 @@ val commonModule = listOf(
     ktorModule,
     apiModule,
     repositoryModule,
-    screenModelModule
+    viewModelModule
 )

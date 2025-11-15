@@ -8,7 +8,6 @@ import ru.alterland.launcher.data.source.network.model.request.SignUpRequest
 import ru.alterland.launcher.domain.model.User
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.domain.repository.UserRepository
-import ru.alterland.launcher.util.base.AppException
 
 class UserRepositoryImpl(
     private val userApi: UserApi,
@@ -62,11 +61,12 @@ class UserRepositoryImpl(
         userApi.checkNick(nickname)
         true
     } catch (e: Exception) {
-        when(e) {
-            is AppException.UserNotFoundException -> false
-            is AppException.ValidationException -> true
-            else -> null
-        }
+        null
+//        when(e) {
+//            is AppException.UserNotFoundException -> false
+//            is AppException.ValidationException -> true
+//            else -> null
+//        }
     }
 
     override suspend fun getUser(force: Boolean) = if (force) {

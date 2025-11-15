@@ -1,6 +1,9 @@
 package ru.alterland.launcher.ui.screen.main.clientsettings
 
-import cafe.adriel.voyager.core.screen.Screen
-import ru.alterland.launcher.ui.screen.main.servers.client.ClientPayload
+import androidx.compose.runtime.Composable
 
-expect class ClientSettingsScreen constructor(payload: ClientPayload): Screen
+@Composable
+expect fun ClientSettingsScreen(
+    payload: ClientSettingsPayload,
+    navigateBack: () -> Unit
+)

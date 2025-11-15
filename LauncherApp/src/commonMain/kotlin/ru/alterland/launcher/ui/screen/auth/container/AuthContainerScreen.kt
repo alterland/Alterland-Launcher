@@ -1,42 +1,59 @@
 package ru.alterland.launcher.ui.screen.auth.container
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import cafe.adriel.voyager.core.registry.rememberScreen
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import ru.alterland.launcher.ui.screen.ContainerScreenProvider
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
+import org.koin.compose.viewmodel.koinViewModel
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
+import ru.alterland.launcher.ui.screen.auth.AuthRoute
+import ru.alterland.launcher.ui.screen.auth.authRouteConfig
+import ru.alterland.launcher.ui.screen.auth.recovery.RecoveryScreen
+import ru.alterland.launcher.ui.screen.auth.sign_in.SignInScreen
+import ru.alterland.launcher.ui.screen.auth.sign_up.SignUpScreen
 
-class AuthContainerScreen: Screen {
+@Composable
+fun AuthContainerScreen(
+    viewModel: AuthContainerViewModel = koinViewModel(),
+    navigateToMain: () -> Unit
+) {
+    val state by viewModel.collectAsState()
 
-    @Composable
-    override fun Content() {
-        val screenModel = koinScreenModel<AuthContainerScreenModel>()
-        val state by screenModel.state.collectAsState()
-        val effects by screenModel.effects.collectAsState()
+    val backStack = rememberNavBackStack(authRouteConfig, AuthRoute.SignIn)
 
-        val navigator = LocalNavigator.currentOrThrow
+    viewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is AuthContainerContract.Effect.NavigateToMain -> navigateToMain()
+        }
+    }
 
-        val dashboardContainer = rememberScreen(ContainerScreenProvider.Dashboard)
-
-        effects.firstOrNull()?.let { effect ->
-            LaunchedEffect(effect) {
-                when (effect) {
-                    AuthContainerContract.Effect.OnNavigateToDashboard -> {
-                        navigator.push(dashboardContainer)
-                    }
+    AuthContainer(
+        state = state,
+        onAction = { viewModel.dispatch(it) }
+    ) {
+        NavDisplay(
+            backStack = backStack,
+            onBack = { backStack.removeLastOrNull() },
+            entryProvider = entryProvider {
+                entry<AuthRoute.SignIn> {
+                    SignInScreen(
+                        navigateToSignUp = { backStack.add(AuthRoute.SignUp) },
+                        navigateToRecovery = { backStack.add(AuthRoute.Recovery) }
+                    )
+                }
+                entry<AuthRoute.SignUp> {
+                    SignUpScreen(
+                        navigateBack = { backStack.removeLastOrNull() }
+                    )
+                }
+                entry<AuthRoute.Recovery> {
+                    RecoveryScreen(
+                        navigateBack = { backStack.removeLastOrNull() }
+                    )
                 }
             }
-            screenModel.onEffectHandled(effect)
-        }
-
-        AuthContainer(
-            state = state,
-            onEvent = { e -> screenModel.onEvent(e) }
         )
     }
 }

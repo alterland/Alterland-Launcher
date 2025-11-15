@@ -1,8 +1,8 @@
 package ru.alterland.launcher.ui.screen.main.editserver
 
-import ru.alterland.launcher.domain.model.ServerProfile
+import kotlinx.serialization.Serializable
 
-sealed class EditServerPayload {
-    data object Add: EditServerPayload()
-    data class Edit(val serverProfile: ServerProfile): EditServerPayload()
-}
+@Serializable
+data class EditServerPayload(
+    val mode: EditServerMode
+)

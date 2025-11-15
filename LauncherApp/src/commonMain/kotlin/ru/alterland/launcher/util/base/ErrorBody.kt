@@ -5,12 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class ErrorBody(
-    @SerialName("message") val message: String
-)
-
-@Serializable
-class ValidationErrorBody(
-    @SerialName("reasons") val reasons: List<String>
+    @SerialName("message") val message: String?,
+    @SerialName("reasons") val reasons: List<String>?
 )
 
 @Serializable

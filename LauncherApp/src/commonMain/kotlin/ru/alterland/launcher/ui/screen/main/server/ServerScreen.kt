@@ -1,34 +1,26 @@
 package ru.alterland.launcher.ui.screen.main.server
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import cafe.adriel.voyager.core.registry.rememberScreen
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.core.screen.ScreenKey
-import cafe.adriel.voyager.koin.koinScreenModel
-import cafe.adriel.voyager.navigator.Navigator
-import org.koin.core.parameter.parameterSetOf
-import ru.alterland.launcher.ui.screen.main.MainScreenProvider
-import ru.alterland.launcher.ui.screen.main.servers.client.ClientPayload
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
+import org.orbitmvi.orbit.compose.collectAsState
+import ru.alterland.launcher.ui.screen.main.client.ClientPayload
+import ru.alterland.launcher.ui.screen.main.client.ClientScreen
 
-class ServerScreen(
-    private val payload: ServerPayload,
-    override val key: ScreenKey = "ServerScreen_${payload.serverProfile.id}"
-): Screen {
+@Composable
+fun ServerScreen(
+    payload: ServerPayload,
+    viewModel: ServerViewModel = koinViewModel { parametersOf(payload) }
+) {
+    val state by viewModel.collectAsState()
 
-    @Composable
-    override fun Content() {
-        val screenModel = koinScreenModel<ServerScreenModel>(parameters = { parameterSetOf(payload) })
-        val state by screenModel.state.collectAsState()
-
-        val clientScreen = state.serverProfile.clientProfile?.let {
-            rememberScreen(MainScreenProvider.Client(payload = ClientPayload(id = it)))
-        }
-
-        Server(
-            state = state,
-            clientNavigation = { clientScreen?.let { Navigator(screen = it) } },
-        )
-    }
+    Server(
+        state = state,
+        client = {
+            state.serverProfile.clientProfile?.let {
+                ClientScreen(payload = ClientPayload(id = it))
+            }
+        },
+    )
 }

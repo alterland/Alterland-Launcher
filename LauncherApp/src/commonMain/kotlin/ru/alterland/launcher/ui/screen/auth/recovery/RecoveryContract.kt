@@ -1,14 +1,15 @@
 package ru.alterland.launcher.ui.screen.auth.recovery
 
+import ru.alterland.launcher.ui.base.UiAction
 import ru.alterland.launcher.ui.base.UiEffect
-import ru.alterland.launcher.ui.base.UiEvent
 import ru.alterland.launcher.ui.base.UiState
 
 class RecoveryContract {
 
-    sealed class Event : UiEvent {
-        data class OnEmailInput(val data: String): Event()
-        data object OnResetPasswordClicked: Event()
+    sealed class Action : UiAction {
+        data class OnEmailInput(val data: String): Action()
+        data object OnResetPasswordClick: Action()
+        data object OnBackClick: Action()
     }
 
     data class State(
@@ -16,5 +17,7 @@ class RecoveryContract {
         val sendCodeProgress: Boolean = false,
     ): UiState
 
-    sealed class Effect: UiEffect()
+    sealed class Effect: UiEffect {
+        data object NavigateBack: Effect()
+    }
 }

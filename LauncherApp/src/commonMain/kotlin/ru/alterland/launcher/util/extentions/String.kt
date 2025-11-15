@@ -2,4 +2,6 @@ package ru.alterland.launcher.util.extentions
 
 import kotlinx.io.files.SystemPathSeparator
 
-infix fun String.v(subPath: String): String = "$this$SystemPathSeparator$subPath"
+val pathSeparator = SystemPathSeparator.toString()
+
+infix fun String.v(subPath: String): String = "$this$pathSeparator$subPath"

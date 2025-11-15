@@ -1,26 +1,26 @@
 package ru.alterland.launcher.ui.screen.auth.recovery
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import org.koin.compose.viewmodel.koinViewModel
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
-class RecoveryScreen: Screen {
+@Composable
+fun RecoveryScreen(
+    viewModel: RecoveryScreenModel = koinViewModel(),
+    navigateBack: () -> Unit
+) {
+    val state by viewModel.collectAsState()
 
-    @Composable
-    override fun Content() {
-        val screenModel = koinScreenModel<RecoveryScreenModel>()
-        val state by screenModel.state.collectAsState()
-
-        val navigator = LocalNavigator.currentOrThrow
-
-        Recovery(
-            state = state,
-            onEvent = { e -> screenModel.onEvent(e) },
-            navigateBack = { navigator.pop() }
-        )
+    viewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is RecoveryContract.Effect.NavigateBack -> navigateBack()
+        }
     }
+
+    Recovery(
+        state = state,
+        onAction = { viewModel.dispatch(it) }
+    )
 }

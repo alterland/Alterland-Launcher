@@ -22,14 +22,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
+import ru.alterland.launcher.ui.model.AppErrorUi
 import ru.alterland.launcher.ui.theme.AppTheme
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ErrorHolder(
     modifier: Modifier = Modifier,
-    errorMessage: ErrorMessage,
-    onMessageClose: (String) -> Unit
+    appError: AppErrorUi,
+    onErrorClose: (String) -> Unit
 ) {
     val shape = RoundedCornerShape(14.dp)
     val closeShape = RoundedCornerShape(9.dp)
@@ -77,7 +78,7 @@ fun ErrorHolder(
                         modifier = Modifier.padding(top = 4.dp),
                         color = AppTheme.colors.labelPrimary,
                         fontSize = 12.sp,
-                        text = errorMessage.message
+                        text = appError.message
                     )
                 }
             }
@@ -103,7 +104,7 @@ fun ErrorHolder(
                     .clip(closeShape)
                     .border(BorderStroke(1.dp, AppTheme.colors.gray3), closeShape)
                     .clickable {
-                        onMessageClose(errorMessage.id)
+                        onErrorClose(appError.id)
                     }
                     .padding(3.dp)
                 ) {

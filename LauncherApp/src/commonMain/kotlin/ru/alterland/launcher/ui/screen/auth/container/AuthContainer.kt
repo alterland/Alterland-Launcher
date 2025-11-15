@@ -10,20 +10,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
-import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.transitions.FadeTransition
 import org.jetbrains.compose.resources.painterResource
-import ru.alterland.launcher.ui.screen.auth.sign_in.SignInScreen
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.Logo
 import ru.alterland.launcher.ui.widgets.errors.BaseErrorHandler
 
-@OptIn(ExperimentalVoyagerApi::class)
 @Composable
 fun AuthContainer(
     state: AuthContainerContract.State,
-    onEvent: (e: AuthContainerContract.Event) -> Unit,
+    onAction: (AuthContainerContract.Action) -> Unit,
+    childNavigation: @Composable () -> Unit
 ) {
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -44,7 +40,7 @@ fun AuthContainer(
                         modifier = Modifier.fillMaxHeight().padding(bottom = 10.dp, top = 50.dp),
                         itemsModifier = Modifier.padding(vertical = 3.dp, horizontal = 15.dp),
                         errors = state.errors,
-                        onMessageClose = { onEvent(AuthContainerContract.Event.OnMessageClose(it)) }
+                        onErrorClose = { onAction(AuthContainerContract.Action.OnMessageClose(it)) }
                     )
                 }
             }
@@ -61,12 +57,7 @@ fun AuthContainer(
             ) {
                 Logo(modifier = Modifier.padding(top = 50.dp, bottom = 26.dp))
 
-                Navigator(SignInScreen()) { navigator ->
-                    FadeTransition(
-                        navigator = navigator,
-                        disposeScreenAfterTransitionEnd = true
-                    )
-                }
+                childNavigation()
             }
         }
     }

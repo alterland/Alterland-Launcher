@@ -10,89 +10,64 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
-import cafe.adriel.voyager.core.registry.rememberScreen
-import cafe.adriel.voyager.navigator.tab.CurrentTab
-import cafe.adriel.voyager.navigator.tab.Tab
-import cafe.adriel.voyager.navigator.tab.TabNavigator
-import cafe.adriel.voyager.navigator.tab.TabOptions
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
 import org.jetbrains.compose.resources.stringResource
 import ru.alterland.launcher.domain.model.User
-import ru.alterland.launcher.ui.screen.main.MainScreenProvider
+import ru.alterland.launcher.ui.screen.main.clientsettings.ClientSettingsPayload
+import ru.alterland.launcher.ui.screen.main.clientsettings.ClientSettingsScreen
+import ru.alterland.launcher.ui.screen.main.editserver.EditServerMode
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerPayload
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerScreen
 import ru.alterland.launcher.ui.screen.main.server.ServerPayload
-import ru.alterland.launcher.ui.screen.main.servers.ServerTab.*
-import ru.alterland.launcher.ui.screen.main.servers.client.ClientPayload
+import ru.alterland.launcher.ui.screen.main.server.ServerScreen
+import ru.alterland.launcher.ui.screen.main.servers.components.TabItem
 import ru.alterland.launcher.ui.theme.AppTheme
-import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(InternalVoyagerApi::class, ExperimentalUuidApi::class)
 @Composable
-fun Servers(state: ServersContract.State) {
-
+fun Servers(
+    state: ServersContract.State
+) {
     VerticalPager(
         state = rememberPagerState(pageCount = { state.serverProfiles.size }),
         modifier = Modifier.fillMaxSize()
     ) { page ->
         state.serverProfiles.getOrNull(page)?.let { serverProfile ->
-            val tabs = mutableListOf<Tab>(
-                PlayTab(
-                    tabOptions = TabOptions(
-                        index = 0u,
-                        title = stringResource(Res.string.play)
-                    ),
-                    screen = rememberScreen(
-                        provider = MainScreenProvider.Server(
-                            payload = ServerPayload(serverProfile = serverProfile)
-                        )
-                    )
-                )
-            ).apply {
-                var i: UShort = 2u
+
+            val serverPayload = ServerPayload(serverProfile = serverProfile)
+            val serverTab = ServerTab.Server(payload = serverPayload)
+
+            val backStack = rememberNavBackStack(
+                serverRouteConfig,
+                ServerRoute.Server(payload = serverPayload)
+            )
+
+            var currentTab by rememberSaveable { mutableStateOf<ServerTab>(serverTab) }
+
+            val tabs = mutableListOf<ServerTab>(serverTab).apply {
                 serverProfile.clientProfile?.let { id ->
+                    add(ServerTab.ClientSettings(payload = ClientSettingsPayload(id = id)))
+                }
+                if (state.userStrength >= User.Role.MIN_EDIT_STRENGTH) {
                     add(
-                        ClientSettingsTab(
-                            tabOptions = TabOptions(
-                                index = i,
-                                title = stringResource(Res.string.settings)
-                            ),
-                            screen = rememberScreen(
-                                provider = MainScreenProvider.ClientSettings(
-                                    payload = ClientPayload(id = id)
+                        ServerTab.EditServer(
+                            payload = EditServerPayload(
+                                mode = EditServerMode.Edit(
+                                    serverProfile = serverProfile
                                 )
                             )
                         )
                     )
-                    i++
-                }
-                if (state.userStrength >= User.Role.MIN_EDIT_STRENGTH) {
-                    add(
-                        EditServerTab(
-                            tabOptions = TabOptions(
-                                index = i,
-                                title = stringResource(Res.string.edit)
-                            ),
-                            screen = EditServerScreen(
-                                payload = EditServerPayload.Edit(serverProfile = serverProfile)
-                            )
-                        )
-                    )
-                    i++
-                    add(
-                        AddServerTab(
-                            tabOptions = TabOptions(
-                                index = i,
-                                title = stringResource(Res.string.add)
-                            ),
-                            screen = EditServerScreen(payload = EditServerPayload.Add)
-                        )
-                    )
-                    i++
+                    add(ServerTab.AddServer(payload = EditServerPayload(mode = EditServerMode.Add)))
                 }
             }
 
@@ -104,12 +79,59 @@ fun Servers(state: ServersContract.State) {
                     fontSize = 12.sp,
                     color = AppTheme.colors.labelPrimary
                 )
-                TabNavigator(tabs.first()) { tabNavigator ->
-                    Row(modifier = Modifier.padding(start = 8.dp, top = 4.dp)) {
-                        tabs.forEach { tab -> TabItem(tab) }
+                Row(modifier = Modifier.padding(start = 8.dp, top = 4.dp)) {
+                    tabs.forEach { tab ->
+                        var title: String
+                        var action: () -> Unit
+                        when(tab) {
+                            is ServerTab.Server -> {
+                                title = stringResource(Res.string.play)
+                                action = { backStack.add(ServerRoute.Server(payload = tab.payload)) }
+                            }
+                            is ServerTab.ClientSettings -> {
+                                title = stringResource(Res.string.settings)
+                                action = { backStack.add(ServerRoute.ClientSettings(payload = tab.payload)) }
+                            }
+                            is ServerTab.EditServer -> {
+                                title = stringResource(Res.string.edit)
+                                action = { backStack.add(ServerRoute.EditServer(payload = tab.payload)) }
+                            }
+                            is ServerTab.AddServer -> {
+                                title = stringResource(Res.string.add)
+                                action = { backStack.add(ServerRoute.EditServer(payload = tab.payload)) }
+                            }
+                        }
+                        TabItem(
+                            title = title,
+                            isSelected = currentTab == tab,
+                            onClick = {
+                                action()
+                                currentTab = tab
+                            }
+                        )
                     }
-                    CurrentTab()
                 }
+                NavDisplay(
+                    backStack = backStack,
+                    onBack = { backStack.removeLastOrNull() },
+                    entryProvider = entryProvider {
+                        entry<ServerRoute.Server> {
+                            ServerScreen(payload = it.payload)
+                        }
+                        entry<ServerRoute.EditServer> {
+                            EditServerScreen(
+                                payload = it.payload,
+                                navigateBack = { backStack.removeLastOrNull() }
+                            )
+                        }
+                        entry<ServerRoute.ClientSettings> {
+                            ClientSettingsScreen(
+                                payload = it.payload,
+                                navigateBack = { backStack.removeLastOrNull() }
+                            )
+                        }
+                    }
+                )
             }
         }
     }

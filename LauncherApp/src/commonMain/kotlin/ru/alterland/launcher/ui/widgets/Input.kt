@@ -17,10 +17,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.theme.defaultElementsShape
 import ru.alterland.launcher.ui.theme.defaultInputHeight

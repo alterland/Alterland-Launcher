@@ -16,7 +16,7 @@ class ErrorRepositoryImpl: ErrorRepository {
     override suspend fun addError(throwable: Throwable) {
         val appError = AppError(
             id = Uuid.random().toString(),
-            error = throwable
+            throwable = throwable
         )
         errors.value.toMutableList().apply {
             add(appError)

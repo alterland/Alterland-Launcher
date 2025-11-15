@@ -22,7 +22,7 @@ import ru.alterland.launcher.ui.theme.AppTheme
 @Composable
 fun Server(
     state: ServerContract.State,
-    clientNavigation: @Composable () -> Unit
+    client: @Composable () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -77,7 +77,7 @@ fun Server(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 14.dp)
             )
-            clientNavigation()
+            client()
         }
     }
 }

@@ -39,3 +39,5 @@ fun Path.checkSum(fileSystem: FileSystem): String {
     val hexCode = encodeHex(bytes, true)
     return String(hexCode)
 }
+
+expect fun Path.makeExecutable()

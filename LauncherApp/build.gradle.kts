@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.buildConfig)
 }
@@ -31,13 +32,10 @@ kotlin {
         }
     }
 
-    jvm("desktop")
+    jvm()
 
     sourceSets {
-        val desktopMain by getting
-
         androidMain.dependencies {
-            implementation(compose.preview)
             implementation(libs.androidx.appcompat)
             implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.activity.compose)
@@ -46,18 +44,17 @@ kotlin {
             implementation(libs.coil.network.okhttp)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.coil.compose)
-
-            implementation(libs.voyager.navigator)
-            implementation(libs.voyager.tab.navigator)
-            implementation(libs.voyager.transitions)
-            implementation(libs.voyager.koin)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.material)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.ui.preview)
+            implementation(libs.compose.components)
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.viewmodel.nav3)
+            implementation(libs.androidx.lifecycle.runtime)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.androidx.nav3.ui)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.auth)
@@ -72,22 +69,31 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
 
+            implementation(libs.orbit.core)
+            implementation(libs.orbit.viewmodel)
+            implementation(libs.orbit.compose)
+
             implementation(libs.koin.core)
+            implementation(libs.koin.compose.viewmodel)
 
             implementation(libs.kstore)
             implementation(libs.kstore.file)
 
-            implementation(libs.filekit.core)
-            implementation(libs.filekit.compose)
+            implementation(libs.coil.compose)
 
-            implementation(libs.minecraft.skin.renderer)
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs)
+            implementation(libs.filekit.dialogs.compose)
+            implementation(libs.filekit.coil)
         }
-        desktopMain.dependencies {
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+        jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.coil.network.okhttp)
-            implementation(libs.appdirs)
             implementation(libs.logback)
         }
     }
@@ -119,10 +125,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-}
-
-dependencies {
-    debugImplementation(compose.uiTooling)
 }
 
 compose.desktop {

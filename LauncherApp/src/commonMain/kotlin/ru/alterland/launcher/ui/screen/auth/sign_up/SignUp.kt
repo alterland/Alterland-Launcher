@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.Button
 import ru.alterland.launcher.ui.widgets.Input
@@ -20,8 +20,7 @@ import ru.alterland.launcher.util.base.Resource
 @Composable
 fun SignUp(
     state: SignUpContract.State,
-    onEvent: (e: SignUpContract.Event) -> Unit,
-    navigateBack: () -> Unit
+    onAction: (SignUpContract.Action) -> Unit
 ) {
 
     fun isIOInProgress() = state.signUpProgress || state.vkSignUpProgress || state.googleSignUpProgress
@@ -50,14 +49,14 @@ fun SignUp(
                 }
                 else -> null
             }
-        ) { onEvent(SignUpContract.Event.OnNickInput(it)) }
+        ) { onAction(SignUpContract.Action.OnNickInput(it)) }
         Input(
             hint = stringResource(Res.string.email),
             text = state.email,
             icon = icEmail,
             enabled = !isIOInProgress(),
             modifier = Modifier.padding(top = elementsPadding),
-        ) { onEvent(SignUpContract.Event.OnEmailInput(it)) }
+        ) { onAction(SignUpContract.Action.OnEmailInput(it)) }
         Input(
             hint = stringResource(Res.string.password),
             text = state.password,
@@ -65,12 +64,12 @@ fun SignUp(
             type = InputType.PASSWORD,
             enabled = !isIOInProgress(),
             modifier = Modifier.padding(top = elementsPadding),
-        ) { onEvent(SignUpContract.Event.OnPasswordInput(it)) }
+        ) { onAction(SignUpContract.Action.OnPasswordInput(it)) }
         Button(
             text = stringResource(Res.string.string_continue),
             isLoading = state.signUpProgress,
             modifier = Modifier.fillMaxWidth().padding(top = elementsPadding)
-        ) { onEvent(SignUpContract.Event.OnSignUpClicked) }
+        ) { onAction(SignUpContract.Action.OnSignUpClicked) }
 //        SocialButton(
 //            text = stringResource(Res.string.vk_sign_up),
 //            icVk,
@@ -92,10 +91,11 @@ fun SignUp(
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
+                modifier = Modifier
+                    .clickable(onClick = { onAction(SignUpContract.Action.OnNavigateBack) }),
                 text = stringResource(Res.string.back),
                 color = AppTheme.colors.labelSecondary,
-                fontSize = 12.sp,
-                modifier = Modifier.clickable(onClick = navigateBack)
+                fontSize = 12.sp
             )
         }
     }
@@ -104,5 +104,5 @@ fun SignUp(
 @Preview
 @Composable
 fun SignUpPreview() {
-    SignUp(SignUpContract.State(), {}, {})
+    SignUp(SignUpContract.State()) {}
 }
