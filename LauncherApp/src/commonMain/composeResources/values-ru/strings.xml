@@ -31,15 +31,13 @@
     <string name="exabytes">ЭБ</string>
 
     <string name="settings">Настройки</string>
-    <string name="client_settings_directory">Расположение</string>
-    <string name="client_settings_directory_browse">Обзор...</string>
-    <string name="jvm_settings">Память (ОЗУ)</string>
-    <string name="jvm_settings_use_recommended_ram">Авто-выбор значения</string>
-    <string name="client_settings">Игра</string>
-    <string name="client_settings_launch_after_update">Запускать после обновления</string>
-    <string name="client_settings_launch_fullscreen">Полноэкранный режим</string>
-    <string name="client_settings_default_directory">Директория по умолчанию</string>
-    <string name="client_settings_auto_connect">Подключаться к серверу автоматически</string>
+    <string name="settings_directory">Расположение</string>
+    <string name="settings_directory_browse">Обзор...</string>
+    <string name="settings_launch_after_update">Запускать после обновления</string>
+    <string name="settings_launch_fullscreen">Полноэкранный режим</string>
+    <string name="settings_default_directory">Директория по умолчанию</string>
+    <string name="settings_auto_connect">Подключаться к серверу автоматически</string>
+    <string name="settings_ram">ОЗУ</string>
     <string name="skins">Скины</string>
 
     <string name="server_status_latency">Пинг: %1$d мс</string>

@@ -11,7 +11,7 @@ actual fun ClientSettingsScreen(
     payload: ClientSettingsPayload,
     navigateBack: () -> Unit
 ) {
-    val viewModel: ClientSettingsViewModel = koinViewModel { parametersOf(payload) }
+    val viewModel: ClientSettingsViewModel = koinViewModel(key = payload.id) { parametersOf(payload) }
     val state by viewModel.collectAsState()
 
     ClientSettings(

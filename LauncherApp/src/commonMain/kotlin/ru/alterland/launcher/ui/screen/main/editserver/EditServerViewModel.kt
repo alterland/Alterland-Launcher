@@ -18,6 +18,7 @@ class EditServerViewModel(
     init {
         setServerProfile()
         getClientProfiles()
+        println(this)
     }
 
     override fun dispatch(action: EditServerContract.Action) {

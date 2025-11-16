@@ -1,5 +1,9 @@
 package ru.alterland.launcher
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation3.runtime.entryProvider
@@ -19,9 +23,18 @@ internal fun App(isDarkTheme: Boolean = true) = AppTheme(isDarkTheme) {
 
     NavDisplay(
         backStack = backStack,
-        onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
-            entry<ContainerRoute.Auth> {
+            entry<ContainerRoute.Auth>(
+                metadata = NavDisplay.transitionSpec {
+                    slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = tween(700)
+                    ) togetherWith slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(700)
+                    )
+                }
+            ) {
                 AuthContainerScreen(
                     navigateToMain = {
                         backStack.add(ContainerRoute.Main)
@@ -29,7 +42,17 @@ internal fun App(isDarkTheme: Boolean = true) = AppTheme(isDarkTheme) {
                     }
                 )
             }
-            entry<ContainerRoute.Main> {
+            entry<ContainerRoute.Main>(
+                metadata = NavDisplay.transitionSpec {
+                    slideInHorizontally(
+                        initialOffsetX = { it },
+                        animationSpec = tween(700)
+                    ) togetherWith slideOutHorizontally(
+                        targetOffsetX = { -it },
+                        animationSpec = tween(700)
+                    )
+                }
+            ) {
                 MainContainerScreen(
                     navigateToAuth = {
                         backStack.add(ContainerRoute.Auth)

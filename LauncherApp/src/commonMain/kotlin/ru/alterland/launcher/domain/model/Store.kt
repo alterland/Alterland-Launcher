@@ -3,14 +3,15 @@ package ru.alterland.launcher.domain.model
 data class Store(
     val accessToken: String?,
     val rememberMe: Boolean?,
-    val launchAfterUpdate: Boolean?,
-    val launchFullscreen: Boolean?,
-    val screenWidth: Int?,
-    val screenHeight: Int?,
-    val currentDir: String?,
-    val clientSettings: Map<String, ClientSettings>?
+    val minecraftSettings: Map<String, MinecraftSettings>?
 ) {
-    data class ClientSettings(
+    data class MinecraftSettings(
+        val launchAfterUpdate: Boolean,
+        val launchFullscreen: Boolean,
+        val autoConnect: Boolean,
+        val screenWidth: Int,
+        val screenHeight: Int,
+        val currentDir: String,
         val ram: Int
     )
 }

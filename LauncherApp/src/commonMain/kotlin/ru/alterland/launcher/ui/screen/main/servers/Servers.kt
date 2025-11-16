@@ -18,40 +18,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.ui.NavDisplay
 import org.jetbrains.compose.resources.stringResource
 import ru.alterland.launcher.domain.model.User
 import ru.alterland.launcher.ui.screen.main.clientsettings.ClientSettingsPayload
-import ru.alterland.launcher.ui.screen.main.clientsettings.ClientSettingsScreen
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerMode
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerPayload
-import ru.alterland.launcher.ui.screen.main.editserver.EditServerScreen
 import ru.alterland.launcher.ui.screen.main.server.ServerPayload
-import ru.alterland.launcher.ui.screen.main.server.ServerScreen
 import ru.alterland.launcher.ui.screen.main.servers.components.TabItem
 import ru.alterland.launcher.ui.theme.AppTheme
 
 @Composable
 fun Servers(
-    state: ServersContract.State
+    state: ServersContract.State,
+    tabNavigation: @Composable (NavBackStack<NavKey>) -> Unit
 ) {
     VerticalPager(
         state = rememberPagerState(pageCount = { state.serverProfiles.size }),
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        key = { index -> state.serverProfiles.getOrNull(index)?.id ?: index }
     ) { page ->
         state.serverProfiles.getOrNull(page)?.let { serverProfile ->
-
             val serverPayload = ServerPayload(serverProfile = serverProfile)
             val serverTab = ServerTab.Server(payload = serverPayload)
 
-            val backStack = rememberNavBackStack(
+            val pageBackStack = rememberNavBackStack(
                 serverRouteConfig,
                 ServerRoute.Server(payload = serverPayload)
             )
 
-            var currentTab by rememberSaveable { mutableStateOf<ServerTab>(serverTab) }
+            var currentTab by rememberSaveable(serverProfile.id) { mutableStateOf<ServerTab>(serverTab) }
 
             val tabs = mutableListOf<ServerTab>(serverTab).apply {
                 serverProfile.clientProfile?.let { id ->
@@ -86,19 +84,19 @@ fun Servers(
                         when(tab) {
                             is ServerTab.Server -> {
                                 title = stringResource(Res.string.play)
-                                action = { backStack.add(ServerRoute.Server(payload = tab.payload)) }
+                                action = { pageBackStack.add(ServerRoute.Server(payload = tab.payload)) }
                             }
                             is ServerTab.ClientSettings -> {
                                 title = stringResource(Res.string.settings)
-                                action = { backStack.add(ServerRoute.ClientSettings(payload = tab.payload)) }
+                                action = { pageBackStack.add(ServerRoute.ClientSettings(payload = tab.payload)) }
                             }
                             is ServerTab.EditServer -> {
                                 title = stringResource(Res.string.edit)
-                                action = { backStack.add(ServerRoute.EditServer(payload = tab.payload)) }
+                                action = { pageBackStack.add(ServerRoute.EditServer(payload = tab.payload)) }
                             }
                             is ServerTab.AddServer -> {
                                 title = stringResource(Res.string.add)
-                                action = { backStack.add(ServerRoute.EditServer(payload = tab.payload)) }
+                                action = { pageBackStack.add(ServerRoute.EditServer(payload = tab.payload)) }
                             }
                         }
                         TabItem(
@@ -111,27 +109,7 @@ fun Servers(
                         )
                     }
                 }
-                NavDisplay(
-                    backStack = backStack,
-                    onBack = { backStack.removeLastOrNull() },
-                    entryProvider = entryProvider {
-                        entry<ServerRoute.Server> {
-                            ServerScreen(payload = it.payload)
-                        }
-                        entry<ServerRoute.EditServer> {
-                            EditServerScreen(
-                                payload = it.payload,
-                                navigateBack = { backStack.removeLastOrNull() }
-                            )
-                        }
-                        entry<ServerRoute.ClientSettings> {
-                            ClientSettingsScreen(
-                                payload = it.payload,
-                                navigateBack = { backStack.removeLastOrNull() }
-                            )
-                        }
-                    }
-                )
+                tabNavigation(pageBackStack)
             }
         }
     }

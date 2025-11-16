@@ -3,10 +3,10 @@ package ru.alterland.launcher.di
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import ru.alterland.launcher.data.repository.ClientFilesRepositoryImpl
-import ru.alterland.launcher.data.repository.ClientSettingsRepositoryImpl
+import ru.alterland.launcher.data.repository.MinecraftSettingsRepositoryImpl
 import ru.alterland.launcher.data.repository.LaunchRepositoryImpl
 import ru.alterland.launcher.domain.repository.ClientFilesRepository
-import ru.alterland.launcher.domain.repository.ClientSettingsRepository
+import ru.alterland.launcher.domain.repository.MinecraftSettingsRepository
 import ru.alterland.launcher.domain.repository.LaunchRepository
 
 internal val desktopRepositoryModule = module {
@@ -29,10 +29,8 @@ internal val desktopRepositoryModule = module {
             dispatcherMain = get(named(DISPATCHER_MAIN))
         )
     }
-    single<ClientSettingsRepository> {
-        ClientSettingsRepositoryImpl(
-            platformConfiguration = get(),
-            fileSystem = get(),
+    single<MinecraftSettingsRepository> {
+        MinecraftSettingsRepositoryImpl(
             localStorage = get()
         )
     }

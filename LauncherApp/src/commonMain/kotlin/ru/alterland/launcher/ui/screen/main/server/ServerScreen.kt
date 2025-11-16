@@ -11,7 +11,7 @@ import ru.alterland.launcher.ui.screen.main.client.ClientScreen
 @Composable
 fun ServerScreen(
     payload: ServerPayload,
-    viewModel: ServerViewModel = koinViewModel { parametersOf(payload) }
+    viewModel: ServerViewModel = koinViewModel(key = payload.serverProfile.id) { parametersOf(payload) }
 ) {
     val state by viewModel.collectAsState()
 

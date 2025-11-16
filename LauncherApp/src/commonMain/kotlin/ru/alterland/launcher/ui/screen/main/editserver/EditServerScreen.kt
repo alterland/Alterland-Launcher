@@ -10,9 +10,13 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun EditServerScreen(
     payload: EditServerPayload,
-    viewModel: EditServerViewModel = koinViewModel { parametersOf(payload) },
     navigateBack: () -> Unit
 ) {
+    val viewModelKey = when(payload.mode) {
+        EditServerMode.Add -> null
+        is EditServerMode.Edit -> payload.mode.serverProfile.id
+    }
+    val viewModel: EditServerViewModel = koinViewModel(key = viewModelKey) { parametersOf(payload) }
     val state by viewModel.collectAsState()
 
     viewModel.collectSideEffect { sideEffect ->
