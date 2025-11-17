@@ -99,8 +99,8 @@ fun MiniProfile(
     }
 }
 
-@Composable
 @Preview
+@Composable
 private fun MiniProfilePreview() {
     MiniProfile(user = Resource.Content(User(
         id = "",

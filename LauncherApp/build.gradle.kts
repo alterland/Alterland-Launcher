@@ -50,10 +50,9 @@ kotlin {
             implementation(libs.compose.foundation)
             implementation(libs.compose.ui.preview)
             implementation(libs.compose.components)
+            implementation(libs.androidx.lifecycle.runtime)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.viewmodel.nav3)
-            implementation(libs.androidx.lifecycle.runtime)
-            implementation(libs.kotlinx.serialization.json)
             implementation(libs.androidx.nav3.ui)
 
             implementation(libs.ktor.client.core)

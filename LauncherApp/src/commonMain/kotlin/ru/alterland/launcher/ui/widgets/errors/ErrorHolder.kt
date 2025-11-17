@@ -13,19 +13,17 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.ui.model.AppErrorUi
 import ru.alterland.launcher.ui.theme.AppTheme
+import ru.alterland.launcher.util.extentions.onPointerEvent
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ErrorHolder(
     modifier: Modifier = Modifier,

@@ -10,13 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.graphics.decodeToImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.skia.Image
+import androidx.compose.ui.tooling.preview.Preview
 import ru.alterland.launcher.domain.model.MinecraftServerStatus
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.theme.defaultElementsShape
@@ -34,7 +35,7 @@ fun MiniServer(
     val bitmap = if (item.serverStatus is MinecraftServerStatus.Online) {
         item.serverStatus.favicon?.let {
             val imageByteArray = Base64.decode(it.replace("data:image/png;base64,", ""))
-            Image.Companion.makeFromEncoded(imageByteArray).toComposeImageBitmap()
+            imageByteArray.decodeToImageBitmap()
         }
     } else {
         null
@@ -51,7 +52,10 @@ fun MiniServer(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             if (bitmap != null) {
                 Image(
                     bitmap = bitmap,
@@ -69,10 +73,12 @@ fun MiniServer(
             }
             Column {
                 Text(
-                    item.name,
+                    modifier = Modifier.padding(start = 16.dp, end = 4.dp),
+                    text = item.name,
                     color = AppTheme.colors.labelPrimary,
                     fontSize = 12.sp,
-                    modifier = Modifier.padding(start = 16.dp)
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
                 when(item.serverStatus) {
                     is MinecraftServerStatus.Online -> {
@@ -111,6 +117,14 @@ fun MiniServer(
                 }
             }
         }
-        ServerStatus(item.serverStatus)
+        ServerStatus(status = item.serverStatus)
     }
+}
+
+@Preview
+@Composable
+private fun Preview() = AppTheme {
+    MiniServer(
+        item = MiniServerItem(id = "", name = "test", serverStatus = MinecraftServerStatus.Offline)
+    )
 }

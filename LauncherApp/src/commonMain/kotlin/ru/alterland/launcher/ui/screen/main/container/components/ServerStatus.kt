@@ -4,6 +4,7 @@ import alterlandlauncher.launcherapp.generated.resources.Res
 import alterlandlauncher.launcherapp.generated.resources.ic_server_status
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.domain.model.MinecraftServerStatus
@@ -11,6 +12,7 @@ import ru.alterland.launcher.ui.theme.AppTheme
 
 @Composable
 fun ServerStatus(
+    modifier: Modifier = Modifier,
     status: MinecraftServerStatus
 ) {
     val serverStatusCircle = painterResource(Res.drawable.ic_server_status)
@@ -22,6 +24,7 @@ fun ServerStatus(
     }
 
     Image(
+        modifier = modifier,
         painter = serverStatusCircle,
         contentDescription = null,
         colorFilter = ColorFilter.tint(statusColor)
