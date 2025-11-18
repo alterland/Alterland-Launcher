@@ -29,14 +29,14 @@ class MinecraftServerRepositoryImpl(
             reuseAddress = true
             reusePort = true
             typeOfService = TypeOfService.IPTOS_LOWDELAY
-            if (this is SocketOptions.TCPClientSocketOptions) {
-                keepAlive = false
-                noDelay = true
-                lingerSeconds = 10
-                socketTimeout = 10
-            }
         }
-        val socket = socketFactory.tcp().connect(host, port)
+        val socket = socketFactory.tcp().connect(
+            hostname = host,
+            port = port,
+            configure = {
+                socketTimeout = 2000
+            }
+        )
         return MinecraftClient(dispatcherIo = dispatcherIo, json = json, connection = socket)
     }
 

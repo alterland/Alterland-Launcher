@@ -3,16 +3,7 @@ package ru.alterland.launcher.ui.screen.main.container
 import alterlandlauncher.launcherapp.generated.resources.Res
 import alterlandlauncher.launcherapp.generated.resources.avatar_rofl
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -21,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.domain.model.User
+import ru.alterland.launcher.ui.model.ServerProfileWithStatus
 import ru.alterland.launcher.ui.screen.main.container.components.MiniProfile
 import ru.alterland.launcher.ui.screen.main.container.components.MiniServer
 import ru.alterland.launcher.ui.screen.main.container.components.ServersPlaceholder
@@ -47,12 +39,14 @@ fun MainContainer(
                 modifier = Modifier.padding(top = 20.dp).fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                LazyColumn {
-                    items(state.miniServerItems) {
-                        MiniServer(
-                            item = it,
-                            modifier = Modifier.padding(start = 9.dp, top = 12.dp, end = 11.dp)
-                        )
+                if (state.serverProfiles is Resource.Content) {
+                    LazyColumn {
+                        items(state.serverProfiles.data) {
+                            MiniServer(
+                                item = it,
+                                modifier = Modifier.padding(start = 9.dp, top = 12.dp, end = 11.dp)
+                            )
+                        }
                     }
                 }
                 MiniProfile(
@@ -64,9 +58,9 @@ fun MainContainer(
             }
         }
         Box(modifier = Modifier.fillMaxSize()) {
-            when(state.servers) {
+            when(state.serverProfiles) {
                 is Resource.Content -> {
-                    if (state.servers.data) {
+                    if (state.serverProfiles.data.isNotEmpty()) {
                         childNavigation()
                     } else {
                         ServersPlaceholder(
@@ -80,7 +74,7 @@ fun MainContainer(
                     }
                 }
                 is Resource.Error -> ServersPlaceholder(
-                    throwable = state.servers.throwable,
+                    throwable = state.serverProfiles.throwable,
                     onRetryClick = { onAction(MainContainerContract.Action.OnReload) }
                 )
                 is Resource.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import ru.alterland.launcher.domain.model.MinecraftServerStatus
+import ru.alterland.launcher.ui.model.ServerProfileWithStatus
 import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.theme.defaultElementsShape
 import kotlin.io.encoding.Base64
@@ -28,12 +28,12 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 @OptIn(ExperimentalEncodingApi::class)
 @Composable
 fun MiniServer(
-    item: MiniServerItem,
+    item: ServerProfileWithStatus,
     modifier: Modifier = Modifier,
 ) {
 
-    val bitmap = if (item.serverStatus is MinecraftServerStatus.Online) {
-        item.serverStatus.favicon?.let {
+    val bitmap = if (item.status is MinecraftServerStatus.Online) {
+        item.status.favicon?.let {
             val imageByteArray = Base64.decode(it.replace("data:image/png;base64,", ""))
             imageByteArray.decodeToImageBitmap()
         }
@@ -74,16 +74,16 @@ fun MiniServer(
             Column {
                 Text(
                     modifier = Modifier.padding(start = 16.dp, end = 4.dp),
-                    text = item.name,
+                    text = item.serverProfile.title,
                     color = AppTheme.colors.labelPrimary,
                     fontSize = 12.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
-                when(item.serverStatus) {
+                when(item.status) {
                     is MinecraftServerStatus.Online -> {
                         Text(
-                            text = stringResource(Res.string.server_status_players, item.serverStatus.onlinePlayers, item.serverStatus.maxPlayers),
+                            text = stringResource(Res.string.server_status_players, item.status.onlinePlayers, item.status.maxPlayers),
                             color = AppTheme.colors.labelPrimary,
                             fontSize = 8.sp,
                             modifier = Modifier.padding(start = 16.dp)
@@ -91,7 +91,7 @@ fun MiniServer(
                         Text(
                             text = stringResource(
                                 Res.string.server_status_latency,
-                                item.serverStatus.latency
+                                item.status.latency
                             ),
                             color = AppTheme.colors.labelPrimary,
                             fontSize = 8.sp,
@@ -117,14 +117,6 @@ fun MiniServer(
                 }
             }
         }
-        ServerStatus(status = item.serverStatus)
+        ServerStatus(status = item.status)
     }
-}
-
-@Preview
-@Composable
-private fun Preview() = AppTheme {
-    MiniServer(
-        item = MiniServerItem(id = "", name = "test", serverStatus = MinecraftServerStatus.Offline)
-    )
 }

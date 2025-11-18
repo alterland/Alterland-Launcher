@@ -5,7 +5,7 @@ import ru.alterland.launcher.ui.base.UiAction
 import ru.alterland.launcher.ui.base.UiEffect
 import ru.alterland.launcher.ui.base.UiState
 import ru.alterland.launcher.ui.model.AppErrorUi
-import ru.alterland.launcher.ui.screen.main.container.components.MiniServerItem
+import ru.alterland.launcher.ui.model.ServerProfileWithStatus
 import ru.alterland.launcher.util.base.Resource
 
 class MainContainerContract {
@@ -19,11 +19,10 @@ class MainContainerContract {
     data class State(
         val errors: List<AppErrorUi> = emptyList(),
         val currentClient: String? = null,
-        val miniServerItems: List<MiniServerItem> = emptyList(),
         val isClientServiceOffline: Boolean = false,
 
         val user: Resource<User>? = null,
-        val servers: Resource<Boolean>? = null,
+        val serverProfiles: Resource<List<ServerProfileWithStatus>>? = null,
     ): UiState
 
     sealed class Effect: UiEffect {
