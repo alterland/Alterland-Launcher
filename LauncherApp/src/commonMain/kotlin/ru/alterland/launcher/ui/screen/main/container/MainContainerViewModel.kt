@@ -59,7 +59,6 @@ class MainContainerViewModel(
             }
             .onFailure { throwable ->
                 reduce { state.copy(user = Resource.Error(throwable)) }
-                errorRepository.addError(throwable)
             }
     }
 
@@ -76,15 +75,15 @@ class MainContainerViewModel(
         runCatching {
             serverProfilesRepository.getServerProfiles()
         }.onFailure { throwable ->
-            reduce { state.copy(serverProfiles = Resource.Error(throwable)) }
-            errorRepository.addError(throwable)
+            if (state.serverProfiles?.getOrNull().isNullOrEmpty()) {
+                reduce { state.copy(serverProfiles = Resource.Error(throwable)) }
+            }
         }
     }
 
     private fun pingServers() = intent {
         pingServerJobs?.forEach { it.cancel() }
-        val serverProfiles = (state.serverProfiles as? Resource.Content)?.data
-        if (serverProfiles.isNullOrEmpty()) return@intent
+        val serverProfiles = state.serverProfiles?.getOrNull() ?: return@intent
         pingServerJobs = serverProfiles.map { item ->
             viewModelScopeErrorHandled.launch {
                 while (isActive) {
@@ -92,7 +91,7 @@ class MainContainerViewModel(
                         minecraftServerRepository.ping(item.serverProfile.ip, item.serverProfile.port)
                     }.getOrElse { MinecraftServerStatus.Offline }
                     reduce {
-                        val updated = (state.serverProfiles as? Resource.Content)?.data?.let { data ->
+                        val updated = state.serverProfiles?.getOrNull()?.let { data ->
                             Resource.Content(data = data.map {
                                 if (it.serverProfile.id == item.serverProfile.id) {
                                     ServerProfileWithStatus(

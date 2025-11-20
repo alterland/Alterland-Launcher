@@ -13,17 +13,30 @@ import ru.alterland.launcher.ui.screen.ContainerRoute
 import ru.alterland.launcher.ui.screen.auth.container.AuthContainerScreen
 import ru.alterland.launcher.ui.screen.containerRouteConfig
 import ru.alterland.launcher.ui.screen.main.container.MainContainerScreen
+import ru.alterland.launcher.ui.screen.splash.SplashScreen
 import ru.alterland.launcher.ui.theme.AppTheme
 
 @Composable
 @Preview
 internal fun App(isDarkTheme: Boolean = true) = AppTheme(isDarkTheme) {
 
-    val backStack = rememberNavBackStack(containerRouteConfig, ContainerRoute.Auth)
+    val backStack = rememberNavBackStack(containerRouteConfig, ContainerRoute.Splash)
 
     NavDisplay(
         backStack = backStack,
         entryProvider = entryProvider {
+            entry<ContainerRoute.Splash> {
+                SplashScreen(
+                    navigateToAuth = {
+                        backStack.add(ContainerRoute.Auth)
+                        backStack.removeFirstOrNull()
+                    },
+                    navigateToMain = {
+                        backStack.add(ContainerRoute.Main)
+                        backStack.removeFirstOrNull()
+                    }
+                )
+            }
             entry<ContainerRoute.Auth>(
                 metadata = NavDisplay.transitionSpec {
                     slideInHorizontally(

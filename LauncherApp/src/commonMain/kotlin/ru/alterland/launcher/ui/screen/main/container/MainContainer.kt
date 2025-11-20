@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import ru.alterland.launcher.domain.model.User
-import ru.alterland.launcher.ui.model.ServerProfileWithStatus
 import ru.alterland.launcher.ui.screen.main.container.components.MiniProfile
 import ru.alterland.launcher.ui.screen.main.container.components.MiniServer
 import ru.alterland.launcher.ui.screen.main.container.components.ServersPlaceholder
@@ -39,8 +38,8 @@ fun MainContainer(
                 modifier = Modifier.padding(top = 20.dp).fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                if (state.serverProfiles is Resource.Content) {
-                    LazyColumn {
+                LazyColumn {
+                    if (state.serverProfiles is Resource.Content) {
                         items(state.serverProfiles.data) {
                             MiniServer(
                                 item = it,
@@ -66,7 +65,7 @@ fun MainContainer(
                         ServersPlaceholder(
                             isEmpty = true,
                             canAddServer =
-                                state.user is Resource.Content<User> &&
+                                state.user is Resource.Content &&
                                         (state.user.data.role?.strength ?: User.Role.DEFAULT_STRENGTH) >= User.Role.MIN_EDIT_STRENGTH,
                             onAddServerClick = { onAction(MainContainerContract.Action.OnNavigateToAddServer) },
                             onRetryClick = { onAction(MainContainerContract.Action.OnReload) }

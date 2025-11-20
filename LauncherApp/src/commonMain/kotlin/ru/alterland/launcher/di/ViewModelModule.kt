@@ -10,8 +10,11 @@ import ru.alterland.launcher.ui.screen.main.container.MainContainerViewModel
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerViewModel
 import ru.alterland.launcher.ui.screen.main.server.ServerViewModel
 import ru.alterland.launcher.ui.screen.main.servers.ServersViewModel
+import ru.alterland.launcher.ui.screen.splash.SplashViewModel
 
 internal val viewModelModule = module {
+    factoryOf(::SplashViewModel)
+
     factoryOf(::AuthContainerViewModel)
     factoryOf(::SignInScreenModel)
     factoryOf(::SignUpScreenModel)

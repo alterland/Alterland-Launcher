@@ -10,6 +10,9 @@ import kotlinx.serialization.modules.polymorphic
 sealed interface ContainerRoute: NavKey {
 
     @Serializable
+    data object Splash: ContainerRoute
+
+    @Serializable
     data object Auth: ContainerRoute
 
     @Serializable
@@ -19,6 +22,7 @@ sealed interface ContainerRoute: NavKey {
 val containerRouteConfig = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
+            subclass(ContainerRoute.Splash::class, ContainerRoute.Splash.serializer())
             subclass(ContainerRoute.Auth::class, ContainerRoute.Auth.serializer())
             subclass(ContainerRoute.Main::class, ContainerRoute.Main.serializer())
         }
