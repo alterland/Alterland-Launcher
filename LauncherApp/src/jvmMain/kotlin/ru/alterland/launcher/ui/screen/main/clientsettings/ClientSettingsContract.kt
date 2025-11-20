@@ -11,22 +11,15 @@ class ClientSettingsContract {
         data object OnLaunchAfterUpdateClicked : Action()
         data object OnLaunchFullscreenClicked : Action()
         data object OnAutoConnectClicked : Action()
-        data class OnRamSliderValueChange(val value: Float) : Action()
-        data object OnRamSliderValueChangeFinished : Action()
+        data class OnRamInput(val value: String) : Action()
+        data object OnRamInputFinished : Action()
     }
 
     data class State(
         val settings: Store.MinecraftSettings? = null,
-        val ramSlider: Slider? = null
-    ) : UiState {
-        data class Slider(
-            val value: Int,
-            val minValue: Int,
-            val maxValue: Int,
-            val step: Int,
-            val steps: Int
-        )
-    }
+        val ramValue: String = "",
+        val recommendedRam: Int
+    ) : UiState
 
     sealed class Effect: UiEffect
 }

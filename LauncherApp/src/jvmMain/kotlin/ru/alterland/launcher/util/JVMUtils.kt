@@ -16,4 +16,5 @@ val OS_BITS = if (OS_NAME == OsName.WINDOWS) {
 } else {
     if (System.getProperty("os.arch").contains("64")) 64 else 32
 }
-val DEVICE_RAM = OPERATING_SYSTEM_MXBEAN.totalMemorySize.shr(20).coerceAtMost(if (OS_BITS == 32) 1536 else 65534)
+val DEVICE_RAM = OPERATING_SYSTEM_MXBEAN.totalMemorySize.shr(20).toInt()
+    .coerceAtMost(if (OS_BITS == 32) 1536 else Int.MAX_VALUE)

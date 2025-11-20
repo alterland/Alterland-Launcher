@@ -27,6 +27,7 @@ import ru.alterland.launcher.ui.theme.defaultInputHeight
 
 @Composable
 fun Input(
+    modifier: Modifier = Modifier,
     hint: String = "",
     text: String = "",
     icon: Painter? = null,
@@ -35,7 +36,6 @@ fun Input(
     enabled: Boolean = true,
     isLoading: Boolean = false,
     endIcon: Painter? = null,
-    modifier: Modifier = Modifier,
     onInput: (String) -> Unit = {},
 ) {
     val colors = AppTheme.colors

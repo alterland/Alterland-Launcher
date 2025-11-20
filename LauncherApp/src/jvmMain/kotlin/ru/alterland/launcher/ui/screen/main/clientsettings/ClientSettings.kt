@@ -1,23 +1,39 @@
 package ru.alterland.launcher.ui.screen.main.clientsettings
 
-import alterlandlauncher.launcherapp.generated.resources.Res
-import alterlandlauncher.launcherapp.generated.resources.settings_auto_connect
-import alterlandlauncher.launcherapp.generated.resources.settings_launch_after_update
-import alterlandlauncher.launcherapp.generated.resources.settings_launch_fullscreen
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.Composable
+import alterlandlauncher.launcherapp.generated.resources.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
+import ru.alterland.launcher.ui.theme.AppTheme
 import ru.alterland.launcher.ui.widgets.CheckBox
-import java.util.*
+import ru.alterland.launcher.ui.widgets.Input
 
 @Composable
 fun ClientSettings(
     state: ClientSettingsContract.State,
     onAction: (ClientSettingsContract.Action) -> Unit
 ) {
+    val focusRequester = remember { FocusRequester() }
+
     Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null,
+                onClick = { focusRequester.freeFocus() }
+            )
+            .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         CheckBox(
@@ -35,36 +51,39 @@ fun ClientSettings(
             text = stringResource(Res.string.settings_auto_connect),
             onClick = { onAction(ClientSettingsContract.Action.OnAutoConnectClicked) }
         )
-
-//        with(state.ramSlider) {
-//            val ramLabel = formatRamLabel(value)
-//            Text(
-//                modifier = Modifier.padding(bottom = 8.dp),
-//                text = "RAM: $ramLabel",
-//                color = AppTheme.colors.labelPrimary
-//            )
-//            Slider(
-//                value = value.toFloat(),
-//                onValueChange = { onAction(ClientSettingsContract.Action.OnRamSliderValueChange(it)) },
-//                onValueChangeFinished = { onAction(ClientSettingsContract.Action.OnRamSliderValueChangeFinished) },
-//                valueRange = minValue.toFloat()..maxValue.toFloat(),
-//                steps = steps,
-//                colors = SliderDefaults.colors(
-//                    thumbColor = AppTheme.colors.primary,
-//                    activeTrackColor = AppTheme.colors.primary
-//                )
-//            )
-//        }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(Res.string.settings_ram),
+                    color = AppTheme.colors.labelPrimary
+                )
+                Input(
+                    modifier = Modifier
+                        .width(86.dp)
+                        .focusRequester(focusRequester)
+                        .onFocusChanged {
+                            if (!it.hasFocus) {
+                                onAction(ClientSettingsContract.Action.OnRamInputFinished)
+                            }
+                        },
+                    text = state.ramValue,
+                    hint = stringResource(Res.string.settings_value),
+                    singleLine = true,
+                    onInput = { onAction(ClientSettingsContract.Action.OnRamInput(value = it)) }
+                )
+                Text(
+                    text = stringResource(Res.string.megabytes),
+                    color = AppTheme.colors.labelPrimary
+                )
+            }
+            Text(
+                text = stringResource(Res.string.settings_ram_warning, state.recommendedRam),
+                color = AppTheme.colors.labelSecondary,
+                fontSize = 10.sp
+            )
+        }
     }
-}
-
-private fun formatRamLabel(valueMb: Int): String {
-    val gbValue = valueMb / 1024f
-    val hasFraction = valueMb % 1024 != 0
-    val gbText = if (hasFraction) {
-        String.format(Locale.US, "%.1f", gbValue)
-    } else {
-        (valueMb / 1024).toString()
-    }
-    return "$gbText GB ($valueMb MB)"
 }

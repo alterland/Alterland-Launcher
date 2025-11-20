@@ -4,14 +4,17 @@ import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.viewmodel.container
 import ru.alterland.launcher.domain.repository.MinecraftSettingsRepository
 import ru.alterland.launcher.ui.base.BaseViewModel
-import kotlin.math.roundToInt
 
 class ClientSettingsViewModel(
     private val minecraftSettingsRepository: MinecraftSettingsRepository,
     private val payload: ClientSettingsPayload
 ) : BaseViewModel<ClientSettingsContract.State, ClientSettingsContract.Effect, ClientSettingsContract.Action>() {
 
-    override val container = container<ClientSettingsContract.State, ClientSettingsContract.Effect>(ClientSettingsContract.State()) {
+    override val container = container<ClientSettingsContract.State, ClientSettingsContract.Effect>(
+        initialState = ClientSettingsContract.State(
+            recommendedRam = 8192
+        )
+    ) {
         getSettings()
     }
 
@@ -20,15 +23,15 @@ class ClientSettingsViewModel(
             ClientSettingsContract.Action.OnLaunchAfterUpdateClicked -> handleOnLaunchAfterUpdateClicked()
             ClientSettingsContract.Action.OnLaunchFullscreenClicked -> handleOnLaunchFullscreenClicked()
             ClientSettingsContract.Action.OnAutoConnectClicked -> handleOnAutoConnectClicked()
-            is ClientSettingsContract.Action.OnRamSliderValueChange -> handleOnRamSliderValueChange(action.value)
-            ClientSettingsContract.Action.OnRamSliderValueChangeFinished -> handleOnRamSliderValueChangeFinished()
+            is ClientSettingsContract.Action.OnRamInput -> handleOnRamInput(action.value)
+            ClientSettingsContract.Action.OnRamInputFinished -> getSettings()
         }
     }
 
     private fun getSettings() = intent {
         viewModelScopeErrorHandled.launch {
             val settings = minecraftSettingsRepository.getSettings(payload.id)
-            reduce { state.copy(settings = settings) }
+            reduce { state.copy(settings = settings, ramValue = settings.ram.toString()) }
         }
     }
 
@@ -62,19 +65,20 @@ class ClientSettingsViewModel(
         }
     }
 
-    private fun handleOnRamSliderValueChange(value: Float) = intent {
-//        val slider = state.ramSlider
-//        val snappedValue = snapToRamStep(value, slider)
-//        reduce { state.copy(ramSlider = slider.copy(value = snappedValue)) }
+    private fun handleOnRamInput(value: String) = intent {
+        reduce { state.copy(ramValue = value) }
+        val intValue = value.toIntOrNull() ?: return@intent
+        val memory = intValue.coerceIn(MIN_MEMORY, MAX_MEMORY)
+        if (memory != state.settings?.ram) {
+            viewModelScopeErrorHandled.launch {
+                val updatedSettings = state.settings?.copy(ram = memory) ?: return@launch
+                minecraftSettingsRepository.saveSettings(payload.id, updatedSettings)
+            }
+        }
     }
 
-    private fun handleOnRamSliderValueChangeFinished() = intent {
-
-    }
-
-    private fun snapToRamStep(value: Float, slider: ClientSettingsContract.State.Slider): Int {
-        val clamped = value.coerceIn(slider.minValue.toFloat(), slider.maxValue.toFloat())
-        val stepsFromMin = ((clamped - slider.minValue) / slider.step).roundToInt()
-        return slider.minValue + stepsFromMin * slider.step
+    companion object {
+        private const val MAX_MEMORY = 16384
+        private const val MIN_MEMORY = 1536
     }
 }
