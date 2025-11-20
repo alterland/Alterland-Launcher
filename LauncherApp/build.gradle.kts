@@ -148,15 +148,18 @@ compose.desktop {
             vendor = "Alterland"
             modules("java.instrument", "jdk.management", "jdk.unsupported")
             linux {
+                iconFile.set(project.file("icon.png"))
                 modules("jdk.security.auth")
             }
 
             //Use Other installer for Windows. E.g.: Inno Setup. IMPORTANT! - copy upgradeUuid value to the custom installer.
             windows {
+                iconFile.set(project.file("icon.ico"))
                 upgradeUuid = "375BA0BB-0A64-41A3-8D75-37315D837DE1"
                 shortcut = true
             }
             macOS {
+                iconFile.set(project.file("icon.icns"))
                 bundleID = "ru.alterland.launcher"
             }
         }

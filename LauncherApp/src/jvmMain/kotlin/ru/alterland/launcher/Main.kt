@@ -1,6 +1,5 @@
 package ru.alterland.launcher
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.window.WindowDraggableArea
@@ -42,16 +41,14 @@ fun main() = application {
         state = state,
         title = ""
     ) {
-        WindowDraggableArea {
-            Row(modifier = Modifier.fillMaxWidth().height(50.dp)) {}
+        with(window) {
+            minimumSize = Dimension(minWindowWidth, minWindowHeight)
+            rootPane.putClientProperty("apple.awt.fullWindowContent", true)
+            rootPane.putClientProperty("apple.awt.transparentTitleBar", true)
+            rootPane.putClientProperty("apple.awt.windowTitleVisible", false)
         }
 
-        this.window.minimumSize = Dimension(minWindowWidth, minWindowHeight)
-        val rootPane = this.window.rootPane
-        rootPane.putClientProperty("apple.awt.fullWindowContent", true)
-        rootPane.putClientProperty("apple.awt.transparentTitleBar", true)
-        rootPane.putClientProperty("apple.awt.windowTitleVisible", false)
-
+        WindowDraggableArea(modifier = Modifier.fillMaxWidth().height(50.dp))
         App()
     }
 }
