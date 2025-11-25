@@ -32,6 +32,8 @@ kstore = "1.0.0"
 filekit = "0.12.0"
 orbit = "11.0.0"
 junit = "4.13.2"
+lwjgl = "3.3.6"
+lwjgl3-awt = "0.2.3"
 
 [libraries]
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
@@ -86,6 +88,11 @@ filekit-core = { group = "io.github.vinceglb", name = "filekit-core", version.re
 filekit-dialogs = { group = "io.github.vinceglb", name = "filekit-dialogs", version.ref = "filekit" }
 filekit-dialogs-compose = { group = "io.github.vinceglb", name = "filekit-dialogs-compose", version.ref = "filekit" }
 filekit-coil = { group = "io.github.vinceglb", name = "filekit-coil", version.ref = "filekit" }
+
+lwjgl = { module = "org.lwjgl:lwjgl", version.ref = "lwjgl" }
+lwjgl-jawt = { module= "org.lwjgl:lwjgl-jawt", version.ref = "lwjgl" }
+lwjgl-vulkan = { module = "org.lwjgl:lwjgl-vulkan", version.ref = "lwjgl" }
+lwjgl3-awt = { module = "org.lwjglx:lwjgl3-awt", version.ref = "lwjgl3-awt" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

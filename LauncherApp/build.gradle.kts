@@ -94,6 +94,19 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.coil.network.okhttp)
             implementation(libs.logback)
+
+            implementation(libs.lwjgl)
+            implementation(libs.lwjgl.vulkan)
+            implementation(libs.lwjgl.jawt)
+            implementation(libs.lwjgl3.awt.get().toString()) {
+                exclude(group = "org.lwjgl")
+            }
+            listOf("windows", "linux", "macos", "macos-arm64").forEach {
+                runtimeOnly(dependencies.variantOf(libs.lwjgl) { classifier("natives-$it") })
+            }
+            listOf("macos", "macos-arm64").forEach {
+                runtimeOnly(dependencies.variantOf(libs.lwjgl.vulkan) { classifier("natives-$it") })
+            }
         }
     }
 }

@@ -30,6 +30,8 @@
     <string name="petabytes">ПБ</string>
     <string name="exabytes">ЭБ</string>
 
+    <string name="splash_updating">Обновление: </string>
+
     <string name="settings">Настройки</string>
     <string name="settings_directory">Расположение</string>
     <string name="settings_directory_browse">Обзор...</string>

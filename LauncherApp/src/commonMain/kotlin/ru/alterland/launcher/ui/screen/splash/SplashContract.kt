@@ -7,8 +7,8 @@ import ru.alterland.launcher.ui.base.UiState
 class SplashContract {
     sealed class Action : UiAction
 
-    data class State(
-        val isLoading: Boolean = false
+    class State(
+
     ): UiState
 
     sealed class Effect: UiEffect {
