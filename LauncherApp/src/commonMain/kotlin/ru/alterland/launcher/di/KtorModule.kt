@@ -1,8 +1,8 @@
 package ru.alterland.launcher.di
 
 import org.koin.dsl.module
-import ru.alterland.launcher.data.source.network.ktor.AppHttpClient
+import ru.alterland.launcher.data.source.network.ktor.configureHttpClient
 
 internal val ktorModule = module {
-    single { AppHttpClient(get(), get()).client }
+    single { configureHttpClient(json = get(), localStorage = get()) }
 }

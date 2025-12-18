@@ -8,6 +8,7 @@ import kotlinx.serialization.modules.polymorphic
 import ru.alterland.launcher.ui.screen.main.clientsettings.ClientSettingsPayload
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerPayload
 import ru.alterland.launcher.ui.screen.main.server.ServerPayload
+import ru.alterland.launcher.ui.screen.main.skins.SkinsPayload
 
 @Serializable
 sealed interface ServerRoute : NavKey {
@@ -20,6 +21,9 @@ sealed interface ServerRoute : NavKey {
 
     @Serializable
     data class ClientSettings(val payload: ClientSettingsPayload) : ServerRoute
+
+    @Serializable
+    data class Skins(val payload: SkinsPayload) : ServerRoute
 }
 
 val serverRouteConfig = SavedStateConfiguration {
@@ -28,6 +32,7 @@ val serverRouteConfig = SavedStateConfiguration {
             subclass(ServerRoute.Server::class, ServerRoute.Server.serializer())
             subclass(ServerRoute.EditServer::class, ServerRoute.EditServer.serializer())
             subclass(ServerRoute.ClientSettings::class, ServerRoute.ClientSettings.serializer())
+            subclass(ServerRoute.Skins::class, ServerRoute.Skins.serializer())
         }
     }
 }

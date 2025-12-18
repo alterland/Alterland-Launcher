@@ -8,8 +8,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.io.decodeFromSource
 import kotlinx.serialization.json.io.encodeToSink
+import ru.alterland.launcher.util.hash.Sha1Digest
 import ru.alterland.launcher.util.hash.StringUtils.encodeHex
-import java.security.MessageDigest
 
 @OptIn(ExperimentalSerializationApi::class)
 inline fun <reified T> Path.saveJson(fileSystem: FileSystem, json: Json, value: T) {
@@ -26,18 +26,22 @@ inline fun <reified T> Path.readJson(fileSystem: FileSystem, json: Json): T {
 }
 
 fun Path.checkSum(fileSystem: FileSystem): String {
-    val digest = MessageDigest.getInstance("SHA-1")
+    val digest = Sha1Digest()
+    val buffer = ByteArray(FILE_BUFFER_SIZE)
+
     fileSystem.source(this).buffered().use { source ->
-        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-        var read = source.readAvailable(buffer, 0, DEFAULT_BUFFER_SIZE)
+        var read = source.readAvailable(buffer, 0, FILE_BUFFER_SIZE)
         while (read > 0) {
             digest.update(buffer, 0, read)
-            read = source.readAvailable(buffer, 0, DEFAULT_BUFFER_SIZE)
+            read = source.readAvailable(buffer, 0, FILE_BUFFER_SIZE)
         }
     }
+
     val bytes = digest.digest()
     val hexCode = encodeHex(bytes, true)
-    return String(hexCode)
+    return hexCode.concatToString()
 }
 
 expect fun Path.makeExecutable()
+
+private const val FILE_BUFFER_SIZE = 8 * 1024

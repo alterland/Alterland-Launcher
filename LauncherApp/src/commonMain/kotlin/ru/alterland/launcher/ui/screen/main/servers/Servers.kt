@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -49,7 +50,7 @@ fun Servers(
                 ServerRoute.Server(payload = serverPayload)
             )
 
-            var currentTab by rememberSaveable(serverProfile.id) { mutableStateOf<ServerTab>(serverTab) }
+            var currentTab by remember(serverProfile.id) { mutableStateOf<ServerTab>(serverTab) }
 
             val tabs = mutableListOf<ServerTab>(serverTab).apply {
                 serverProfile.clientProfile?.let { id ->

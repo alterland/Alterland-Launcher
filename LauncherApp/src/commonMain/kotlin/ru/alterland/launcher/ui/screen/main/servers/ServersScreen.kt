@@ -12,6 +12,7 @@ import org.orbitmvi.orbit.compose.collectAsState
 import ru.alterland.launcher.ui.screen.main.clientsettings.ClientSettingsScreen
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerScreen
 import ru.alterland.launcher.ui.screen.main.server.ServerScreen
+import ru.alterland.launcher.ui.screen.main.skins.SkinsScreen
 
 @Composable
 fun ServersScreen(
@@ -34,6 +35,12 @@ fun ServersScreen(
                 }
                 entry<ServerRoute.ClientSettings> {
                     ClientSettingsScreen(
+                        payload = it.payload,
+                        navigateBack = { pageBackStack.removeLastOrNull() }
+                    )
+                }
+                entry<ServerRoute.Skins> {
+                    SkinsScreen(
                         payload = it.payload,
                         navigateBack = { pageBackStack.removeLastOrNull() }
                     )

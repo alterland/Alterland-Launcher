@@ -13,9 +13,7 @@ class ServersViewModel(
     private val serverProfilesRepository: ServerProfilesRepository
 ): BaseViewModel<ServersContract.State, ServersContract.Effect, ServersContract.Action>() {
 
-    override val container = container<ServersContract.State, ServersContract.Effect>(ServersContract.State())
-
-    init {
+    override val container = container<ServersContract.State, ServersContract.Effect>(ServersContract.State()) {
         getUser()
         subscribeToServerProfiles()
     }

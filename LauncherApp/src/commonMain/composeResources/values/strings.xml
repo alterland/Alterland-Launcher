@@ -34,6 +34,9 @@
     <string name="client_settings">Game</string>
     <string name="client_settings_launch_fullscreen">Run in full-screen mode</string>
     <string name="client_settings_auto_connect">Connect to the server automatically</string>
+    <string name="settings_select_skin">Change</string>
+    <string name="settings_model_wide">Wide</string>
+    <string name="settings_model_slim">Slim</string>
     <string name="skins">Skins</string>
 
     <string name="server_status_latency">Latency: %1$d ms</string>

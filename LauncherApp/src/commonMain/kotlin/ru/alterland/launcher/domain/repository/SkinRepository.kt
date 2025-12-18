@@ -1,5 +1,8 @@
 package ru.alterland.launcher.domain.repository
 
-interface SkinRepository {
+import ru.alterland.launcher.domain.model.Skin
 
+interface SkinRepository {
+    suspend fun loadSkin(): Skin
+    suspend fun saveSkin(skin: Skin)
 }

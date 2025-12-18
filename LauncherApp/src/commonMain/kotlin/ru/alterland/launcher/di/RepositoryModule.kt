@@ -23,12 +23,7 @@ internal val repositoryModule = module {
             localStorage = get()
         )
     }
-    single<MinecraftServerRepository> {
-        MinecraftServerRepositoryImpl(
-            dispatcherIo = get(named(DISPATCHER_IO)),
-            json = get()
-        )
-    }
+    single<MinecraftServerRepository> { MinecraftServerRepositoryImpl() }
     single<ServerProfilesRepository> {
         ServerProfilesRepositoryImpl(
             fileSystem = get(),

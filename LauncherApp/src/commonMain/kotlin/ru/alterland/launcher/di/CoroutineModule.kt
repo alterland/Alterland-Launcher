@@ -3,6 +3,7 @@ package ru.alterland.launcher.di
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 

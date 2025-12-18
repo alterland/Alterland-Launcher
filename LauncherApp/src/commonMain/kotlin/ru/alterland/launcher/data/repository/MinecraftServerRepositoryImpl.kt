@@ -1,43 +1,21 @@
 package ru.alterland.launcher.data.repository
 
-import io.ktor.network.selector.*
-import io.ktor.network.sockets.*
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import ru.alterland.launcher.data.mapper.toDomain
-import ru.alterland.launcher.data.source.minecraft.MinecraftClient
 import ru.alterland.launcher.domain.model.MinecraftServerStatus
 import ru.alterland.launcher.domain.repository.MinecraftServerRepository
+import tech.aliorpse.mcutils.api.MCServer
+import tech.aliorpse.mcutils.api.getStatus
 
-class MinecraftServerRepositoryImpl(
-    private val dispatcherIo: CoroutineDispatcher,
-    private val json: Json
-): MinecraftServerRepository {
+class MinecraftServerRepositoryImpl: MinecraftServerRepository {
 
-    private val ktorSelectorManager by lazy { SelectorManager(dispatcherIo) }
-
-    override suspend fun ping(host: String, port: Int): MinecraftServerStatus = withContext(dispatcherIo) {
-        val client = connect(host, if (port <= 0) DEFAULT_PORT else port)
-        val statusResponse = client.requestStatus(4)
-        client.close()
-        statusResponse.toDomain()
-    }
-
-    private suspend fun connect(host: String, port: Int): MinecraftClient {
-        val socketFactory = aSocket(ktorSelectorManager).configure {
-            reuseAddress = true
-            reusePort = true
-            typeOfService = TypeOfService.IPTOS_LOWDELAY
-        }
-        val socket = socketFactory.tcp().connect(
-            hostname = host,
-            port = port,
-            configure = {
-                socketTimeout = 2000
-            }
+    override suspend fun ping(host: String, port: Int): MinecraftServerStatus {
+        val serverStatus = MCServer.getStatus(host = host, port = if (port <= 0) DEFAULT_PORT else port, enableSrv = false)
+        return MinecraftServerStatus.Online(
+            favicon = serverStatus.favicon,
+            maxPlayers = serverStatus.players.max,
+            onlinePlayers = serverStatus.players.online,
+            version = serverStatus.version.name,
+            latency = serverStatus.ping
         )
-        return MinecraftClient(dispatcherIo = dispatcherIo, json = json, connection = socket)
     }
 
     companion object {

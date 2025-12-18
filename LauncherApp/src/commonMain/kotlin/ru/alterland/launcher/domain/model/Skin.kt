@@ -1,6 +1,11 @@
 package ru.alterland.launcher.domain.model
 
-import java.awt.image.BufferedImage
-
-
-data class Skin(val name: String, val image: BufferedImage)
+data class Skin(
+    val name: String,
+    val image: String,
+    val modelType: ModelType
+) {
+    enum class ModelType {
+        WIDE, SLIM
+    }
+}

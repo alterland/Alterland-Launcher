@@ -32,6 +32,17 @@ kotlin {
         }
     }
 
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "LauncherApp"
+            isStatic = true
+        }
+    }
+
     jvm()
 
     sourceSets {
@@ -40,8 +51,10 @@ kotlin {
             implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.coil.network.okhttp)
+            implementation(libs.ktor.client.cio)
+        }
+        appleMain.dependencies {
+            implementation(libs.ktor.client.darwin) //used by coil
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -73,17 +86,21 @@ kotlin {
             implementation(libs.orbit.compose)
 
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
 
             implementation(libs.kstore)
             implementation(libs.kstore.file)
 
             implementation(libs.coil.compose)
+            implementation(libs.coil.ktor)
 
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs)
             implementation(libs.filekit.dialogs.compose)
             implementation(libs.filekit.coil)
+
+            implementation(libs.mcutils.server.status)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -91,22 +108,8 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.coil.network.okhttp)
             implementation(libs.logback)
-
-            implementation(libs.lwjgl)
-            implementation(libs.lwjgl.vulkan)
-            implementation(libs.lwjgl.jawt)
-            implementation(libs.lwjgl3.awt.get().toString()) {
-                exclude(group = "org.lwjgl")
-            }
-            listOf("windows", "linux", "macos", "macos-arm64").forEach {
-                runtimeOnly(dependencies.variantOf(libs.lwjgl) { classifier("natives-$it") })
-            }
-            listOf("macos", "macos-arm64").forEach {
-                runtimeOnly(dependencies.variantOf(libs.lwjgl.vulkan) { classifier("natives-$it") })
-            }
+            implementation(libs.ktor.client.cio)
         }
     }
 }

@@ -1,5 +1,6 @@
 package ru.alterland.launcher.ui.screen.main.clientsettings
 
+import ru.alterland.launcher.domain.model.Skin
 import ru.alterland.launcher.domain.model.Store
 import ru.alterland.launcher.ui.base.UiAction
 import ru.alterland.launcher.ui.base.UiEffect
@@ -13,13 +14,17 @@ class ClientSettingsContract {
         data object OnAutoConnectClicked : Action()
         data class OnRamInput(val value: String) : Action()
         data object OnRamInputFinished : Action()
+        data object OnChangeSkinClicked : Action()
     }
 
     data class State(
         val settings: Store.MinecraftSettings? = null,
         val ramValue: String = "",
-        val recommendedRam: Int
+        val recommendedRam: Int,
+        val skin: Skin? = null
     ) : UiState
 
-    sealed class Effect: UiEffect
+    sealed class Effect: UiEffect {
+        data object NavigateToSkinLibrary : Effect()
+    }
 }

@@ -9,12 +9,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.alterland.launcher.ui.theme.AppTheme
 
 @Composable
 fun LoadableText(
@@ -27,7 +27,7 @@ fun LoadableText(
 
     val infiniteTransition = rememberInfiniteTransition()
 
-    val transparencyDec by infiniteTransition.animateFloat(
+    val alpha by infiniteTransition.animateFloat(
         initialValue = 30F,
         targetValue = 80F,
         animationSpec = infiniteRepeatable(
@@ -36,14 +36,11 @@ fun LoadableText(
         )
     )
 
-    val hexAlpha = "0x"+Integer.toHexString(transparencyDec.toInt())
-    val color = Color(255,255,255, Integer.decode(hexAlpha))
-
     Box(modifier = modifier
         .width(width)
         .height(heightDp)
         .background(
-            color,
+            AppTheme.colors.forceWhitePrimary.copy(alpha = alpha),
             RoundedCornerShape(round)
         )
     )

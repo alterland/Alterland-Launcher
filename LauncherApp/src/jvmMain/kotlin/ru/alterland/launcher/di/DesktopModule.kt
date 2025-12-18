@@ -4,5 +4,5 @@ val desktopModule = listOf(
     desktopApiModule,
     desktopPlatformModule,
     desktopRepositoryModule,
-    desktopScreenModelModule,
+    desktopViewModelModule,
 )

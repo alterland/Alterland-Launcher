@@ -41,7 +41,7 @@ fun MiniProfile(
             LoadableItem(
                 isLoading = user is Resource.Loading || user == null,
                 placeholder = {
-                    LoadableImage(size = 32.dp)
+                    LoadableImage(modifier = Modifier.size(32.dp))
                 }
             ) {
                 when(user) {

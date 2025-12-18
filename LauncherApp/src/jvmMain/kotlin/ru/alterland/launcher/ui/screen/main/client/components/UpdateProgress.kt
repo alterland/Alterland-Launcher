@@ -8,17 +8,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import ru.alterland.launcher.domain.model.clientprofile.ClientStatus
 import ru.alterland.launcher.ui.theme.AppTheme
-import ru.alterland.launcher.util.extentions.humanReadableByteCount
+import ru.alterland.launcher.util.extentions.ByteSuffix.Companion.getByteSuffix
+import ru.alterland.launcher.util.extentions.ByteSuffix.Companion.toHumanReadable
 
 @Composable
 fun UpdateProgress(
@@ -32,25 +33,16 @@ fun UpdateProgress(
         clientStatus.received.toFloat() / clientStatus.total.toFloat()
     }
 
-    var received by remember { mutableStateOf("") }
-    var total by remember { mutableStateOf("") }
-
-    val coroutineScope = rememberCoroutineScope()
-    coroutineScope.launch {
-        received = clientStatus.received.humanReadableByteCount()
-        total = clientStatus.total.humanReadableByteCount()
-    }
+    val received = remember(clientStatus.received) { clientStatus.received.getByteSuffix() }
+    val total = remember(clientStatus.total) { clientStatus.total.getByteSuffix() }
 
     Row(
         modifier = modifier.fillMaxWidth().padding(horizontal = 32.dp)
     ) {
         Column {
-            rememberCoroutineScope().launch {
-                clientStatus.received.humanReadableByteCount()
-            }
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "$received ${stringResource(Res.string.out_of)} $total",
+                text = "${received.toHumanReadable(clientStatus.received)} ${stringResource(Res.string.out_of)} ${total.toHumanReadable(clientStatus.total)}",
                 color = AppTheme.colors.labelPrimary,
                 textAlign = TextAlign.End,
                 fontSize = 12.sp

@@ -42,6 +42,9 @@
     <string name="settings_ram">ОЗУ</string>
     <string name="settings_ram_warning">Рекомендованное значение для сервера - %1$s.\nСлишком низкие или слишком высокие значения могут привести к лагам.</string>
     <string name="settings_value">Значение</string>
+    <string name="settings_select_skin">Сменить</string>
+    <string name="settings_model_wide">Толстая</string>
+    <string name="settings_model_slim">Тонкая</string>
     <string name="skins">Скины</string>
 
     <string name="server_status_latency">Пинг: %1$d мс</string>
