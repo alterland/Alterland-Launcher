@@ -45,7 +45,6 @@
     <string name="settings_select_skin">Сменить</string>
     <string name="settings_model_wide">Толстая</string>
     <string name="settings_model_slim">Тонкая</string>
-    <string name="skins">Скины</string>
 
     <string name="server_status_latency">Пинг: %1$d мс</string>
     <string name="server_status_players">Игроков: %1$d / %2$d</string>
@@ -69,6 +68,8 @@
     <string name="edit_server_port">Порт</string>
     <string name="edit_server_client_profile">Связанный клиент</string>
     <string name="edit_server_client_profile_edit">Редактировать клиент</string>
+
+    <string name="skins">Скины</string>
 
     <string name="edit">Редактировать</string>
     <string name="add">Добавить</string>

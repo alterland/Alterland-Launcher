@@ -13,13 +13,13 @@ import androidx.compose.ui.window.rememberWindowState
 import io.github.vinceglb.filekit.FileKit
 import org.koin.compose.KoinApplication
 import ru.alterland.launcher.di.commonModule
-import ru.alterland.launcher.di.desktopModule
+import ru.alterland.launcher.di.jvmModule
 import java.awt.Dimension
 
 fun main() = application {
     KoinApplication(application = {
         modules(commonModule)
-        modules(desktopModule)
+        modules(jvmModule)
     }) {
         FileKit.init(appId = BuildConfig.WORK_FOLDER)
 
@@ -44,6 +44,7 @@ fun main() = application {
                 rootPane.putClientProperty("apple.awt.fullWindowContent", true)
                 rootPane.putClientProperty("apple.awt.transparentTitleBar", true)
                 rootPane.putClientProperty("apple.awt.windowTitleVisible", false)
+                rootPane.putClientProperty("apple.awt.application.appearance", "system")
             }
 
             WindowDraggableArea(modifier = Modifier.fillMaxWidth().height(50.dp))

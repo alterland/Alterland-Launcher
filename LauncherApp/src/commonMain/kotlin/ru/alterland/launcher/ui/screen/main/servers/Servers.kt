@@ -29,6 +29,7 @@ import ru.alterland.launcher.ui.screen.main.editserver.EditServerMode
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerPayload
 import ru.alterland.launcher.ui.screen.main.server.ServerPayload
 import ru.alterland.launcher.ui.screen.main.servers.components.TabItem
+import ru.alterland.launcher.ui.screen.main.skins.SkinsPayload
 import ru.alterland.launcher.ui.theme.AppTheme
 
 @Composable
@@ -36,9 +37,12 @@ fun Servers(
     state: ServersContract.State,
     tabNavigation: @Composable (NavBackStack<NavKey>) -> Unit
 ) {
+    var isOnPlayTab by rememberSaveable { mutableStateOf(true) }
+
     VerticalPager(
         state = rememberPagerState(pageCount = { state.serverProfiles.size }),
         modifier = Modifier.fillMaxSize(),
+        userScrollEnabled = isOnPlayTab,
         key = { index -> state.serverProfiles.getOrNull(index)?.id ?: index }
     ) { page ->
         state.serverProfiles.getOrNull(page)?.let { serverProfile ->
@@ -56,6 +60,7 @@ fun Servers(
                 serverProfile.clientProfile?.let { id ->
                     add(ServerTab.ClientSettings(payload = ClientSettingsPayload(id = id)))
                 }
+                add(ServerTab.Skins(payload = SkinsPayload(serverProfile = serverProfile)))
                 if (state.userStrength >= User.Role.MIN_EDIT_STRENGTH) {
                     add(
                         ServerTab.EditServer(
@@ -91,6 +96,10 @@ fun Servers(
                                 title = stringResource(Res.string.settings)
                                 action = { pageBackStack.add(ServerRoute.ClientSettings(payload = tab.payload)) }
                             }
+                            is ServerTab.Skins -> {
+                                title = stringResource(Res.string.skins)
+                                action = { pageBackStack.add(ServerRoute.Skins(payload = tab.payload)) }
+                            }
                             is ServerTab.EditServer -> {
                                 title = stringResource(Res.string.edit)
                                 action = { pageBackStack.add(ServerRoute.EditServer(payload = tab.payload)) }
@@ -106,6 +115,7 @@ fun Servers(
                             onClick = {
                                 action()
                                 currentTab = tab
+                                isOnPlayTab = tab is ServerTab.Server
                             }
                         )
                     }

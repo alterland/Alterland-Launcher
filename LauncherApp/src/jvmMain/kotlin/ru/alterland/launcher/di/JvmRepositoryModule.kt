@@ -9,7 +9,7 @@ import ru.alterland.launcher.domain.repository.ClientFilesRepository
 import ru.alterland.launcher.domain.repository.MinecraftSettingsRepository
 import ru.alterland.launcher.domain.repository.LaunchRepository
 
-internal val desktopRepositoryModule = module {
+internal val jvmRepositoryModule = module {
     single<ClientFilesRepository> {
         ClientFilesRepositoryImpl(
             clientProfilesRepository = get(),

@@ -4,6 +4,6 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import ru.alterland.launcher.data.source.network.DownloadApi
 
-internal val desktopApiModule = module {
+internal val jvmApiModule = module {
     single { DownloadApi(dispatcherIo = get(named(DISPATCHER_IO))) }
 }

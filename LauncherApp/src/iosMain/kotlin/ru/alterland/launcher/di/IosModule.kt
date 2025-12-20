@@ -1,5 +1,6 @@
 package ru.alterland.launcher.di
 
 internal fun iosModule() = listOf(
-    platformModule()
+    platformModule(),
+    iosCoilModule
 )

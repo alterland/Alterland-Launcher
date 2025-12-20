@@ -3,22 +3,17 @@ package ru.alterland.launcher.ui.screen.main.clientsettings
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.viewmodel.container
 import ru.alterland.launcher.domain.repository.MinecraftSettingsRepository
-import ru.alterland.launcher.domain.repository.SkinRepository
 import ru.alterland.launcher.ui.base.BaseViewModel
 
 class ClientSettingsViewModel(
     private val minecraftSettingsRepository: MinecraftSettingsRepository,
-    private val skinRepository: SkinRepository,
     private val payload: ClientSettingsPayload
 ) : BaseViewModel<ClientSettingsContract.State, ClientSettingsContract.Effect, ClientSettingsContract.Action>() {
 
     override val container = container<ClientSettingsContract.State, ClientSettingsContract.Effect>(
-        initialState = ClientSettingsContract.State(
-            recommendedRam = 8192
-        )
+        initialState = ClientSettingsContract.State(recommendedRam = 8192)
     ) {
         getSettings()
-        loadSkin()
     }
 
     override fun dispatch(action: ClientSettingsContract.Action) {
@@ -28,7 +23,6 @@ class ClientSettingsViewModel(
             ClientSettingsContract.Action.OnAutoConnectClicked -> handleOnAutoConnectClicked()
             is ClientSettingsContract.Action.OnRamInput -> handleOnRamInput(action.value)
             ClientSettingsContract.Action.OnRamInputFinished -> getSettings()
-            ClientSettingsContract.Action.OnChangeSkinClicked -> handleOnChangeSkinClicked()
         }
     }
 
@@ -37,10 +31,6 @@ class ClientSettingsViewModel(
             val settings = minecraftSettingsRepository.getSettings(payload.id)
             reduce { state.copy(settings = settings, ramValue = settings.ram.toString()) }
         }
-    }
-
-    private fun loadSkin() = intent {
-        postSideEffect(ClientSettingsContract.Effect.NavigateToSkinLibrary)
     }
 
     private fun handleOnLaunchAfterUpdateClicked() = intent {
@@ -84,24 +74,6 @@ class ClientSettingsViewModel(
             }
         }
     }
-
-    private fun handleOnChangeSkinClicked() = intent {
-
-    }
-
-//    private fun loadSkin() = intent {
-//        viewModelScopeErrorHandled.launch {
-//            val skin = skinRepository.loadSkin()
-//            reduce { state.copy(skin = skin) }
-//        }
-//    }
-//
-//    private fun saveSkin() = intent {
-//        viewModelScopeErrorHandled.launch {
-//            val skin = skinRepository.loadSkin()
-//            reduce { state.copy(skin = skin) }
-//        }
-//    }
 
     companion object {
         private const val MAX_MEMORY = 16384

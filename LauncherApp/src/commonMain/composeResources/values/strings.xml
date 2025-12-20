@@ -37,7 +37,6 @@
     <string name="settings_select_skin">Change</string>
     <string name="settings_model_wide">Wide</string>
     <string name="settings_model_slim">Slim</string>
-    <string name="skins">Skins</string>
 
     <string name="server_status_latency">Latency: %1$d ms</string>
     <string name="server_status_players">Players: %1$d / %2$d</string>
@@ -61,6 +60,9 @@
     <string name="edit_server_port">Port</string>
     <string name="edit_server_client_profile">Connected client</string>
     <string name="edit_server_client_profile_edit">Edit client profile</string>
+
+    <string name="skins">Skins</string>
+
     <string name="add">Add</string>
     <string name="save">Save</string>
 </resources>

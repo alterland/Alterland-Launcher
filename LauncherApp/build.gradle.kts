@@ -54,7 +54,7 @@ kotlin {
             implementation(libs.ktor.client.cio)
         }
         appleMain.dependencies {
-            implementation(libs.ktor.client.darwin) //used by coil
+            implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -129,6 +129,7 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "/META-INF/INDEX.LIST"
+            excludes += "DebugProbesKt.bin"
         }
     }
     buildTypes {

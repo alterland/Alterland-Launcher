@@ -27,12 +27,6 @@ fun ServersScreen(
                 entry<ServerRoute.Server> {
                     ServerScreen(payload = it.payload)
                 }
-                entry<ServerRoute.EditServer> {
-                    EditServerScreen(
-                        payload = it.payload,
-                        navigateBack = { pageBackStack.removeLastOrNull() }
-                    )
-                }
                 entry<ServerRoute.ClientSettings> {
                     ClientSettingsScreen(
                         payload = it.payload,
@@ -41,6 +35,12 @@ fun ServersScreen(
                 }
                 entry<ServerRoute.Skins> {
                     SkinsScreen(
+                        payload = it.payload,
+                        navigateBack = { pageBackStack.removeLastOrNull() }
+                    )
+                }
+                entry<ServerRoute.EditServer> {
+                    EditServerScreen(
                         payload = it.payload,
                         navigateBack = { pageBackStack.removeLastOrNull() }
                     )
