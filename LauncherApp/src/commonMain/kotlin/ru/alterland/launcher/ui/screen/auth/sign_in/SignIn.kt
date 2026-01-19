@@ -27,8 +27,8 @@ fun SignIn(
 
     val icLogin = painterResource(Res.drawable.ic_login)
     val icPassword = painterResource(Res.drawable.ic_password)
-    val icVk = painterResource(Res.drawable.ic_vk)
-    val icGoogle = painterResource(Res.drawable.ic_google)
+    painterResource(Res.drawable.ic_vk)
+    painterResource(Res.drawable.ic_google)
 
     val elementsPadding = 20.dp
 

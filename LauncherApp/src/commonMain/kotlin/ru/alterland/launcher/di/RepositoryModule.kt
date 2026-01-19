@@ -46,7 +46,8 @@ internal val repositoryModule = module {
     }
     single<SkinRepository> {
         SkinRepositoryImpl(
-            dispatcherIo = get(named(DISPATCHER_IO))
+            skinsApi = get(),
+            fileSystem = get()
         )
     }
 }

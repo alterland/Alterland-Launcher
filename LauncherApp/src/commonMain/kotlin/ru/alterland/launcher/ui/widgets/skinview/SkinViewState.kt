@@ -24,13 +24,13 @@ class SkinViewState(
     initialRotationY: Float = 0f,
     initialModelType: Skin.ModelType = Skin.ModelType.WIDE,
     initialAnimation: AnimationType = AnimationType.IDLE,
-    initialShowOuterLayer: Boolean = true
+    initialShowOuterLayer: Boolean = true,
+    initialIsPaused: Boolean = false
 ) {
     var rotationX by mutableFloatStateOf(initialRotationX)
         internal set
 
     var rotationY by mutableFloatStateOf(initialRotationY)
-        internal set
 
     var modelType by mutableStateOf(initialModelType)
 
@@ -43,7 +43,7 @@ class SkinViewState(
 
     var animationSpeed by mutableFloatStateOf(1f)
 
-    var isPaused by mutableStateOf(false)
+    var isPaused by mutableStateOf(initialIsPaused)
 
     fun rotate(deltaX: Float, deltaY: Float) {
         rotationY += deltaX * 0.01f
@@ -63,6 +63,7 @@ fun rememberSkinViewState(
     initialRotationY: Float = 0.5f,
     initialAnimation: AnimationType = AnimationType.IDLE,
     initialShowOuterLayer: Boolean = true,
+    initialIsPaused: Boolean = false,
     imageLoader: ImageLoader = koinInject()
 ): SkinViewState {
     val platformContext = LocalPlatformContext.current
@@ -73,7 +74,8 @@ fun rememberSkinViewState(
             initialRotationY = initialRotationY,
             initialModelType = skin.modelType,
             initialAnimation = initialAnimation,
-            initialShowOuterLayer = initialShowOuterLayer
+            initialShowOuterLayer = initialShowOuterLayer,
+            initialIsPaused = initialIsPaused
         )
     }
 

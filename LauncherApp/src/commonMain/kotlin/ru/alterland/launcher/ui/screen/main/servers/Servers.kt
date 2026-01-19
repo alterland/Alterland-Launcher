@@ -9,12 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,7 +19,7 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import org.jetbrains.compose.resources.stringResource
-import ru.alterland.launcher.domain.model.User
+import ru.alterland.launcher.domain.model.Role
 import ru.alterland.launcher.ui.screen.main.clientsettings.ClientSettingsPayload
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerMode
 import ru.alterland.launcher.ui.screen.main.editserver.EditServerPayload
@@ -61,7 +57,7 @@ fun Servers(
                     add(ServerTab.ClientSettings(payload = ClientSettingsPayload(id = id)))
                 }
                 add(ServerTab.Skins(payload = SkinsPayload(serverProfile = serverProfile)))
-                if (state.userStrength >= User.Role.MIN_EDIT_STRENGTH) {
+                if (state.user.getOrNull()?.role == Role.ADMIN) {
                     add(
                         ServerTab.EditServer(
                             payload = EditServerPayload(
@@ -73,6 +69,26 @@ fun Servers(
                     )
                     add(ServerTab.AddServer(payload = EditServerPayload(mode = EditServerMode.Add)))
                 }
+            }
+
+            LaunchedEffect(Unit) {
+                snapshotFlow { pageBackStack.lastOrNull() }
+                    .collect { currentRoute ->
+                        val newTab = when (currentRoute) {
+                            is ServerRoute.Server -> serverTab
+                            is ServerRoute.ClientSettings -> tabs.find { it is ServerTab.ClientSettings }
+                            is ServerRoute.Skins -> tabs.find { it is ServerTab.Skins }
+                            is ServerRoute.EditServer -> {
+                                when (currentRoute.payload.mode) {
+                                    is EditServerMode.Edit -> tabs.find { it is ServerTab.EditServer }
+                                    is EditServerMode.Add -> tabs.find { it is ServerTab.AddServer }
+                                }
+                            }
+                            else -> serverTab
+                        } ?: serverTab
+                        currentTab = newTab
+                        isOnPlayTab = newTab is ServerTab.Server
+                    }
             }
 
             Column(modifier = Modifier.fillMaxSize().background(AppTheme.colors.backgroundElevatedSecondary)) {
@@ -112,11 +128,7 @@ fun Servers(
                         TabItem(
                             title = title,
                             isSelected = currentTab == tab,
-                            onClick = {
-                                action()
-                                currentTab = tab
-                                isOnPlayTab = tab is ServerTab.Server
-                            }
+                            onClick = { action() }
                         )
                     }
                 }

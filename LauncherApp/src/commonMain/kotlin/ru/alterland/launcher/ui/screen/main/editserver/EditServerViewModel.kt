@@ -44,7 +44,7 @@ class EditServerViewModel(
                 reduce { state.copy(clientProfileObjects = Resource.Content(clientProfiles)) }
             }
             .onFailure { throwable ->
-                reduce { state.copy(clientProfileObjects = Resource.Error(throwable)) }
+                reduce { state.copy(clientProfileObjects = Resource.Error(throwable = throwable)) }
                 errorRepository.addError(throwable)
             }
     }

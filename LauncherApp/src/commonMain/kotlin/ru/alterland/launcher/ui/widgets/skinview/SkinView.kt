@@ -30,7 +30,8 @@ private const val TEXEL_OVERLAP = 0.01f
 @Composable
 fun SkinView(
     modifier: Modifier = Modifier,
-    state: SkinViewState
+    state: SkinViewState,
+    enableDragRotation: Boolean = true
 ) {
     val playerModel = remember(state.modelType) {
         PlayerModel(state.modelType)
@@ -60,14 +61,16 @@ fun SkinView(
         }
     }
 
-    Canvas(
-        modifier = modifier.pointerInput(Unit) {
+    val dragModifier = if (enableDragRotation) {
+        Modifier.pointerInput(Unit) {
             detectDragGestures { change, dragAmount ->
                 change.consume()
                 state.rotate(dragAmount.x, dragAmount.y)
             }
         }
-    ) {
+    } else Modifier
+
+    Canvas(modifier = modifier.then(dragModifier)) {
         val centerX = size.width / 2
         val centerY = size.height / 2
 

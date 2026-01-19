@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.viewmodel.container
+import ru.alterland.launcher.domain.model.User
 import ru.alterland.launcher.domain.model.clientprofile.ClientProfile
 import ru.alterland.launcher.domain.model.clientprofile.Feature
 import ru.alterland.launcher.domain.model.clientprofile.Player
@@ -23,9 +24,11 @@ class ClientViewModel(
 
     override val container = container<ClientContract.State, ClientContract.Effect>(ClientContract.State())
 
+    private var user: User? = null
     private var clientProfile: ClientProfile? = null
 
     init {
+        subscribeToUser()
         updateClientProfile()
         subscribeToClientProfiles()
     }
@@ -36,23 +39,30 @@ class ClientViewModel(
         }
     }
 
+    private fun subscribeToUser() = intent {
+        userRepository.user.collect { resource ->
+            user = resource.getOrNull()
+        }
+    }
+
     private fun updateClientProfile() = viewModelScopeErrorHandled.launch {
         clientProfilesRepository.updateClientProfile(id = payload.id)
     }
 
     private fun handlePlayClick() = intent {
-        clientProfile?.let {
-            //setState { copy(status = clientProfile.copy(status = ClientStatus.UpdateError(0))) }
-            val user = userRepository.getUser(force = false)
-            clientFilesRepository.updateAndLaunch(
-                clientProfile = it,
-                player = Player(
-                    id = user.id,
-                    accessToken = localStorage.accessToken.value.orEmpty(),
-                    nickname = user.nickname
-                ),
-                features = mapOf(Feature.HAS_CUSTOM_RESOLUTION to false)
-            )
+        user?.let { user ->
+            clientProfile?.let {
+                //setState { copy(status = clientProfile.copy(status = ClientStatus.UpdateError(0))) }
+                clientFilesRepository.updateAndLaunch(
+                    clientProfile = it,
+                    player = Player(
+                        id = user.id,
+                        accessToken = localStorage.accessToken.value.orEmpty(),
+                        nickname = user.nickname
+                    ),
+                    features = mapOf(Feature.HAS_CUSTOM_RESOLUTION to false)
+                )
+            }
         }
     }
 

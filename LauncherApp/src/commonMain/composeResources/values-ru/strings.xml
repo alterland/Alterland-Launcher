@@ -43,8 +43,6 @@
     <string name="settings_ram_warning">Рекомендованное значение для сервера - %1$s.\nСлишком низкие или слишком высокие значения могут привести к лагам.</string>
     <string name="settings_value">Значение</string>
     <string name="settings_select_skin">Сменить</string>
-    <string name="settings_model_wide">Толстая</string>
-    <string name="settings_model_slim">Тонкая</string>
 
     <string name="server_status_latency">Пинг: %1$d мс</string>
     <string name="server_status_players">Игроков: %1$d / %2$d</string>
@@ -70,6 +68,13 @@
     <string name="edit_server_client_profile_edit">Редактировать клиент</string>
 
     <string name="skins">Скины</string>
+    <string name="selected_skin">Мой скин</string>
+    <string name="skins_library">Библиотека</string>
+    <string name="skins_add">Добавить свой</string>
+    <string name="skins_model_type_title">Модель персонажа</string>
+    <string name="skins_model_type_wide">Широкая модель</string>
+    <string name="skins_model_type_slim">Стройная модель</string>
+    <string name="skins_apply">Применить</string>
 
     <string name="edit">Редактировать</string>
     <string name="add">Добавить</string>

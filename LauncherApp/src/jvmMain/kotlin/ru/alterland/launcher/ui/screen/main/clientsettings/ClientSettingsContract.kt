@@ -21,6 +21,5 @@ class ClientSettingsContract {
         val recommendedRam: Int
     ) : UiState
 
-    sealed class Effect: UiEffect {
-    }
+    sealed class Effect: UiEffect
 }

@@ -11,5 +11,11 @@ internal val apiModule = module {
     single { UserApi(httpClient = get(), dispatcherIo = get(named(DISPATCHER_IO))) }
     single { ServerProfilesApi(httpClient = get(), dispatcherIo = get(named(DISPATCHER_IO))) }
     single { ClientProfilesApi(httpClient = get(), dispatcherIo = get(named(DISPATCHER_IO))) }
-    single { SkinsApi(httpClient = get(), dispatcherIo = get(named(DISPATCHER_IO))) }
+    single {
+        SkinsApi(
+            httpClient = get(),
+            uploadHttpClient = get(named(HTTP_CLIENT_UPLOAD)),
+            dispatcherIo = get(named(DISPATCHER_IO))
+        )
+    }
 }

@@ -35,8 +35,6 @@
     <string name="client_settings_launch_fullscreen">Run in full-screen mode</string>
     <string name="client_settings_auto_connect">Connect to the server automatically</string>
     <string name="settings_select_skin">Change</string>
-    <string name="settings_model_wide">Wide</string>
-    <string name="settings_model_slim">Slim</string>
 
     <string name="server_status_latency">Latency: %1$d ms</string>
     <string name="server_status_players">Players: %1$d / %2$d</string>
@@ -62,6 +60,13 @@
     <string name="edit_server_client_profile_edit">Edit client profile</string>
 
     <string name="skins">Skins</string>
+    <string name="selected_skin">My skin</string>
+    <string name="skins_library">Library</string>
+    <string name="skins_add">Add own</string>
+    <string name="skins_model_type_title">Player model</string>
+    <string name="skins_model_type_wide">Wide</string>
+    <string name="skins_model_type_slim">Slim</string>
+    <string name="skins_apply">Apply</string>
 
     <string name="add">Add</string>
     <string name="save">Save</string>

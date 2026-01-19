@@ -27,6 +27,7 @@ class MainContainerViewModel(
     private var pingServerJobs: List<Job>? = null
 
     init {
+        subscribeToUser()
         subscribeToErrors()
         subscribeToAccessToken()
         subscribeToServerProfiles()
@@ -47,19 +48,18 @@ class MainContainerViewModel(
     }
 
     private fun reload() {
-        getUser()
+        updateUser()
         getServerProfiles()
     }
 
-    private fun getUser() = intent {
-        reduce { state.copy(user = Resource.Loading()) }
-        runCatching { userRepository.getUser() }
-            .onSuccess { user ->
-                reduce { state.copy(user = Resource.Content(user)) }
-            }
-            .onFailure { throwable ->
-                reduce { state.copy(user = Resource.Error(throwable)) }
-            }
+    private fun subscribeToUser() = intent {
+        userRepository.user.collect {
+            reduce { state.copy(user = it) }
+        }
+    }
+
+    private fun updateUser() = viewModelScopeErrorHandled.launch {
+        userRepository.updateUser()
     }
 
     private fun signOut() = intent {
@@ -76,7 +76,7 @@ class MainContainerViewModel(
             serverProfilesRepository.getServerProfiles()
         }.onFailure { throwable ->
             if (state.serverProfiles?.getOrNull().isNullOrEmpty()) {
-                reduce { state.copy(serverProfiles = Resource.Error(throwable)) }
+                reduce { state.copy(serverProfiles = Resource.Error(throwable = throwable)) }
             }
         }
     }

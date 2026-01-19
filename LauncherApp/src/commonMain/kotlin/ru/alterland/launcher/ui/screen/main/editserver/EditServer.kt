@@ -86,7 +86,7 @@ fun EditServer(
                                 modifier = Modifier.padding(start = 8.dp).size(13.dp)
                             )
                         }
-                        null -> {}
+                        else -> {}
                     }
                 }
             )

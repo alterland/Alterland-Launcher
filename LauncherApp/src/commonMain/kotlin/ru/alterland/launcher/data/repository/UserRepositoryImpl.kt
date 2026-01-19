@@ -1,5 +1,8 @@
 package ru.alterland.launcher.data.repository
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import ru.alterland.launcher.data.mapper.toDomain
 import ru.alterland.launcher.data.source.network.UserApi
 import ru.alterland.launcher.data.source.network.model.request.ResetPasswordRequest
@@ -8,38 +11,47 @@ import ru.alterland.launcher.data.source.network.model.request.SignUpRequest
 import ru.alterland.launcher.domain.model.User
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.domain.repository.UserRepository
+import ru.alterland.launcher.util.base.Resource
 
 class UserRepositoryImpl(
     private val userApi: UserApi,
     private val localStorage: LocalStorage
 ): UserRepository {
 
-    private var cachedUser: User? = null
+    private val _user: MutableStateFlow<Resource<User>> = MutableStateFlow(Resource.Idle())
+    override val user: StateFlow<Resource<User>> = _user.asStateFlow()
 
     override suspend fun signIn(login: String, password: String) {
-        val result = userApi.signIn(
-            SignInRequest(
-                login = login,
-                password = password
+        runCatching {
+            _user.emit(Resource.Loading())
+            val result = userApi.signIn(
+                SignInRequest(
+                    login = login,
+                    password = password
+                )
             )
-        )
-        localStorage.setAccessToken(result.accessToken.orEmpty())
-        result.toDomain().also {
-            cachedUser = it
+            localStorage.setAccessToken(result.accessToken.orEmpty())
+            val user = result.toDomain()
+            _user.emit(Resource.Content(user))
+        }.onFailure {
+            _user.emit(Resource.Error(data = user.value.getOrNull(), throwable = it))
         }
     }
 
     override suspend fun signUp(nickname: String, email: String, password: String) {
-        val result = userApi.signUp(
-            SignUpRequest(
-                nickname = nickname,
-                email = email,
-                password = password
+        runCatching {
+            val result = userApi.signUp(
+                SignUpRequest(
+                    nickname = nickname,
+                    email = email,
+                    password = password
+                )
             )
-        )
-        localStorage.setAccessToken(result.accessToken.orEmpty())
-        result.toDomain().also {
-            cachedUser = it
+            localStorage.setAccessToken(result.accessToken.orEmpty())
+            val user = result.toDomain()
+            _user.emit(Resource.Content(user))
+        }.onFailure {
+            _user.emit(Resource.Error(data = user.value.getOrNull(), throwable = it))
         }
     }
 
@@ -54,7 +66,7 @@ class UserRepositoryImpl(
         }
         localStorage.setAccessToken("")
         userApi.clearToken()
-        cachedUser = null
+        _user.emit(Resource.Idle())
     }
 
     override suspend fun checkNick(nickname: String): Boolean? = try {
@@ -69,11 +81,13 @@ class UserRepositoryImpl(
 //        }
     }
 
-    override suspend fun getUser(force: Boolean) = if (force) {
-        fetchUser()
-    } else {
-        cachedUser ?: fetchUser()
+    override suspend fun updateUser() {
+        runCatching {
+            val user = userApi.getUser().toDomain()
+            _user.emit(Resource.Content(user))
+        }.onFailure {
+            _user.emit(Resource.Error(data = user.value.getOrNull(), throwable = it))
+        }
     }
 
-    private suspend fun fetchUser() = userApi.getUser().toDomain().also { cachedUser = it }
 }

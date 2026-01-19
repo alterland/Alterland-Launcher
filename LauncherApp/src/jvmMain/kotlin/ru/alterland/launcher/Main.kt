@@ -16,39 +16,41 @@ import ru.alterland.launcher.di.commonModule
 import ru.alterland.launcher.di.jvmModule
 import java.awt.Dimension
 
-fun main() = application {
-    KoinApplication(application = {
-        modules(commonModule)
-        modules(jvmModule)
-    }) {
-        FileKit.init(appId = BuildConfig.WORK_FOLDER)
+fun main() {
+    System.setProperty("apple.awt.application.appearance", "system")
+    application {
+        KoinApplication(application = {
+            modules(commonModule)
+            modules(jvmModule)
+        }) {
+            FileKit.init(appId = BuildConfig.WORK_FOLDER)
 
-        val minWindowWidth = 800
-        val minWindowHeight = 530
+            val minWindowWidth = 900
+            val minWindowHeight = 600
 
-        val state = rememberWindowState(
-            position = WindowPosition.Aligned(Alignment.Center),
-            width = minWindowWidth.dp,
-            height = minWindowHeight.dp
-        )
+            val state = rememberWindowState(
+                position = WindowPosition.Aligned(Alignment.Center),
+                width = minWindowWidth.dp,
+                height = minWindowHeight.dp
+            )
 
-        Window(
-            onCloseRequest = ::exitApplication,
-            undecorated = false,
-            resizable = true,
-            state = state,
-            title = ""
-        ) {
-            with(window) {
-                minimumSize = Dimension(minWindowWidth, minWindowHeight)
-                rootPane.putClientProperty("apple.awt.fullWindowContent", true)
-                rootPane.putClientProperty("apple.awt.transparentTitleBar", true)
-                rootPane.putClientProperty("apple.awt.windowTitleVisible", false)
-                rootPane.putClientProperty("apple.awt.application.appearance", "system")
+            Window(
+                onCloseRequest = ::exitApplication,
+                undecorated = false,
+                resizable = true,
+                state = state,
+                title = ""
+            ) {
+                with(window) {
+                    minimumSize = Dimension(minWindowWidth, minWindowHeight)
+                    rootPane.putClientProperty("apple.awt.fullWindowContent", true)
+                    rootPane.putClientProperty("apple.awt.transparentTitleBar", true)
+                    rootPane.putClientProperty("apple.awt.windowTitleVisible", false)
+                }
+
+                WindowDraggableArea(modifier = Modifier.fillMaxWidth().height(50.dp))
+                App()
             }
-
-            WindowDraggableArea(modifier = Modifier.fillMaxWidth().height(50.dp))
-            App()
         }
     }
 }

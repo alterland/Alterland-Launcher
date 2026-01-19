@@ -43,3 +43,11 @@ internal fun configureHttpClient(json: Json, localStorage: LocalStorage) = platf
     }
     expectSuccess = true
 }
+
+internal fun configureUploadHttpClient() = platformHttpClient {
+    install(Logging) {
+        logger = Logger.SIMPLE
+        level = LogLevel.ALL
+    }
+    expectSuccess = true
+}

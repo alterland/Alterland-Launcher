@@ -12,7 +12,7 @@ plugins {
 }
 
 buildConfig {
-    buildConfigField("boolean", "DEV_ENV", "${false}")
+    buildConfigField("boolean", "DEV_ENV", "${true}")
     buildConfigField("String", "DEV_API_BASE_URL", "\"localhost:3000\"")
     buildConfigField("String", "PROD_API_BASE_URL", "\"api.alterland.ru\"")
     buildConfigField("String", "MOJANG_ASSETS_HOST", "\"https://resources.download.minecraft.net\"")
@@ -51,7 +51,7 @@ kotlin {
             implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
-            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.okhttp)
         }
         appleMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -109,7 +109,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.logback)
-            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.okhttp)
         }
     }
 }

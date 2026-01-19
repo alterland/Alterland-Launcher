@@ -21,8 +21,9 @@ class MainContainerContract {
         val currentClient: String? = null,
         val isClientServiceOffline: Boolean = false,
 
-        val user: Resource<User>? = null,
+        val user: Resource<User> = Resource.Idle(),
         val serverProfiles: Resource<List<ServerProfileWithStatus>>? = null,
+        val avatarUrl: String? = null,
     ): UiState
 
     sealed class Effect: UiEffect {

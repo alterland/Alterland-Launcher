@@ -1,9 +1,9 @@
 [versions]
 #languages, plugins
-kotlin = "2.2.21"
+kotlin = "2.3.0"
 agp = "8.12.3"
-buildConfig = "6.0.6"
-compose-multiplatform = "1.10.0-rc02"
+buildConfig = "6.0.7"
+compose-multiplatform = "1.10.0"
 compose-hotreload = "1.0.0"
 
 #Android
@@ -14,8 +14,8 @@ android-targetSdk = "36"
 #AndroidX libraries
 androidx-core-ktx = "1.17.0"
 androidx-appcompat = "1.7.1"
-androidx-activity-compose = "1.12.1"
-androidx-lifecycle = "2.10.0-alpha06"
+androidx-activity-compose = "1.12.2"
+androidx-lifecycle = "2.10.0-alpha07"
 androidx-nav3 = "1.0.0-alpha06"
 
 #Kotlinx
@@ -62,7 +62,7 @@ coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref 
 coil-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
 
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
-ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
 ktor-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }

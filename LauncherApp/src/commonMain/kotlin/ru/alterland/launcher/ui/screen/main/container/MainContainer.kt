@@ -1,7 +1,5 @@
 package ru.alterland.launcher.ui.screen.main.container
 
-import alterlandlauncher.launcherapp.generated.resources.Res
-import alterlandlauncher.launcherapp.generated.resources.avatar_rofl
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,8 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.resources.painterResource
-import ru.alterland.launcher.domain.model.User
+import ru.alterland.launcher.domain.model.Role
 import ru.alterland.launcher.ui.screen.main.container.components.MiniProfile
 import ru.alterland.launcher.ui.screen.main.container.components.MiniServer
 import ru.alterland.launcher.ui.screen.main.container.components.ServersPlaceholder
@@ -26,8 +23,6 @@ fun MainContainer(
     onAction: (MainContainerContract.Action) -> Unit,
     childNavigation: @Composable () -> Unit
 ) {
-    val avatar = painterResource(Res.drawable.avatar_rofl)
-
     Row(modifier = Modifier.fillMaxWidth().background(AppTheme.colors.backgroundTertiary)) {
         Column(Modifier
             .fillMaxHeight()
@@ -48,12 +43,13 @@ fun MainContainer(
                         }
                     }
                 }
-                MiniProfile(
-                    user = state.user,
-                    avatar = avatar,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 16.dp, end = 11.dp),
-                    onExit = { onAction(MainContainerContract.Action.OnSignOutClicked) }
-                )
+                Column {
+                    MiniProfile(
+                        user = state.user,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 16.dp, end = 11.dp),
+                        onExit = { onAction(MainContainerContract.Action.OnSignOutClicked) }
+                    )
+                }
             }
         }
         Box(modifier = Modifier.fillMaxSize()) {
@@ -64,9 +60,7 @@ fun MainContainer(
                     } else {
                         ServersPlaceholder(
                             isEmpty = true,
-                            canAddServer =
-                                state.user is Resource.Content &&
-                                        (state.user.data.role?.strength ?: User.Role.DEFAULT_STRENGTH) >= User.Role.MIN_EDIT_STRENGTH,
+                            canAddServer = state.user.getOrNull()?.role == Role.ADMIN,
                             onAddServerClick = { onAction(MainContainerContract.Action.OnNavigateToAddServer) },
                             onRetryClick = { onAction(MainContainerContract.Action.OnReload) }
                         )
@@ -83,7 +77,7 @@ fun MainContainer(
                         modifier = Modifier.size(32.dp)
                     )
                 }
-                null -> {}
+                else -> {}
             }
             BaseErrorHandler(
                 modifier = Modifier
