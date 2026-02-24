@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StoreV1(
     @SerialName("accessToken") val accessToken: String? = null,
+    @SerialName("refreshToken") val refreshToken: String? = null,
     @SerialName("rememberMe") val rememberMe: Boolean? = null,
     @SerialName("minecraftSettings") val minecraftSettings: Map<String, MinecraftSettings>? = null,
 ) {

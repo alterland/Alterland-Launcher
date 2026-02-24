@@ -8,6 +8,7 @@ import ru.alterland.launcher.data.source.network.UserApi
 import ru.alterland.launcher.data.source.network.model.request.ResetPasswordRequest
 import ru.alterland.launcher.data.source.network.model.request.SignInRequest
 import ru.alterland.launcher.data.source.network.model.request.SignUpRequest
+import ru.alterland.launcher.data.source.network.model.response.GetTokensResponse
 import ru.alterland.launcher.domain.model.User
 import ru.alterland.launcher.domain.repository.LocalStorage
 import ru.alterland.launcher.domain.repository.UserRepository
@@ -30,13 +31,14 @@ class UserRepositoryImpl(
                     password = password
                 )
             )
-            localStorage.setAccessToken(result.accessToken.orEmpty())
-            val user = result.toDomain()
+            setTokensFromResult(result.tokens)
+            val user = result.user.toDomain()
             _user.emit(Resource.Content(user))
         }.onFailure {
             _user.emit(Resource.Error(data = user.value.getOrNull(), throwable = it))
         }
     }
+
 
     override suspend fun signUp(nickname: String, email: String, password: String) {
         runCatching {
@@ -47,8 +49,8 @@ class UserRepositoryImpl(
                     password = password
                 )
             )
-            localStorage.setAccessToken(result.accessToken.orEmpty())
-            val user = result.toDomain()
+            setTokensFromResult(result.tokens)
+            val user = result.user.toDomain()
             _user.emit(Resource.Content(user))
         }.onFailure {
             _user.emit(Resource.Error(data = user.value.getOrNull(), throwable = it))
@@ -61,12 +63,15 @@ class UserRepositoryImpl(
     }
 
     override suspend fun signOut() {
+        localStorage.setTokens("", "")
+        userApi.clearToken()
+        _user.emit(Resource.Idle())
+    }
+
+    override suspend fun signOutFromAllDevices() {
         runCatching {
             userApi.signOut()
         }
-        localStorage.setAccessToken("")
-        userApi.clearToken()
-        _user.emit(Resource.Idle())
     }
 
     override suspend fun checkNick(nickname: String): Boolean? = try {
@@ -88,6 +93,10 @@ class UserRepositoryImpl(
         }.onFailure {
             _user.emit(Resource.Error(data = user.value.getOrNull(), throwable = it))
         }
+    }
+
+    private suspend fun setTokensFromResult(tokens: GetTokensResponse) {
+        localStorage.setTokens(tokens.accessToken, tokens.refreshToken)
     }
 
 }

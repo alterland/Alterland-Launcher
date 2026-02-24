@@ -36,6 +36,9 @@ class LocalStorageImpl(
     private val _accessToken: MutableStateFlow<String?> = MutableStateFlow(null)
     override val accessToken: StateFlow<String?> = _accessToken.asStateFlow()
 
+    private val _refreshToken: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val refreshToken: StateFlow<String?> = _refreshToken.asStateFlow()
+
     override val storeFlow: Flow<Store?> = store.updates.map { it?.toDomain() }
 
     init {
@@ -50,6 +53,18 @@ class LocalStorageImpl(
             update { it?.copy(accessToken = accessToken) }
         }
         _accessToken.emit(accessToken)
+    }
+
+    override suspend fun setRefreshToken(refreshToken: String?) {
+        if (store.get()?.rememberMe == true) {
+            update { it?.copy(refreshToken = refreshToken) }
+        }
+        _refreshToken.emit(refreshToken)
+    }
+
+    override suspend fun setTokens(accessToken: String?, refreshToken: String?) {
+        setAccessToken(accessToken)
+        setRefreshToken(refreshToken)
     }
 
     override suspend fun get(): Store? = store.get()?.toDomain()

@@ -12,6 +12,7 @@ import ru.alterland.launcher.data.source.network.model.request.ResetPasswordRequ
 import ru.alterland.launcher.data.source.network.model.request.SignInRequest
 import ru.alterland.launcher.data.source.network.model.request.SignUpRequest
 import ru.alterland.launcher.data.source.network.model.response.CheckNicknameResponse
+import ru.alterland.launcher.data.source.network.model.response.GetSignResponse
 import ru.alterland.launcher.data.source.network.model.response.GetUserResponse
 
 class UserApi(
@@ -22,13 +23,13 @@ class UserApi(
         private const val PATH: String = "user"
     }
 
-    suspend fun signIn(req: SignInRequest): GetUserResponse = withContext(dispatcherIo) {
+    suspend fun signIn(req: SignInRequest): GetSignResponse = withContext(dispatcherIo) {
         httpClient.post("$PATH/signin") {
             setBody(req)
         }.body()
     }
 
-    suspend fun signUp(req: SignUpRequest): GetUserResponse = withContext(dispatcherIo) {
+    suspend fun signUp(req: SignUpRequest): GetSignResponse = withContext(dispatcherIo) {
         httpClient.post("$PATH/signup") {
             setBody(req)
         }.body()

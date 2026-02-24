@@ -11,6 +11,7 @@ interface UserRepository {
     suspend fun signUp(nickname: String, email: String, password: String)
     suspend fun resetPassword(email: String)
     suspend fun signOut()
+    suspend fun signOutFromAllDevices()
     suspend fun checkNick(nickname: String): Boolean?
     suspend fun updateUser()
 }

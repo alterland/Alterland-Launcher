@@ -2,6 +2,7 @@ package ru.alterland.launcher.domain.model
 
 data class Store(
     val accessToken: String?,
+    val refreshToken: String?,
     val rememberMe: Boolean?,
     val minecraftSettings: Map<String, MinecraftSettings>?
 ) {
